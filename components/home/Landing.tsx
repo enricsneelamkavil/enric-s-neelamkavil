@@ -8,15 +8,27 @@ import styled, { keyframes } from 'styled-components'
 const IMG_APPLE_ICON = 'https://www.figma.com/api/mcp/asset/9d335656-3da1-4e16-aaa5-c0659c20541e'
 
 // TODO: replace with Supabase Storage URLs once photos are uploaded
-const IMG_LEFT  = 'https://www.figma.com/api/mcp/asset/fcb8b190-87c9-4c8d-a91f-0db3aaaa9abc'
-const IMG_MAIN  = 'https://www.figma.com/api/mcp/asset/6ca82b31-c4ff-42fe-85e1-c7b9a4055c7e'
-const IMG_RIGHT = 'https://www.figma.com/api/mcp/asset/c401e8db-b79b-4df1-8744-67e108295e9b'
+const IMG_LEFT = '/landing/left.png'
+const IMG_MAIN = '/landing/main.png'
+const IMG_RIGHT = '/landing/right.png'
 
-const IMG_LOGOS = 'https://www.figma.com/api/mcp/asset/c76576f3-a84a-4924-bc0d-442d46b0534f'
+// Company logos — ordered to match Figma marquee sequence
+const LOGO_PATHS = [
+  '/company logos/karghewale-logo.svg',
+  '/company logos/apro-it-logo.svg',
+  '/company logos/urbantrash-logo.svg',
+  '/company logos/unnathi-logo.svg',
+  '/company logos/ust-logo.svg',
+  '/company logos/vurse-logo.svg',
+  '/company logos/fundesigns-logo.svg',
+  '/company logos/opengrad-logo.svg',
+  '/company logos/cce-logo.svg',
+  '/company logos/mulearn-logo.svg',
+] as const
 
 // ─── Animation ───────────────────────────────────────────────────────────────
 
-const marqueeScroll = keyframes`
+const marquee = keyframes`
   from { transform: translateX(0); }
   to   { transform: translateX(-50%); }
 `
@@ -25,7 +37,7 @@ const marqueeScroll = keyframes`
 
 const Landing = () => {
   return (
-    <Section>
+    <Section data-section="landing">
 
       {/* 1 ── Main Lander */}
       <MainLander>
@@ -60,25 +72,19 @@ const Landing = () => {
 
         {/* TODO: replace with Supabase Storage URL — portrait of Enric */}
         <PhotoPanel>
-          <PhotoZoomed
+          <PhotoFill
             src={IMG_MAIN}
             alt="Portrait of Enric S Neelamkavil"
-            $left="-68.8%"
-            $top="-83.29%"
-            $width="262.89%"
-            $height="392.46%"
+
           />
         </PhotoPanel>
 
         {/* TODO: replace with Supabase Storage URL — tropical leaves close-up */}
         <PhotoPanel>
-          <PhotoZoomed
+          <PhotoFill
             src={IMG_RIGHT}
             alt="Close-up of large tropical leaves"
-            $left="-173.11%"
-            $top="-83.2%"
-            $width="273.06%"
-            $height="392.46%"
+
           />
         </PhotoPanel>
       </PhotoRow>
@@ -88,8 +94,17 @@ const Landing = () => {
         <TrustLabel>Trusted by multiple clients worldwide</TrustLabel>
         <MarqueeWrapper>
           <MarqueeTrack>
-            <LogoImage src={IMG_LOGOS} alt="Client logos" />
-            <LogoImage src={IMG_LOGOS} alt="" aria-hidden="true" />
+            <LogoSet>
+              {LOGO_PATHS.map((src) => (
+                <LogoImage key={src} src={src} alt="" />
+              ))}
+            </LogoSet>
+            {/* Duplicate set — aria-hidden, used only for seamless loop */}
+            <LogoSet aria-hidden="true">
+              {LOGO_PATHS.map((src) => (
+                <LogoImage key={src} src={src} alt="" />
+              ))}
+            </LogoSet>
           </MarqueeTrack>
         </MarqueeWrapper>
       </LogoSection>
@@ -140,9 +155,9 @@ const TagText = styled.span`
 `
 
 const AppleIcon = styled.img`
-  /* 10px decorative separator icon; Figma asset, replace when uploading to storage */
-  height: 0.625rem;
-  width: auto;
+  width: 8.293px;
+  height: 10.2px;
+  max-width: none;
 `
 
 const TextContainer = styled.div`
@@ -247,9 +262,10 @@ const TrustLabel = styled.p`
 `
 
 const MarqueeWrapper = styled.div`
+  display: flex;
+  align-items: center;
   width: 100%;
-  /* 3.5rem = 56px — Figma logo strip height */
-  height: 3.5rem;
+  height: auto;
   overflow: hidden;
   /* replicates Figma's mask asset with a CSS gradient edge-fade */
   -webkit-mask-image: linear-gradient(
@@ -270,19 +286,29 @@ const MarqueeWrapper = styled.div`
 
 const MarqueeTrack = styled.div`
   display: flex;
+  align-items: center;
   width: max-content;
-  animation: ${marqueeScroll} 30s linear infinite;
+  animation: ${marquee} 40s linear infinite;
 
   &:hover {
     animation-play-state: paused;
   }
 `
 
+const LogoSet = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[20]};
+  /* padding-right matches gap so the set's full width includes its trailing space —
+     this makes translateX(-50%) land exactly at the seam with no jump */
+  padding-right: ${({ theme }) => theme.spacing[20]};
+  flex-shrink: 0;
+`
+
 const LogoImage = styled.img`
-  /* 3.5rem = 56px — matches MarqueeWrapper height */
-  height: 3.5rem;
+  display: block;
+  height: auto;
   width: auto;
-  /* max-width: none overrides global reset — logo strip is a wide flat image */
   max-width: none;
   flex-shrink: 0;
 `

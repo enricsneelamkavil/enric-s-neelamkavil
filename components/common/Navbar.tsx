@@ -8,10 +8,10 @@ import styled from 'styled-components'
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
 const NAV_LINKS = [
-  { label: 'Home',    href: '/' },
-  { label: 'About',   href: '/about' },
-  { label: 'Work',    href: '/works' },
-  { label: 'Resume',  href: '/resume' },
+  { label: 'Home', href: '/' },
+  { label: 'About', href: '/about' },
+  { label: 'Work', href: '/works' },
+  { label: 'Resume', href: '/resume' },
   { label: 'Contact', href: '/contact' },
 ] as const
 
@@ -80,7 +80,7 @@ const NavItem = styled.li`
   display: contents;
 `
 
-const NavLink = styled(Link)<{ $active: boolean }>`
+const NavLink = styled(Link) <{ $active: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;

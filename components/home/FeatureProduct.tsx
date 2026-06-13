@@ -152,8 +152,10 @@ const LogoGroup = styled.div`
 `
 
 const PlushLogo = styled.img`
-  height: 3.5rem; /* 56px — Figma logo height */
-  width: auto;
+  display: block;
+  width: 189.157px;
+  height: 56px;
+  max-width: none;
 `
 
 const Tagline = styled.p`

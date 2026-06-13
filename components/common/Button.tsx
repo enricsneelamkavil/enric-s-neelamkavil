@@ -75,6 +75,7 @@ const Button = ({ label, variant = 'primary', href, external, onClick }: ButtonP
 
 const base = css<{ $variant: Variant }>`
   display: inline-flex;
+  align-self: flex-start;
   align-items: center;
   gap: ${({ theme }) => theme.spacing[2]};
   padding: ${({ theme }) => theme.spacing[4]} ${({ theme }) => theme.spacing[6]};

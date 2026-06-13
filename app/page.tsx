@@ -27,4 +27,5 @@ const PageSections = styled.div`
   align-items: center;
   gap: ${({ theme }) => theme.spacing[30]};
   width: 100%;
+  padding-bottom: 0;
 `

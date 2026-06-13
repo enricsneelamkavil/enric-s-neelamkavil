@@ -18,6 +18,7 @@ const stackSansHeadline = Stack_Sans_Headline({
   weight: 'variable',
   variable: '--font-stack-headline',
   display: 'swap',
+  adjustFontFallback: false,
 })
 
 const stackSansNotch = Stack_Sans_Notch({
@@ -25,23 +26,9 @@ const stackSansNotch = Stack_Sans_Notch({
   weight: 'variable',
   variable: '--font-stack-notch',
   display: 'swap',
+  adjustFontFallback: false,
 })
 
-const stackSansText = Stack_Sans_Text({
-  subsets: ['latin'],
-  weight: 'variable',
-  variable: '--font-stack-text',
-  display: 'swap',
-})
-
-// Instrument Serif is weight 400 only (no variable axis)
-const instrumentSerif = Instrument_Serif({
-  subsets: ['latin'],
-  weight: '400',
-  style: ['normal', 'italic'],
-  variable: '--font-instrument-serif',
-  display: 'swap',
-})
 
 // ─── Page Metadata ───────────────────────────────────────────────────────────
 export const metadata: Metadata = {
@@ -57,8 +44,6 @@ export default function RootLayout({
   const fontClasses = [
     stackSansHeadline.variable,
     stackSansNotch.variable,
-    stackSansText.variable,
-    instrumentSerif.variable,
   ].join(' ')
 
   return (

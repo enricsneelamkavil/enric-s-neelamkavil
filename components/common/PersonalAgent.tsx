@@ -2,10 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
-import styled from 'styled-components'
-
-// px at which the agent reveals on the homepage (clears the landing section)
-const LANDING_THRESHOLD = 800
+import styled, { keyframes } from 'styled-components'
 
 // ─── Send arrow icon (inline SVG — no expiring asset URL) ─────────────────────
 
@@ -30,16 +27,23 @@ const PersonalAgent = () => {
   const [scrollVisible, setScrollVisible] = useState(pathname !== '/')
   const [footerVisible, setFooterVisible] = useState(false)
 
-  // Homepage: hide during landing section, reveal once user scrolls past it
+  // Homepage: hide while Landing section is in view, reveal once scrolled past 100vh
   useEffect(() => {
     if (pathname !== '/') {
       setScrollVisible(true)
       return
     }
-    const check = () => setScrollVisible(window.scrollY > LANDING_THRESHOLD)
-    check()
-    window.addEventListener('scroll', check, { passive: true })
-    return () => window.removeEventListener('scroll', check)
+
+    const handleScroll = () => {
+      // 20% of viewport height — appears much sooner as soon as user starts scrolling past the top
+      setScrollVisible(window.scrollY > window.innerHeight * 0.2)
+    }
+
+    // Check immediately on mount
+    handleScroll()
+
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
   }, [pathname])
 
   // All pages: hide when the footer enters the viewport
@@ -77,31 +81,33 @@ const PersonalAgent = () => {
 
   return (
     <Wrapper $visible={isVisible} role="search" aria-label="Ask Enric">
-      <Bar>
-        <InputArea>
-          <Cursor aria-hidden="true">›_</Cursor>
-          <ChatInput
-            ref={inputRef}
-            value={message}
-            onChange={e => setMessage(e.target.value)}
-            onKeyDown={e => e.key === 'Enter' && handleSubmit()}
-            placeholder="ask Enric…"
-            aria-label="Ask Enric a question"
-          />
-        </InputArea>
+      <BarContainer>
+        <Bar>
+          <InputArea>
+            <Cursor aria-hidden="true">›_</Cursor>
+            <ChatInput
+              ref={inputRef}
+              value={message}
+              onChange={e => setMessage(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && handleSubmit()}
+              placeholder="ask Enric…"
+              aria-label="Ask Enric a question"
+            />
+          </InputArea>
 
-        <Controls>
-          <ShortcutHint aria-hidden="true">⌘ K</ShortcutHint>
-          <SendButton
-            type="button"
-            onClick={handleSubmit}
-            aria-label="Send"
-            disabled={!message.trim()}
-          >
-            <SendIcon />
-          </SendButton>
-        </Controls>
-      </Bar>
+          <Controls>
+            <ShortcutHint aria-hidden="true">⌘ K</ShortcutHint>
+            <SendButton
+              type="button"
+              onClick={handleSubmit}
+              aria-label="Send"
+              disabled={!message.trim()}
+            >
+              <SendIcon />
+            </SendButton>
+          </Controls>
+        </Bar>
+      </BarContainer>
     </Wrapper>
   )
 }
@@ -116,23 +122,60 @@ const Wrapper = styled.div<{ $visible: boolean }>`
   z-index: 100;
   padding: ${({ theme }) => theme.spacing[2]};
   border-radius: ${({ theme }) => theme.radii.xl};
-  /* glass halo — surface.primary at 20% opacity; no solid token covers alpha */
-  background-color: rgba(255, 255, 255, 0.2);
+  /* complete clear glass effect */
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   opacity: ${({ $visible }) => ($visible ? 1 : 0)};
   pointer-events: ${({ $visible }) => ($visible ? 'auto' : 'none')};
   transition: opacity 0.25s ease;
 `
 
-const Bar = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing[3]};
-  background-color: ${({ theme }) => theme.colors.surface.primary};
-  border: 2px solid ${({ theme }) => theme.colors.surface.highlight};
-  border-radius: ${({ theme }) => theme.radii.lg};
-  padding: ${({ theme }) => theme.spacing[3]} ${({ theme }) => theme.spacing[4]};
+const spin = keyframes`
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+`
+
+const BarContainer = styled.div`
+  position: relative;
   /* 52.5rem = 840px (Figma spec); shrinks on narrow viewports */
   width: min(52.5rem, calc(100vw - ${({ theme }) => theme.spacing[6]} * 2));
+  border-radius: ${({ theme }) => theme.radii.lg};
+  padding: 2px; /* Border thickness */
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    /* Make the spinning element a massive square centered via margin so it never exposes gaps when rotating */
+    top: 50%;
+    left: 50%;
+    width: 3000px;
+    height: 3000px;
+    margin: -1500px 0 0 -1500px;
+    background: conic-gradient(
+      from 0deg,
+      #FF4D2E 0%,
+      #FFCE74 33%,
+      #E80064 66%,
+      #FF4D2E 100%
+    );
+    animation: ${spin} 3s linear infinite;
+    z-index: 0;
+  }
+`
+
+const Bar = styled.div`
+  position: relative;
+  z-index: 1; /* Above the spinning gradient */
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background-color: ${({ theme }) => theme.colors.surface.primary};
+  border-radius: calc(${({ theme }) => theme.radii.lg} - 2px); /* Inner radius */
+  padding: ${({ theme }) => theme.spacing[3]} ${({ theme }) => theme.spacing[4]};
+  width: 100%;
 `
 
 const InputArea = styled.div`
@@ -197,7 +240,7 @@ const SendButton = styled.button`
   background-color: ${({ theme }) => theme.colors.surface.tertiary};
   border: none;
   cursor: pointer;
-  color: ${({ theme }) => theme.colors.icon.secondary};
+  color: ${({ theme }) => theme.colors.icon.highlight};
   flex-shrink: 0;
   transition: background-color 0.15s ease, color 0.15s ease;
 
