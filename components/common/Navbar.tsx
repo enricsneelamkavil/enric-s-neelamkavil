@@ -1,118 +1,108 @@
 'use client'
 
 import Link from 'next/link'
+import { useEffect, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import styled from 'styled-components'
 
-// ─── Types ───────────────────────────────────────────────────────────────────
+// ─── Data ─────────────────────────────────────────────────────────────────────
 
-interface NavLink {
-  label: string
-  href: string
-}
-
-const NAV_LINKS: NavLink[] = [
+const NAV_LINKS = [
   { label: 'Home',    href: '/' },
   { label: 'About',   href: '/about' },
   { label: 'Work',    href: '/works' },
   { label: 'Resume',  href: '/resume' },
   { label: 'Contact', href: '/contact' },
-]
+] as const
 
-// ─── Component ───────────────────────────────────────────────────────────────
+// ─── Component ────────────────────────────────────────────────────────────────
 
 const Navbar = () => {
   const pathname = usePathname()
+  const [scrolled, setScrolled] = useState(false)
+
+  // "On Scroll" variant — add shadow to outer wrapper once page has scrolled
+  useEffect(() => {
+    const check = () => setScrolled(window.scrollY > 0)
+    check()
+    window.addEventListener('scroll', check, { passive: true })
+    return () => window.removeEventListener('scroll', check)
+  }, [])
 
   return (
-    // Outer shell: black pill with glass effect, fixed-floated at top center
-    <NavShell>
-      <NavPill>
-        {NAV_LINKS.map(({ label, href }) => (
-          <NavLink
-            key={href}
-            href={href}
-            $active={pathname === href}
-          >
-            {label}
-          </NavLink>
-        ))}
+    <NavWrapper $scrolled={scrolled} aria-label="Main navigation">
+      <NavPill role="list">
+        {NAV_LINKS.map(({ label, href }) => {
+          const active = pathname === href
+          return (
+            <NavItem key={href} role="listitem">
+              <NavLink href={href} $active={active} aria-current={active ? 'page' : undefined}>
+                {label}
+              </NavLink>
+            </NavItem>
+          )
+        })}
       </NavPill>
-    </NavShell>
+    </NavWrapper>
   )
 }
 
-// ─── Styled Components ───────────────────────────────────────────────────────
+// ─── Styles ───────────────────────────────────────────────────────────────────
 
-/**
- * Outer wrapper — black pill (r:16px), glass effect, fixed centered at top.
- * Design: 473×68px on 1920px canvas → centered with left:50%/transform.
- * padding: 8px all sides, gap: 8px (VERTICAL layout = padding around inner pill)
- */
-const NavShell = styled.nav`
+const NavWrapper = styled.nav<{ $scrolled: boolean }>`
   position: fixed;
-  top: 16px;
+  top: ${({ theme }) => theme.spacing[4]};
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
-
-  /* Outer black pill */
-  background-color: rgba(0, 0, 0, 0.92);
-  border-radius: ${({ theme }) => theme.radii['2xl']}; /* 18px ≈ r:16px */
-  padding: ${({ theme }) => theme.spacing[2]};          /* 8px all sides */
-
-  /* Glass effect from Figma */
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+  padding: ${({ theme }) => theme.spacing[2]};
+  border-radius: ${({ theme }) => theme.radii.xl};
+  /* outer shell is transparent per Figma; shadow added on scroll (On Scroll variant) */
+  background-color: transparent;
+  transition: box-shadow 0.2s ease;
+  box-shadow: ${({ $scrolled }) =>
+    $scrolled ? '0 4px 24px rgba(0, 0, 0, 0.08)' : 'none'};
 `
 
-/**
- * Inner pill — light grey (#F7F7F7) with 1px #E0E0E0 border, r:12px.
- * Design: 457×52px, pad:8px all sides, HORIZONTAL layout, gap:0
- */
-const NavPill = styled.div`
+const NavPill = styled.ul`
   display: flex;
-  flex-direction: row;
   align-items: center;
+  list-style: none;
+  margin: 0;
+  padding: ${({ theme }) => theme.spacing[2]};
+  background-color: ${({ theme }) => theme.colors.surface.tertiary};
+  border: 1px solid ${({ theme }) => theme.colors.border.tertiary};
+  border-radius: ${({ theme }) => theme.radii.lg};
   gap: 0;
-
-  background-color: #F7F7F7;
-  border: 1px solid #E0E0E0;
-  border-radius: ${({ theme }) => theme.radii.lg}; /* 12px */
-  padding: ${({ theme }) => theme.spacing[2]};      /* 8px all sides */
 `
 
-/**
- * Individual nav link pill.
- * Active state: dark fill (#171717) with white text.
- * Inactive: transparent, dark text (#171717), same dark text on hover.
- * padding: 8px top/bottom, 16px left/right. r:12px. font: 16px uppercase.
- */
+const NavItem = styled.li`
+  display: contents;
+`
+
 const NavLink = styled(Link)<{ $active: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-
-  padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[3]}`}; /* 8px 12px */
-  border-radius: ${({ theme }) => theme.radii.lg}; /* 12px */
-
+  padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[4]}`};
+  border-radius: ${({ theme }) => theme.radii.lg};
   font-family: ${({ theme }) => theme.fonts.sans};
-  font-size: ${({ theme }) => theme.fontSizes.sm};   /* 16px */
   font-weight: ${({ theme }) => theme.fontWeights.regular};
-  line-height: 1.25rem;  /* 20px */
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  line-height: ${({ theme }) => theme.lineHeights.snug};
   letter-spacing: ${({ theme }) => theme.letterSpacings.normal};
   text-transform: uppercase;
   text-decoration: none;
   white-space: nowrap;
+  background-color: ${({ theme, $active }) =>
+    $active ? theme.colors.surface.inverse : 'transparent'};
+  color: ${({ theme, $active }) =>
+    $active ? theme.colors.text.inverse : theme.colors.text.link};
+  transition: background-color 0.15s ease, color 0.15s ease;
 
-  /* Active: dark pill, white text */
-  background-color: ${({ $active }) => ($active ? '#171717' : 'transparent')};
-  color: ${({ $active }) => ($active ? '#FFFFFF' : '#171717')};
-
-  transition: background-color 150ms ease, color 150ms ease;
-
-  &:hover {
-    background-color: ${({ $active }) => ($active ? '#171717' : 'rgba(23, 23, 23, 0.06)')};
+  &:hover:not([aria-current='page']) {
+    /* subtle tint — surface.inverse at ~6% opacity; no solid token covers this alpha */
+    background-color: rgba(23, 23, 23, 0.06);
   }
 `
 
