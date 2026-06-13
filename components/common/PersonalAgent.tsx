@@ -120,7 +120,7 @@ const Wrapper = styled.div<{ $visible: boolean }>`
   left: 50%;
   transform: translateX(-50%);
   z-index: 100;
-  padding: ${({ theme }) => theme.spacing[2]};
+  padding: 6px;
   border-radius: ${({ theme }) => theme.radii.xl};
   /* complete clear glass effect */
   background-color: rgba(255, 255, 255, 0.1);
@@ -139,8 +139,8 @@ const spin = keyframes`
 
 const BarContainer = styled.div`
   position: relative;
-  /* 52.5rem = 840px (Figma spec); shrinks on narrow viewports */
-  width: min(52.5rem, calc(100vw - ${({ theme }) => theme.spacing[6]} * 2));
+  /* Reduced width from 52.5rem to 44rem as requested */
+  width: min(44rem, calc(100vw - ${({ theme }) => theme.spacing[6]} * 2));
   border-radius: ${({ theme }) => theme.radii.lg};
   padding: 2px; /* Border thickness */
   overflow: hidden;
@@ -174,14 +174,14 @@ const Bar = styled.div`
   gap: 0;
   background-color: ${({ theme }) => theme.colors.surface.primary};
   border-radius: calc(${({ theme }) => theme.radii.lg} - 2px); /* Inner radius */
-  padding: ${({ theme }) => theme.spacing[3]} ${({ theme }) => theme.spacing[4]};
+  padding: 10px ${({ theme }) => theme.spacing[4]};
   width: 100%;
 `
 
 const InputArea = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing[3]};
+  gap: 10px;
   flex: 1;
   min-width: 0;
 `
@@ -216,7 +216,7 @@ const ChatInput = styled.input`
 const Controls = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing[3]};
+  gap: 10px;
   flex-shrink: 0;
 `
 
@@ -234,8 +234,8 @@ const SendButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
-  width: ${({ theme }) => theme.spacing[8]};
-  height: ${({ theme }) => theme.spacing[8]};
+  width: 28px;
+  height: 28px;
   border-radius: ${({ theme }) => theme.radii.full};
   background-color: ${({ theme }) => theme.colors.surface.tertiary};
   border: none;

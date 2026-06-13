@@ -55,11 +55,14 @@ const NavWrapper = styled.nav<{ $scrolled: boolean }>`
   left: 50%;
   transform: translateX(-50%);
   z-index: 1000;
-  padding: ${({ theme }) => theme.spacing[2]};
+  padding: 6px;
   border-radius: ${({ theme }) => theme.radii.xl};
-  /* outer shell is transparent per Figma; shadow added on scroll (On Scroll variant) */
-  background-color: transparent;
-  transition: box-shadow 0.2s ease;
+  /* complete clear glass effect matching Figma's GLASS effect */
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  transition: box-shadow 0.2s ease, background-color 0.2s ease, backdrop-filter 0.2s ease;
   box-shadow: ${({ $scrolled }) =>
     $scrolled ? '0 4px 24px rgba(0, 0, 0, 0.08)' : 'none'};
 `
@@ -69,7 +72,7 @@ const NavPill = styled.ul`
   align-items: center;
   list-style: none;
   margin: 0;
-  padding: ${({ theme }) => theme.spacing[2]};
+  padding: 6px;
   background-color: ${({ theme }) => theme.colors.surface.tertiary};
   border: 1px solid ${({ theme }) => theme.colors.border.tertiary};
   border-radius: ${({ theme }) => theme.radii.lg};
@@ -84,8 +87,8 @@ const NavLink = styled(Link) <{ $active: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[4]}`};
-  border-radius: ${({ theme }) => theme.radii.lg};
+  padding: 6px ${({ theme }) => theme.spacing[3]};
+  border-radius: ${({ theme }) => theme.radii.md};
   font-family: ${({ theme }) => theme.fonts.sans};
   font-weight: ${({ theme }) => theme.fontWeights.regular};
   font-size: ${({ theme }) => theme.fontSizes.sm};
