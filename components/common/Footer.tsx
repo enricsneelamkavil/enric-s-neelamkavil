@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import styled, { css } from 'styled-components'
+import Button from './Button'
 
 // Figma asset URLs — valid for 7 days from design sync (replace with permanent paths after)
 const SHAPE_A = 'https://www.figma.com/api/mcp/asset/ff23ef65-d282-4fb9-b701-d371bb6eb8af'
@@ -9,7 +10,6 @@ const SHAPE_B = 'https://www.figma.com/api/mcp/asset/474045a8-27d4-424d-ac99-0d3
 const SHAPE_C = 'https://www.figma.com/api/mcp/asset/d0f77c83-3105-4ad7-a667-527a5cdfe700'
 const SHAPE_D = 'https://www.figma.com/api/mcp/asset/11b42307-6072-4c88-abbe-a2a81924e3f7'
 const HEART_ICON = 'https://www.figma.com/api/mcp/asset/29c1fef7-2902-49ad-8ffd-31a305ffb44f'
-const ARROW_ICON = 'https://www.figma.com/api/mcp/asset/51653ac9-9c5b-4c83-be3c-d7427906ad0b'
 
 const SHAPES = [SHAPE_A, SHAPE_B, SHAPE_C, SHAPE_D]
 
@@ -45,12 +45,7 @@ const Footer = () => {
               Product &amp; Experience Designer mapping complex user flows into clean,
               developer-friendly products. Based in Kerala, India.
             </BioText>
-            <ProjectButton href="/contact">
-              <ButtonLabel>Start a project</ButtonLabel>
-              <ArrowBox>
-                <img src={ARROW_ICON} alt="" width={10} height={10} />
-              </ArrowBox>
-            </ProjectButton>
+            <Button label="Start a project" href="/contact" />
           </DesignerBlock>
 
           <NavColumn>
@@ -183,41 +178,6 @@ const BioText = styled.p`
   font-size: ${({ theme }) => theme.fontSizes.sm};
   line-height: ${({ theme }) => theme.lineHeights.normal};
   color: ${({ theme }) => theme.colors.text.secondary};
-`
-
-const ProjectButton = styled(Link)`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing[2]};
-  padding: ${({ theme }) => theme.spacing[4]} ${({ theme }) => theme.spacing[6]};
-  background-color: ${({ theme }) => theme.colors.surface.inverse};
-  border-radius: ${({ theme }) => theme.radii.lg};
-  text-decoration: none;
-  flex-shrink: 0;
-`
-
-const ButtonLabel = styled.span`
-  font-family: ${({ theme }) => theme.fonts.sans};
-  font-weight: ${({ theme }) => theme.fontWeights.regular};
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-  line-height: ${({ theme }) => theme.lineHeights.snug};
-  color: ${({ theme }) => theme.colors.text.inverse};
-  white-space: nowrap;
-`
-
-const ArrowBox = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  background-color: ${({ theme }) => theme.colors.icon.inverse};
-  border-radius: ${({ theme }) => theme.radii.md};
-  flex-shrink: 0;
-
-  img {
-    display: block;
-  }
 `
 
 // ─── Navigation columns ───────────────────────────────────────────────────────
