@@ -7,7 +7,6 @@ import styled, { keyframes } from 'styled-components'
 
 const IMG_APPLE_ICON = 'https://www.figma.com/api/mcp/asset/9d335656-3da1-4e16-aaa5-c0659c20541e'
 
-// TODO: replace with Supabase Storage URLs once photos are uploaded
 const IMG_LEFT = '/landing/left.png'
 const IMG_MAIN = '/landing/main.png'
 const IMG_RIGHT = '/landing/right.png'

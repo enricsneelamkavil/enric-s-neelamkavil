@@ -22,15 +22,15 @@ const HEART_ICON = 'https://www.figma.com/api/mcp/asset/2afd27d0-04e0-42aa-b80f-
 const SHAPES = [
   { src: SHAPE_A, w: 64 },
   { src: SHAPE_B, w: 64 },
-  { src: SHAPE_C, w: 60 },
+  { src: SHAPE_C, w: 64 },
   { src: SHAPE_D, w: 64 },
 ] as const
 
 const PAGE_LINKS = [
   { label: 'Home', href: '/' },
-  { label: 'About', href: '/about' },
-  { label: 'Work', href: '/works' },
-  { label: 'Contact', href: '/contact' },
+  { label: 'About', href: '#' },
+  { label: 'Work', href: '#' },
+  { label: 'Contact', href: '#' },
 ]
 
 const SOCIAL_LINKS = [
@@ -69,7 +69,7 @@ const Footer = () => (
                 Product &amp; Experience Designer mapping complex user flows into clean,
                 developer-friendly products. Based in Kerala, India.
               </BioText>
-              <Button label="Start a project" href="/contact" />
+              <Button label="Start a project" href="#" />
             </DesignerCol>
 
             {/* Col 2 — Figma 145:857: w-240px, gap-16px */}

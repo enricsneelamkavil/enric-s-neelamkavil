@@ -9,22 +9,22 @@ import DiamondBullet from '@/components/shared/DiamondBullet'
 // ─── Assets (Figma URLs — expire 7 days from generation) ─────────────────────
 
 const IMG_URBAN_TRASH = 'https://www.figma.com/api/mcp/asset/8cee8bf9-eaf3-4809-8f96-47a9dae3fd2a'
-const IMG_REPUTE_UP   = 'https://www.figma.com/api/mcp/asset/3855e47a-8b50-497a-bb0c-02d2c0d10f7f'
-const IMG_UNNATHI     = 'https://www.figma.com/api/mcp/asset/dc0632b6-12a7-4dcb-aab9-18e65b4264e7'
+const IMG_REPUTE_UP = 'https://www.figma.com/api/mcp/asset/3855e47a-8b50-497a-bb0c-02d2c0d10f7f'
+const IMG_UNNATHI = 'https://www.figma.com/api/mcp/asset/dc0632b6-12a7-4dcb-aab9-18e65b4264e7'
 
 // ─── WorkCard sub-component ───────────────────────────────────────────────────
 
 interface WorkCardProps {
-  gradient:        string
-  tags:            readonly [string, string]
-  title:           string
-  description:     string
-  buttonLabel:     string
-  buttonVariant?:  'primary' | 'secondary'
-  buttonHref?:     string
+  gradient: string
+  tags: readonly [string, string]
+  title: string
+  description: string
+  buttonLabel: string
+  buttonVariant?: 'primary' | 'secondary'
+  buttonHref?: string
   buttonExternal?: boolean
-  showcaseImg:     string
-  showcaseAlt:     string
+  showcaseImg: string
+  showcaseAlt: string
 }
 
 const WorkCard = ({
@@ -101,7 +101,7 @@ const MyWorks = () => {
         description="ReputeUp is your all-in-one tool for gathering reviews and showcasing testimonials that can drive revenue. Generate and collect Google reviews through WhatsApp/QR/SMS/Email"
         buttonLabel="View design"
         buttonVariant="secondary"
-        buttonHref="#"
+        buttonHref="https://www.behance.net/gallery/229810827/ReputeUp-AI-Review-Management-Landing"
         showcaseImg={IMG_REPUTE_UP}
         showcaseAlt="ReputeUp AI product showcase"
       />
@@ -113,7 +113,7 @@ const MyWorks = () => {
         description="Unnathi (Kerala Empowerment Society) is an initiative by the Government of Kerala, registered under the Travancore-Cochin Literary, Scientific and Charitable Societies Registration Act."
         buttonLabel="View design"
         buttonVariant="secondary"
-        buttonHref="#"
+        buttonHref="https://www.behance.net/gallery/177469589/Unnathi-Kerala-Website-Showcase"
         showcaseImg={IMG_UNNATHI}
         showcaseAlt="Unnathi product showcase"
       />

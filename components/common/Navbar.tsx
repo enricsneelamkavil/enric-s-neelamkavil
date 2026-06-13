@@ -9,10 +9,10 @@ import styled from 'styled-components'
 
 const NAV_LINKS = [
   { label: 'Home', href: '/' },
-  { label: 'About', href: '/about' },
-  { label: 'Work', href: '/works' },
-  { label: 'Resume', href: '/resume' },
-  { label: 'Contact', href: '/contact' },
+  { label: 'About', href: '#' },
+  { label: 'Work', href: '#' },
+  { label: 'Resume', href: '#' },
+  { label: 'Contact', href: '#' },
 ] as const
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -87,7 +87,7 @@ const NavLink = styled(Link) <{ $active: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 6px ${({ theme }) => theme.spacing[3]};
+  padding: 6px ${({ theme }) => theme.spacing[4]};
   border-radius: ${({ theme }) => theme.radii.md};
   font-family: ${({ theme }) => theme.fonts.sans};
   font-weight: ${({ theme }) => theme.fontWeights.regular};
