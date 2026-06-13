@@ -4,35 +4,39 @@
 // ─────────────────────────────────────────────────────────────────────────────
 
 // ─── COLORS ──────────────────────────────────────────────────────────────────
-// Color tokens extracted from Figma variables (VariableID references in nodes)
+// Color tokens sourced from Figma variables
 
 export const colors = {
-  // Backgrounds
-  bg: {
-    primary: '#0A0A0A',       // page background (near-black)
-    secondary: '#111111',     // elevated surface
-    card: '#141414',          // card surface
-    inverted: '#FFFFFF',      // light surface (footer CTA, tags)
+  background: {
+    primary: '#FFFFFF',
   },
 
-  // Text
+  surface: {
+    primary:   '#FFFFFF',
+    tertiary:  '#F7F7F7',
+    highlight: '#E8342A',
+    inverse:   '#171717',
+  },
+
   text: {
-    primary: '#EDEDED',       // primary text on dark bg
-    secondary: '#5C5C5C',     // secondary / muted (rgb ~36% grey — VariableID:78:192)
-    muted: '#3A3A3A',         // tertiary / disabled
-    inverted: '#0A0A0A',      // text on light surface
-    accent: '#EDEDED',        // accent white
+    primary:   '#171717',
+    secondary: '#5C5C5C',
+    tertiary:  '#A3A3A3',
+    highlight: '#E8342A',
+    inverse:   '#FFFFFF',
+    link:      '#171717',
   },
 
-  // Borders & strokes
   border: {
-    default: '#1F1F1F',       // subtle divider
-    strong: '#2E2E2E',        // card border
+    tertiary: '#E0E0E0',
+    inverse:  '#FFFFFF',
   },
 
-  // Brand / accent — to be refined once Figma variables are confirmed
-  accent: {
-    primary: '#EDEDED',       // used for interactive highlights
+  icon: {
+    primary:   '#171717',
+    secondary: '#5C5C5C',
+    highlight: '#E8342A',
+    inverse:   '#FFFFFF',
   },
 } as const
 
