@@ -3,6 +3,7 @@
 import React from 'react'
 import styled, { ThemeProvider } from 'styled-components'
 import theme from '@/styles/theme'
+import GlobalStyle from '@/styles/GlobalStyle'
 import Navbar from '@/components/common/Navbar'
 import Footer from '@/components/common/Footer'
 import PersonalAgent from '@/components/common/PersonalAgent'
@@ -14,11 +15,11 @@ interface Props {
 const Layout = ({ children }: Props) => {
   return (
     <ThemeProvider theme={theme}>
+      <GlobalStyle />
       <PageWrapper>
         <Navbar />
         <Main>{children}</Main>
         <Footer />
-        {/* PersonalAgent renders on every page globally */}
         <PersonalAgent />
       </PageWrapper>
     </ThemeProvider>
