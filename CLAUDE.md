@@ -97,6 +97,17 @@ export default ComponentName
 - [ ] Resume
 - [ ] Contact
 
+## Home Page Sections
+1. SectionLabel.tsx     → shared, eyebrow tags
+2. SectionHeader.tsx    → shared, mixed-weight headings  
+3. Landing.tsx          → hero, welcome tag, photos, marquee
+4. AboutBrief.tsx       → bio + 3 stats
+5. Interests.tsx        → scrolling ticker
+6. FeatureProduct.tsx   → Plush feature card
+7. AwardShelf.tsx       → four award medallions
+8. MyWorks.tsx          → Supabase, WorkCard subcomponent
+9. app/page.tsx         → compose all sections
+
 ## Build Order (Home Session)
 1. Extract typography + spacing tokens from Figma → append to `styles/theme.ts`
 2. Build `styles/StyledComponentsRegistry.tsx` — SSR boilerplate
