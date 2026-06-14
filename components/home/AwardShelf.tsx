@@ -3,6 +3,7 @@
 import styled from 'styled-components'
 import SectionLabel from '@/components/shared/SectionLabel'
 import SectionHeader from '@/components/shared/SectionHeader'
+import { mq } from '@/styles/theme'
 
 // ─── Assets (Figma URLs — expire 7 days from generation) ─────────────────────
 
@@ -80,6 +81,16 @@ const Section = styled.div`
   gap: ${({ theme }) => theme.spacing[10]};
   width: 100%;
   max-width: ${({ theme }) => theme.layout.maxWidth};
+
+  ${mq.tablet} {
+    padding: 0 24px;
+  }
+
+  ${mq.mobile} {
+    padding: 0 24px;
+    max-width: none;
+    gap: 40px;
+  }
 `
 
 const TitleContainer = styled.div`
@@ -87,6 +98,10 @@ const TitleContainer = styled.div`
   flex-direction: column;
   align-items: flex-start;
   white-space: nowrap;
+
+  ${mq.mobile} {
+    white-space: normal;
+  }
 `
 
 const AwardsRow = styled.div`
@@ -94,6 +109,25 @@ const AwardsRow = styled.div`
   align-items: center;
   justify-content: space-between;
   width: 100%;
+
+  ${mq.tablet} {
+    gap: 24px;
+    justify-content: flex-start;
+    overflow-x: auto;
+    scrollbar-width: none;
+    &::-webkit-scrollbar { display: none; }
+  }
+
+  ${mq.mobile} {
+    justify-content: flex-start;
+    gap: 32px;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+    &::-webkit-scrollbar { display: none; }
+  }
 `
 
 // ── Award card ────────────────────────────────────────────────────────────────
@@ -107,6 +141,11 @@ const CardWrapper = styled.div`
   gap: ${({ theme }) => theme.spacing[2]};
   /* 13.25rem = 212px — Figma explicit card width */
   width: 13.25rem;
+  flex-shrink: 0;
+
+  ${mq.mobile} {
+    scroll-snap-align: start;
+  }
 `
 
 const GarlandWrapper = styled.div`

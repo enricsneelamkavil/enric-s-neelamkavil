@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import styled, { css, useTheme } from 'styled-components'
+import { mq } from '@/styles/theme'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -91,6 +92,10 @@ const base = css<{ $variant: Variant }>`
     $variant === 'secondary'
       ? `1px solid ${theme.colors.border.tertiary}`
       : 'none'};
+
+  ${mq.mobile} {
+    padding: 12px 16px;
+  }
 `
 
 const InternalLink = styled(Link)<{ $variant: Variant }>`

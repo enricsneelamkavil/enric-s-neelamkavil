@@ -1,9 +1,9 @@
 'use client'
 
 import styled, { keyframes } from 'styled-components'
+import { mq } from '@/styles/theme'
 
 // ─── Assets ──────────────────────────────────────────────────────────────────
-// All Figma URLs expire 7 days from generation
 
 const IMG_APPLE_ICON = 'https://www.figma.com/api/mcp/asset/9d335656-3da1-4e16-aaa5-c0659c20541e'
 
@@ -11,7 +11,6 @@ const IMG_LEFT = '/landing/left.png'
 const IMG_MAIN = '/landing/main.png'
 const IMG_RIGHT = '/landing/right.png'
 
-// Company logos — ordered to match Figma marquee sequence
 const LOGO_PATHS = [
   '/company logos/karghewale-logo.svg',
   '/company logos/apro-it-logo.svg',
@@ -61,7 +60,6 @@ const Landing = () => {
 
       {/* 2 ── Header Photos */}
       <PhotoRow>
-        {/* TODO: replace with Supabase Storage URL — foliage + terracotta roof tiles */}
         <PhotoPanel>
           <PhotoFill
             src={IMG_LEFT}
@@ -69,21 +67,17 @@ const Landing = () => {
           />
         </PhotoPanel>
 
-        {/* TODO: replace with Supabase Storage URL — portrait of Enric */}
         <PhotoPanel>
           <PhotoFill
             src={IMG_MAIN}
             alt="Portrait of Enric S Neelamkavil"
-
           />
         </PhotoPanel>
 
-        {/* TODO: replace with Supabase Storage URL — tropical leaves close-up */}
         <PhotoPanel>
           <PhotoFill
             src={IMG_RIGHT}
             alt="Close-up of large tropical leaves"
-
           />
         </PhotoPanel>
       </PhotoRow>
@@ -98,7 +92,6 @@ const Landing = () => {
                 <LogoImage key={src} src={src} alt="" />
               ))}
             </LogoSet>
-            {/* Duplicate set — aria-hidden, used only for seamless loop */}
             <LogoSet aria-hidden="true">
               {LOGO_PATHS.map((src) => (
                 <LogoImage key={src} src={src} alt="" />
@@ -119,9 +112,18 @@ const Section = styled.section`
   flex-direction: column;
   align-items: center;
   width: 100%;
-  /* 8.75rem = 140px — matches Figma Content frame y-offset; clears fixed navbar */
   padding-top: 8.75rem;
   gap: ${({ theme }) => theme.spacing[20]};
+
+  ${mq.tablet} {
+    padding-top: 6rem;
+    gap: ${({ theme }) => theme.spacing[10]};
+  }
+
+  ${mq.mobile} {
+    padding-top: 5rem;
+    gap: ${({ theme }) => theme.spacing[10]};
+  }
 `
 
 // ── 1: Main Lander ────────────────────────────────────────────────────────────
@@ -133,6 +135,12 @@ const MainLander = styled.div`
   width: 100%;
   max-width: ${({ theme }) => theme.layout.maxWidth};
   gap: ${({ theme }) => theme.spacing[6]};
+
+  ${mq.mobile} {
+    padding: 0 24px;
+    max-width: none;
+    gap: ${({ theme }) => theme.spacing[6]};
+  }
 `
 
 const WelcomeTag = styled.div`
@@ -171,12 +179,22 @@ const TextContainer = styled.div`
 const Headline = styled.h1`
   margin: 0;
   font-family: ${({ theme }) => theme.fonts.notch};
-  /* Figma specifies Stack_Sans_Notch:Medium — not the Regular used in SectionHeader */
   font-weight: ${({ theme }) => theme.fontWeights.medium};
   font-size: ${({ theme }) => theme.fontSizes['3xl']};
   line-height: ${({ theme }) => theme.lineHeights['3xl']};
   letter-spacing: ${({ theme }) => theme.letterSpacings.tightest};
   color: ${({ theme }) => theme.colors.text.primary};
+
+  ${mq.tablet} {
+    font-size: 3rem;
+    line-height: 3.75rem;
+  }
+
+  ${mq.mobile} {
+    font-size: 2rem;
+    line-height: 2.5rem;
+    letter-spacing: -0.64px;
+  }
 `
 
 const Period = styled.span`
@@ -190,9 +208,13 @@ const Subtitle = styled.p`
   font-size: ${({ theme }) => theme.fontSizes.sm};
   line-height: ${({ theme }) => theme.lineHeights.normal};
   color: ${({ theme }) => theme.colors.text.secondary};
-  /* 44.25rem = 708px — explicit width constraint from Figma */
   max-width: 44.25rem;
   text-align: center;
+
+  ${mq.mobile} {
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
 `
 
 // ── 2: Header Photos ─────────────────────────────────────────────────────────
@@ -203,15 +225,37 @@ const PhotoRow = styled.div`
   gap: ${({ theme }) => theme.spacing[6]};
   width: 100%;
   max-width: ${({ theme }) => theme.layout.maxWidth};
+
+  ${mq.tablet} {
+    max-width: 100%;
+    padding: 0 24px;
+    gap: ${({ theme }) => theme.spacing[3]};
+  }
+
+  ${mq.mobile} {
+    /* Bleed: 663.952px container centered in viewport overflows on both sides */
+    width: 663.952px;
+    max-width: none;
+    gap: 13.643px;
+    flex-shrink: 0;
+  }
 `
 
 const PhotoPanel = styled.div`
   position: relative;
   flex: 1 0 0;
-  /* 21rem = 336px — Figma panel height, no theme token at this value */
   height: 21rem;
   border-radius: ${({ theme }) => theme.radii.xl};
   overflow: hidden;
+
+  ${mq.tablet} {
+    height: 14rem;
+  }
+
+  ${mq.mobile} {
+    height: 11.9375rem; /* 191px */
+    border-radius: 9.095px;
+  }
 `
 
 const PhotoFill = styled.img`
@@ -223,23 +267,6 @@ const PhotoFill = styled.img`
   object-position: bottom;
 `
 
-interface PhotoZoomedProps {
-  $left: string
-  $top: string
-  $width: string
-  $height: string
-}
-
-const PhotoZoomed = styled.img<PhotoZoomedProps>`
-  position: absolute;
-  /* max-width: none overrides global img { max-width: 100% } — image is intentionally oversized for cropping */
-  max-width: none;
-  left: ${({ $left }) => $left};
-  top: ${({ $top }) => $top};
-  width: ${({ $width }) => $width};
-  height: ${({ $height }) => $height};
-`
-
 // ── 3: Company Logos ─────────────────────────────────────────────────────────
 
 const LogoSection = styled.div`
@@ -248,6 +275,10 @@ const LogoSection = styled.div`
   align-items: center;
   width: 100%;
   gap: ${({ theme }) => theme.spacing[6]};
+
+  ${mq.mobile} {
+    padding: 0 24px;
+  }
 `
 
 const TrustLabel = styled.p`
@@ -258,6 +289,11 @@ const TrustLabel = styled.p`
   line-height: ${({ theme }) => theme.lineHeights.normal};
   color: ${({ theme }) => theme.colors.text.tertiary};
   text-align: center;
+
+  ${mq.mobile} {
+    font-size: 0.75rem;
+    line-height: 1rem;
+  }
 `
 
 const MarqueeWrapper = styled.div`
@@ -266,7 +302,6 @@ const MarqueeWrapper = styled.div`
   width: 100%;
   height: auto;
   overflow: hidden;
-  /* replicates Figma's mask asset with a CSS gradient edge-fade */
   -webkit-mask-image: linear-gradient(
     to right,
     transparent 0%,
@@ -281,6 +316,12 @@ const MarqueeWrapper = styled.div`
     black 94%,
     transparent 100%
   );
+
+  ${mq.mobile} {
+    /* Escape the 24px padding on LogoSection so the marquee is full-viewport-width */
+    width: calc(100% + 48px);
+    margin-left: -24px;
+  }
 `
 
 const MarqueeTrack = styled.div`
@@ -298,8 +339,6 @@ const LogoSet = styled.div`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing[20]};
-  /* padding-right matches gap so the set's full width includes its trailing space —
-     this makes translateX(-50%) land exactly at the seam with no jump */
   padding-right: ${({ theme }) => theme.spacing[20]};
   flex-shrink: 0;
 `

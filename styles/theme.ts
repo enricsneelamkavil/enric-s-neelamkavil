@@ -150,6 +150,29 @@ export const radii = {
   full:  '9999px', // fully rounded (pill)
 } as const
 
+// ─── BREAKPOINTS ─────────────────────────────────────────────────────────────
+// Canonical viewport breakpoints — imported directly in styled-components
+// (not on the theme object since they are static and don't need ThemeProvider)
+
+export const bp = {
+  mobile:  '768px',
+  tablet:  '1024px',
+  desktop: '1280px',
+} as const
+
+// Media query helper strings — use as tagged template literal interpolations:
+//   const Foo = styled.div`
+//     font-size: 64px;
+//     ${mq.mobile} { font-size: 32px; }
+//   `
+export const mq = {
+  mobile:       '@media (max-width: 768px)',
+  tablet:       '@media (min-width: 769px) and (max-width: 1024px)',
+  tabletDown:   '@media (max-width: 1024px)',
+  smallDesktop: '@media (min-width: 1025px) and (max-width: 1280px)',
+  largeDesktop: '@media (min-width: 1281px)',
+} as const
+
 // ─── THEME OBJECT ────────────────────────────────────────────────────────────
 // Assembled theme for use with styled-components ThemeProvider
 
@@ -163,6 +186,7 @@ const theme = {
   spacing,
   layout,
   radii,
+  bp,
 } as const
 
 export type Theme = typeof theme

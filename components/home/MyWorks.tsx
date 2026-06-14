@@ -5,6 +5,7 @@ import Button from '@/components/common/Button'
 import SectionLabel from '@/components/shared/SectionLabel'
 import SectionHeader from '@/components/shared/SectionHeader'
 import DiamondBullet from '@/components/shared/DiamondBullet'
+import { mq } from '@/styles/theme'
 
 // ─── Assets (Figma URLs — expire 7 days from generation) ─────────────────────
 
@@ -40,6 +41,11 @@ const WorkCard = ({
   showcaseAlt,
 }: WorkCardProps) => (
   <CardOuter $gradient={gradient}>
+    {/* Image: order-1 on desktop, order-0 (first) on mobile via CSS */}
+    <ImageArea>
+      <ShowcaseImg src={showcaseImg} alt={showcaseAlt} />
+    </ImageArea>
+
     <ProductContainer>
       <ProductTagsRow>
         <TagLabel>{tags[0]}</TagLabel>
@@ -61,10 +67,6 @@ const WorkCard = ({
         external={buttonExternal}
       />
     </ProductContainer>
-
-    <ImageArea>
-      <ShowcaseImg src={showcaseImg} alt={showcaseAlt} />
-    </ImageArea>
   </CardOuter>
 )
 
@@ -78,7 +80,10 @@ const MyWorks = () => {
           <SectionLabel>MY WORKS · 2022 → 2026</SectionLabel>
           <SectionHeader before="Other things I've " muted="shipped" />
         </TitleBlock>
-        <Button label="See all works" variant="secondary" href="/works" />
+        {/* Hidden on mobile via HeaderCTA wrapper */}
+        <HeaderCTA>
+          <Button label="See all works" variant="secondary" href="/works" />
+        </HeaderCTA>
       </HeaderContainer>
 
       <WorkCard
@@ -123,14 +128,22 @@ const MyWorks = () => {
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-// ── Section shell ─────────────────────────────────────────────────────────────
-
 const Section = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing[10]};
   width: 100%;
   max-width: ${({ theme }) => theme.layout.maxWidth};
+
+  ${mq.tablet} {
+    padding: 0 24px;
+  }
+
+  ${mq.mobile} {
+    padding: 0 24px;
+    max-width: none;
+    gap: 40px;
+  }
 `
 
 const HeaderContainer = styled.div`
@@ -147,6 +160,18 @@ const TitleBlock = styled.div`
   flex: 1 0 0;
   white-space: nowrap;
   min-width: 0;
+
+  ${mq.mobile} {
+    white-space: normal;
+  }
+`
+
+const HeaderCTA = styled.div`
+  flex-shrink: 0;
+
+  ${mq.mobile} {
+    display: none;
+  }
 `
 
 // ── WorkCard ──────────────────────────────────────────────────────────────────
@@ -155,13 +180,34 @@ const CardOuter = styled.div<{ $gradient: string }>`
   display: flex;
   align-items: flex-start;
   gap: ${({ theme }) => theme.spacing[2]};
-  /* 29.625rem = 474px — Figma card height */
   height: 29.625rem;
   width: 100%;
   padding: ${({ theme }) => theme.spacing[10]};
   border-radius: ${({ theme }) => theme.radii.xl};
   overflow: hidden;
   background: ${({ $gradient }) => $gradient};
+
+  /* Desktop: ProductContainer left, ImageArea right */
+  & > *:first-child { order: 2; } /* ImageArea → right */
+  & > *:last-child  { order: 1; } /* ProductContainer → left */
+
+  ${mq.tablet} {
+    height: auto;
+    min-height: 320px;
+    padding: ${({ theme }) => theme.spacing[6]};
+  }
+
+  ${mq.mobile} {
+    flex-direction: column;
+    height: auto;
+    padding: 24px 12px;
+    gap: 16px;
+    border-radius: ${({ theme }) => theme.radii.xl};
+
+    /* Mobile: ImageArea first, ProductContainer second */
+    & > *:first-child { order: 1; } /* ImageArea → top */
+    & > *:last-child  { order: 2; } /* ProductContainer → bottom */
+  }
 `
 
 const ProductContainer = styled.div`
@@ -169,10 +215,25 @@ const ProductContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   gap: ${({ theme }) => theme.spacing[8]};
-  /* 23.875rem = 382px — Figma left column width */
   width: 23.875rem;
   flex-shrink: 0;
   height: 100%;
+
+  ${mq.tablet} {
+    width: 100%;
+    flex-shrink: 1;
+    height: auto;
+    gap: ${({ theme }) => theme.spacing[6]};
+  }
+
+  ${mq.mobile} {
+    width: 100%;
+    flex-shrink: 1;
+    height: auto;
+    gap: 16px;
+    padding: 12px;
+    justify-content: flex-start;
+  }
 `
 
 const ProductTagsRow = styled.div`
@@ -195,6 +256,10 @@ const ProductInfoBlock = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing[3]};
+
+  ${mq.mobile} {
+    gap: 12px;
+  }
 `
 
 const ProductTitle = styled.h3`
@@ -204,9 +269,17 @@ const ProductTitle = styled.h3`
   font-size: ${({ theme }) => theme.fontSizes.xl};
   line-height: normal;
   color: ${({ theme }) => theme.colors.text.primary};
+
+  ${mq.tablet} {
+    font-size: ${({ theme }) => theme.fontSizes.lg};
+  }
+
+  ${mq.mobile} {
+    font-size: 2rem;
+    line-height: 2.5rem;
+  }
 `
 
-/* Period is red in work cards — different from hero headline's text.secondary period */
 const HighlightPeriod = styled.span`
   color: ${({ theme }) => theme.colors.text.highlight};
 `
@@ -227,6 +300,19 @@ const ImageArea = styled.div`
   height: 100%;
   border-radius: ${({ theme }) => theme.radii['2xl']};
   overflow: hidden;
+
+  ${mq.tablet} {
+    flex: 1 0 0;
+    height: 220px;
+  }
+
+  ${mq.mobile} {
+    flex: none;
+    width: 100%;
+    height: auto;
+    aspect-ratio: 660 / 394;
+    border-radius: ${({ theme }) => theme.radii.lg};
+  }
 `
 
 const ShowcaseImg = styled.img`
@@ -235,6 +321,11 @@ const ShowcaseImg = styled.img`
   height: 100%;
   object-fit: contain;
   object-position: right center;
+
+  ${mq.mobile} {
+    object-fit: cover;
+    object-position: center;
+  }
 `
 
 export default MyWorks

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { usePathname } from 'next/navigation'
 import styled, { keyframes } from 'styled-components'
+import { mq } from '@/styles/theme'
 
 // ─── Send arrow icon (inline SVG — no expiring asset URL) ─────────────────────
 
@@ -130,6 +131,10 @@ const Wrapper = styled.div<{ $visible: boolean }>`
   opacity: ${({ $visible }) => ($visible ? 1 : 0)};
   pointer-events: ${({ $visible }) => ($visible ? 'auto' : 'none')};
   transition: opacity 0.25s ease;
+
+  ${mq.mobile} {
+    display: none;
+  }
 `
 
 const spin = keyframes`

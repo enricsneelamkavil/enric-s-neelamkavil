@@ -5,6 +5,7 @@ import Button from '@/components/common/Button'
 import SectionLabel from '@/components/shared/SectionLabel'
 import SectionHeader from '@/components/shared/SectionHeader'
 import DiamondBullet from '@/components/shared/DiamondBullet'
+import { mq } from '@/styles/theme'
 
 // ─── Assets (Figma URLs — expire 7 days from generation) ─────────────────────
 
@@ -81,6 +82,16 @@ const Section = styled.div`
   gap: ${({ theme }) => theme.spacing[10]};
   width: 100%;
   max-width: ${({ theme }) => theme.layout.maxWidth};
+
+  ${mq.tablet} {
+    padding: 0 24px;
+  }
+
+  ${mq.mobile} {
+    padding: 0 24px;
+    max-width: none;
+    gap: 32px;
+  }
 `
 
 const TitleContainer = styled.div`
@@ -88,6 +99,10 @@ const TitleContainer = styled.div`
   flex-direction: column;
   align-items: flex-start;
   white-space: nowrap;
+
+  ${mq.mobile} {
+    white-space: normal;
+  }
 `
 
 const Article = styled.div`
@@ -98,20 +113,48 @@ const Article = styled.div`
   padding: ${({ theme }) => theme.spacing[6]};
   border: 1px solid ${({ theme }) => theme.colors.border.tertiary};
   border-radius: ${({ theme }) => theme.radii['3xl']};
+
+  ${mq.tablet} {
+    flex-direction: column;
+    align-items: stretch;
+    gap: ${({ theme }) => theme.spacing[6]};
+    border-radius: ${({ theme }) => theme.radii.xl};
+    padding: ${({ theme }) => theme.spacing[4]};
+  }
+
+  ${mq.mobile} {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 32px;
+    border-radius: ${({ theme }) => theme.radii.xl};
+    padding: 12px;
+  }
 `
 
 // ── Image panel ───────────────────────────────────────────────────────────────
 
 const ImagePanel = styled.div`
   position: relative;
-  /* 33.75rem × 29.625rem = 540px × 474px — explicit Figma panel dimensions */
   width: 33.75rem;
   height: 29.625rem;
   flex-shrink: 0;
   border-radius: ${({ theme }) => theme.radii['2xl']};
   overflow: hidden;
-  /* warm cream gradient — no theme token for these mid-tones */
   background: linear-gradient(to bottom, #f3efe6, #ebe5d8);
+
+  ${mq.tablet} {
+    width: 100%;
+    height: 280px;
+    flex-shrink: 1;
+  }
+
+  ${mq.mobile} {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 540 / 474;
+    flex-shrink: 1;
+    border-radius: ${({ theme }) => theme.radii.lg};
+  }
 `
 
 const BgImage = styled.img`
@@ -125,12 +168,21 @@ const BgImage = styled.img`
 
 const CardImage = styled.img`
   position: absolute;
-  /* Figma: left:50%, top:141px, translate(-50%,-50%), rotate(-61.11deg), w:193.263px */
   left: 50%;
   top: 141px;
   transform: translate(-50%, -50%) rotate(-61.11deg);
   width: 193.263px;
-  max-width: none; /* overrides global img { max-width: 100% } */
+  max-width: none;
+
+  ${mq.tablet} {
+    width: 140px;
+    top: 50%;
+  }
+
+  ${mq.mobile} {
+    width: 138.536px;
+    top: 50%;
+  }
 `
 
 // ── Right content ─────────────────────────────────────────────────────────────
@@ -143,6 +195,11 @@ const Content = styled.div`
   justify-content: center;
   height: 100%;
   min-width: 0;
+
+  ${mq.tabletDown} {
+    flex: none;
+    height: auto;
+  }
 `
 
 const LogoGroup = styled.div`
@@ -156,6 +213,11 @@ const PlushLogo = styled.img`
   width: 189.157px;
   height: 56px;
   max-width: none;
+
+  ${mq.mobile} {
+    width: 136.05px;
+    height: 40.278px;
+  }
 `
 
 const Tagline = styled.p`
@@ -180,6 +242,10 @@ const FeatureList = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing[1]};
+
+  ${mq.mobile} {
+    gap: 8px;
+  }
 `
 
 const FeatureRow = styled.div`
@@ -192,10 +258,10 @@ const FeatureText = styled.p`
   margin: 0;
   font-family: ${({ theme }) => theme.fonts.sans};
   font-weight: ${({ theme }) => theme.fontWeights.regular};
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-  line-height: ${({ theme }) => theme.lineHeights.normal};
+  font-size: ${({ theme }) => theme.fontSizes.xs};
+  line-height: ${({ theme }) => theme.lineHeights.tight};
   color: ${({ theme }) => theme.colors.text.secondary};
-  white-space: nowrap;
+  white-space: normal;
 `
 
 export default FeatureProduct

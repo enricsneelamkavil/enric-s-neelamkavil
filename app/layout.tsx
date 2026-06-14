@@ -2,8 +2,6 @@ import type { Metadata } from 'next'
 import {
   Stack_Sans_Headline,
   Stack_Sans_Notch,
-  Stack_Sans_Text,
-  Instrument_Serif,
 } from 'next/font/google'
 import StyledComponentsRegistry from '@/styles/StyledComponentsRegistry'
 import Layout from '@/components/common/Layout'
@@ -35,6 +33,9 @@ export const metadata: Metadata = {
   title: 'Enric S Neelamkavil — Product & Experience Designer',
   description:
     'Portfolio of Enric S Neelamkavil — product designer with award-winning branding expertise, building at the intersection of culture, craft, and technology.',
+  icons: {
+    icon: '/favicon.svg',
+  },
 }
 
 // ─── Root Layout ─────────────────────────────────────────────────────────────

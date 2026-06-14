@@ -3,6 +3,7 @@
 import { Fragment, useEffect, useRef } from 'react'
 import styled from 'styled-components'
 import DiamondBullet from '@/components/shared/DiamondBullet'
+import { mq } from '@/styles/theme'
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
@@ -97,6 +98,16 @@ const InterestItem = styled.p`
   line-height: 3.1rem; /* 49.6px — Figma value, no theme token at this ratio */
   color: ${({ theme }) => theme.colors.text.secondary};
   white-space: nowrap;
+
+  ${mq.tablet} {
+    font-size: 1.75rem;
+    line-height: 2.5rem;
+  }
+
+  ${mq.mobile} {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
 `
 
 export default Interests

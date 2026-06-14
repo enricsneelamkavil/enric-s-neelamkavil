@@ -4,6 +4,7 @@ import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
 import styled from 'styled-components'
 import SectionLabel from '@/components/shared/SectionLabel'
 import SectionHeader from '@/components/shared/SectionHeader'
+import { mq } from '@/styles/theme'
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
@@ -113,6 +114,19 @@ const Section = styled.div`
   gap: ${({ theme }) => theme.spacing[10]};
   width: 100%;
   max-width: ${({ theme }) => theme.layout.maxWidth};
+
+  ${mq.tablet} {
+    gap: ${({ theme }) => theme.spacing[8]};
+    padding: 0 24px;
+  }
+
+  ${mq.mobile} {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 40px;
+    padding: 0 24px;
+    max-width: none;
+  }
 `
 
 const InfoSection = styled.div`
@@ -120,6 +134,12 @@ const InfoSection = styled.div`
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing[3]};
   flex: 1;
+
+  ${mq.mobile} {
+    flex: none;
+    width: 100%;
+    gap: 12px;
+  }
 `
 
 const TitleContainer = styled.div`
@@ -127,6 +147,10 @@ const TitleContainer = styled.div`
   flex-direction: column;
   align-items: flex-start;
   white-space: nowrap;
+
+  ${mq.mobile} {
+    white-space: normal;
+  }
 `
 
 const Bio = styled.p`
@@ -148,6 +172,13 @@ const StatsContainer = styled.div`
   justify-content: center;
   gap: ${({ theme }) => theme.spacing[8]};
   flex: 1;
+
+  ${mq.mobile} {
+    flex: none;
+    width: 100%;
+    justify-content: flex-start;
+    gap: 32px;
+  }
 `
 
 // ── Stat Block ─────────────────────────────────────────────────────────────────
@@ -157,9 +188,15 @@ const StatBlockWrapper = styled.div`
   flex-direction: column;
   align-items: flex-start;
   gap: ${({ theme }) => theme.spacing[3]};
-  /* 6.25rem = 100px — Figma explicit stat block width */
   width: 6.25rem;
   text-align: center;
+
+  ${mq.mobile} {
+    flex: 1 0 0;
+    width: auto;
+    gap: 12px;
+    text-align: left;
+  }
 `
 
 const StatValue = styled.p`
@@ -171,6 +208,17 @@ const StatValue = styled.p`
   line-height: ${({ theme }) => theme.lineHeights.xl};
   color: ${({ theme }) => theme.colors.text.secondary};
   text-align: center;
+
+  ${mq.tablet} {
+    font-size: 2.5rem;
+    line-height: 3rem;
+  }
+
+  ${mq.mobile} {
+    font-size: 2rem;
+    line-height: 2.5rem;
+    text-align: left;
+  }
 `
 
 const StatLabel = styled.p`
@@ -178,20 +226,23 @@ const StatLabel = styled.p`
   width: 100%;
   font-family: ${({ theme }) => theme.fonts.sans};
   font-weight: ${({ theme }) => theme.fontWeights.regular};
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-  line-height: ${({ theme }) => theme.lineHeights.normal};
+  font-size: ${({ theme }) => theme.fontSizes.xs};
+  line-height: ${({ theme }) => theme.lineHeights.tight};
   color: ${({ theme }) => theme.colors.text.tertiary};
   text-transform: uppercase;
-  text-align: center;
+  text-align: left;
 `
 
 // Replaces Figma's imgSeparator asset — a plain 1px vertical rule
 const Separator = styled.div`
   width: 1px;
-  /* 4rem = 64px — Figma separator height */
   height: 4rem;
   background-color: ${({ theme }) => theme.colors.border.tertiary};
   flex-shrink: 0;
+
+  ${mq.mobile} {
+    display: none;
+  }
 `
 
 export default AboutBrief

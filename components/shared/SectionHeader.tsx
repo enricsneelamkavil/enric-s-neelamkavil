@@ -1,4 +1,5 @@
 import styled from 'styled-components'
+import { mq } from '@/styles/theme'
 
 interface Props {
   /** Text before the muted word — rendered in text.primary */
@@ -27,6 +28,16 @@ const Heading = styled.h2`
   line-height: ${({ theme }) => theme.lineHeights.loose};
   letter-spacing: ${({ theme }) => theme.letterSpacings.tight};
   color: ${({ theme }) => theme.colors.text.primary};
+
+  ${mq.tablet} {
+    font-size: 1.75rem;
+    line-height: 2.25rem;
+  }
+
+  ${mq.mobile} {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
 `
 
 const Muted = styled.span`
