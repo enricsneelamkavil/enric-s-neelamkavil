@@ -116,24 +116,7 @@ const PersonalAgent = () => {
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
 const Wrapper = styled.div<{ $visible: boolean }>`
-  position: fixed;
-  bottom: ${({ theme }) => theme.spacing[6]};
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 100;
-  padding: 6px;
-  border-radius: ${({ theme }) => theme.radii.xl};
-  background-color: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  opacity: ${({ $visible }) => ($visible ? 1 : 0)};
-  pointer-events: ${({ $visible }) => ($visible ? 'auto' : 'none')};
-  transition: opacity 0.25s ease;
-
-  ${mq.mobile} {
-    display: none;
-  }
+  display: none; /* Hidden everywhere as requested, except trigger in mobile menu */
 `
 
 const spin = keyframes`

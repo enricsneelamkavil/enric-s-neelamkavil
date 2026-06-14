@@ -4,41 +4,16 @@ interface Props {
   children: React.ReactNode
 }
 
-const SectionLabel = ({ children }: Props) => {
-  return (
-    <Container>
-      <Item>
-        <Typography>{children}</Typography>
-      </Item>
-    </Container>
-  )
-}
+const SectionLabel = ({ children }: Props) => (
+  <Label>{children}</Label>
+)
 
-const Container = styled.div`
-  display: inline-flex;
-  padding: 6px;
-  align-items: center;
-  border-radius: ${({ theme }) => theme.radii.md};
-  border: 1px solid ${({ theme }) => theme.colors.border.tertiary};
-  background: ${({ theme }) => theme.colors.surface.tertiary};
-`
-
-const Item = styled.div`
-  display: flex;
-  padding: 4px 10px;
-  justify-content: center;
-  align-items: center;
-  border-radius: ${({ theme }) => theme.radii.md};
-  background: ${({ theme }) => theme.colors.surface.inverse};
-`
-
-const Typography = styled.span`
-  color: ${({ theme }) => theme.colors.text.inverse};
+const Label = styled.p`
   font-family: ${({ theme }) => theme.fonts.sans};
-  font-size: ${({ theme }) => theme.fontSizes.xs};
-  font-style: normal;
   font-weight: ${({ theme }) => theme.fontWeights.regular};
+  font-size: ${({ theme }) => theme.fontSizes.xs};
   line-height: ${({ theme }) => theme.lineHeights.snug};
+  color: ${({ theme }) => theme.colors.text.tertiary};
   text-transform: uppercase;
 `
 
