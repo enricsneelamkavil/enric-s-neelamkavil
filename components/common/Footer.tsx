@@ -40,8 +40,29 @@ const SOCIAL_LINKS = [
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-const Footer = () => (
-  <FooterWrapper>
+import { useEffect, useState } from 'react'
+
+const Footer = () => {
+  const [visitorCount, setVisitorCount] = useState<number | null>(null)
+
+  useEffect(() => {
+    const fetchCount = async () => {
+      try {
+        const res = await fetch('/api/visitor', { method: 'POST' })
+        const data = await res.json()
+        if (data && data.count !== null) {
+          setVisitorCount(data.count)
+        }
+      } catch (err) {
+        console.error('Failed to fetch visitor count', err)
+      }
+    }
+
+    fetchCount()
+  }, [])
+
+  return (
+    <FooterWrapper>
 
     <ContentCard>
       <ContentInner>
@@ -97,7 +118,9 @@ const Footer = () => (
                 <EmailText>enricsneelamkavil@gmail.com</EmailText>
                 <VisitorBlock>
                   <VisitorLabel>You&apos;re visitor number:</VisitorLabel>
-                  <VisitorCount>1001</VisitorCount>
+                  <VisitorCount>
+                    {visitorCount !== null ? String(visitorCount).padStart(3, '0') : '---'}
+                  </VisitorCount>
                 </VisitorBlock>
               </ReachOutContent>
             </NavCol>
@@ -132,7 +155,8 @@ const Footer = () => (
     </BottomSection>
 
   </FooterWrapper>
-)
+  )
+}
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 

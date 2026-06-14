@@ -9,12 +9,13 @@
 ## Supabase Usage
 - `projects` table — case study content (title, description, tags, cover image URL)
 - Storage bucket — images and assets
+- `/api/visitor` route — POST increments visitor counter, returns `{ count: number }`
 
 ## Folder Structure
 ```
 portfolio/                        # project root
 ├── app/
-│   ├── page.tsx                  # Home
+│   ├── page.tsx                  # Home ✅ Done
 │   ├── about/page.tsx            # About
 │   ├── works/page.tsx            # Works
 │   ├── resume/page.tsx           # Resume
@@ -22,23 +23,32 @@ portfolio/                        # project root
 │   └── layout.tsx                # Global layout (Navbar + Footer + PersonalAgent)
 ├── components/
 │   ├── common/
-│   │   ├── Navbar.tsx            ✅ Done
-│   │   ├── Footer.tsx            ✅ Done
+│   │   ├── Navbar.tsx            ✅ Done — desktop glass pill + mobile bottom pill
+│   │   ├── Footer.tsx            ✅ Done — visitor counter wired to /api/visitor
 │   │   ├── Button.tsx            ✅ Done
-│   │   ├── PersonalAgent.tsx     ✅ Done (global AI assistant widget)
+│   │   ├── PersonalAgent.tsx     ✅ Done (hidden globally via display:none — interaction TBD)
 │   │   └── Layout.tsx
-│   ├── home/                     # Home-specific section components
+│   ├── home/
+│   │   ├── Landing.tsx           ✅ Done
+│   │   ├── AboutBrief.tsx        ✅ Done
+│   │   ├── Interests.tsx         ✅ Done
+│   │   ├── FeatureProduct.tsx    ✅ Done
+│   │   ├── AwardShelf.tsx        ✅ Done
+│   │   └── MyWorks.tsx           ✅ Done
 │   ├── works/
 │   ├── about/
 │   ├── resume/
 │   ├── contact/
-│   └── shared/                   # Reusable across pages (SectionHeader, Tag, etc.)
+│   └── shared/
+│       ├── SectionLabel.tsx      ✅ Done — plain uppercase <p>, no pill/chip styling
+│       ├── SectionHeader.tsx     ✅ Done
+│       └── DiamondBullet.tsx     ✅ Done
 ├── styles/
-│   ├── theme.ts                  # Design tokens — colors ✅, fonts + spacing TBD
-│   ├── GlobalStyle.ts            # Global resets
-│   └── StyledComponentsRegistry.tsx  # SSR fix for styled-components + Next.js
+│   ├── theme.ts                  ✅ Done — colors, fonts, spacing, breakpoints (bp + mq)
+│   ├── GlobalStyle.ts            ✅ Done
+│   └── StyledComponentsRegistry.tsx  ✅ Done — SSR fix for styled-components + Next.js
 ├── lib/
-│   └── supabase.ts               # Supabase client
+│   └── supabase.ts               ✅ Done
 ├── hooks/                        # Custom hooks (useProjects, etc.)
 ├── types/                        # Shared TypeScript interfaces
 └── CLAUDE.md                     # This file
@@ -50,11 +60,48 @@ portfolio/                        # project root
 - `components/common/Navbar.tsx` ✅
 - `components/common/Footer.tsx` ✅
 - `components/common/Button.tsx` ✅
-- `components/common/PersonalAgent.tsx` ✅ (AI assistant widget — renders on every page globally)
+- `components/common/PersonalAgent.tsx` ✅
+- `components/shared/SectionLabel.tsx` ✅
+- `components/shared/SectionHeader.tsx` ✅
+- `components/shared/DiamondBullet.tsx` ✅
+- All `components/home/*.tsx` ✅
+
+## Breakpoint System
+Defined in `styles/theme.ts` — import `mq` directly, never write raw media queries:
+```ts
+export const mq = {
+  mobile:       '@media (max-width: 768px)',
+  tablet:       '@media (min-width: 769px) and (max-width: 1024px)',
+  tabletDown:   '@media (max-width: 1024px)',
+  smallDesktop: '@media (min-width: 1025px) and (max-width: 1280px)',
+  largeDesktop: '@media (min-width: 1281px)',
+}
+```
+
+## Responsive Rules (Home Page — established patterns)
+- **Mobile** (`mq.mobile`, ≤768px): single-column, 24px horizontal padding, `max-width: none`
+- **Tablet** (`mq.tablet`, 769–1024px): side-by-side layouts preserved (no vertical stacking except mobile-only sections), `padding: 0 24px`
+- **Desktop** (>1024px): base styles, `max-width: 1168px` content width
+- `FeatureProduct`: horizontal layout at tablet AND desktop — only stacks vertically on mobile
+- `MyWorks WorkCard`: side-by-side at tablet AND desktop — only stacks on mobile
+- `Footer InfoRow`: `flex-wrap: wrap` at tablet to prevent button clipping
+
+## Navbar — Mobile Bottom Pill
+- 5 nav links + vertical separator + agent icon button (placeholder, `onClick={() => {}}`)
+- Agent icon: Figma asset node `185:866` — stored as `AGENT_ICON` constant in Navbar.tsx
+- **⚠️ The Figma asset URL expires in ~7 days from generation** — replace with permanent `/public/` asset
+- PersonalAgent is fully hidden (`display: none`) everywhere — mobile interaction TBD
+
+## PersonalAgent
+- Currently `display: none` everywhere (Wrapper has `display: none` as the only rule)
+- ⌘K / Ctrl+K shortcut wired but has no visible effect while hidden
+- Mobile agent trigger button exists in Navbar but is a no-op placeholder
+- Interaction design not yet defined — do not implement until specified
 
 ## Design Tokens
-- Color tokens defined in `styles/theme.ts` ✅
-- Typography and spacing — extract from Figma home design and append to theme.ts
+- All tokens in `styles/theme.ts` ✅ — colors, fonts, font sizes, line heights, spacing, radii, breakpoints
+- **Never hardcode hex values or px values** — always use `theme.*` tokens
+- Exception: breakpoint media queries use `mq.*` imported directly (not via ThemeProvider)
 
 ## Architecture Rules
 - Every visual section = its own component file, even if used once
@@ -70,7 +117,6 @@ portfolio/                        # project root
 
 ## Component Pattern
 ```tsx
-// Every component follows this pattern
 interface Props {
   // typed props
 }
@@ -91,29 +137,22 @@ export default ComponentName
 ```
 
 ## Pages
-- [x] Home — designed in Figma, ready to build
+- [x] Home — built and responsive ✅
 - [ ] Works
 - [ ] About
 - [ ] Resume
 - [ ] Contact
 
-## Home Page Sections
-1. SectionLabel.tsx     → shared, eyebrow tags
-2. SectionHeader.tsx    → shared, mixed-weight headings  
-3. Landing.tsx          → hero, welcome tag, photos, marquee
-4. AboutBrief.tsx       → bio + 3 stats
-5. Interests.tsx        → scrolling ticker
-6. FeatureProduct.tsx   → Plush feature card
-7. AwardShelf.tsx       → four award medallions
-8. MyWorks.tsx          → Supabase, WorkCard subcomponent
-9. app/page.tsx         → compose all sections
-
-## Build Order (Home Session)
-1. Extract typography + spacing tokens from Figma → append to `styles/theme.ts`
-2. Build `styles/StyledComponentsRegistry.tsx` — SSR boilerplate
-3. Build `components/common/Layout.tsx` — wraps Navbar + Footer + PersonalAgent
-4. Build home sections one by one from Figma annotations → `components/home/`
-5. Wire into `app/page.tsx`
+## Home Page Sections — All Complete ✅
+1. `SectionLabel.tsx`   → shared — plain uppercase eyebrow text, `colors.text.tertiary`, no chip/pill
+2. `SectionHeader.tsx`  → shared — mixed-weight headings (notch font)
+3. `Landing.tsx`        → hero, photo row (bleed on mobile), marquee (full-bleed via negative margin)
+4. `AboutBrief.tsx`     → bio + 3 animated count-up stats
+5. `Interests.tsx`      → scrolling ticker
+6. `FeatureProduct.tsx` → Plush feature card, horizontal at tablet+desktop, stacks only on mobile
+7. `AwardShelf.tsx`     → four award medallions, horizontal scroll on mobile/tablet
+8. `MyWorks.tsx`        → 3 WorkCards, exact Figma gradients, images natural-proportion on mobile
+9. `app/page.tsx`       → composes all sections
 
 ## Figma
 - File: https://www.figma.com/design/cGxPfzhfg2zi9MivaiE7dX/Enric-S-Neelamkavil-|-Portfolio?node-id=136-3016
@@ -121,6 +160,7 @@ export default ComponentName
 - Sections marked "Dynamic" → wire to Supabase
 - Sections marked "Static" → hardcode content
 - Sections marked "Reusable" → place in `components/shared/`
+- **Always re-fetch Figma nodes fresh** — asset URLs and design values can change between sessions
 
 ## Supabase Client
 ```ts
@@ -138,3 +178,13 @@ export const supabase = createClient(
 NEXT_PUBLIC_SUPABASE_URL=
 NEXT_PUBLIC_SUPABASE_ANON_KEY=
 ```
+
+## What's Next
+- [ ] Replace expiring Navbar agent icon URL with permanent `/public/` asset
+- [ ] Build Works page (`app/works/page.tsx`)
+- [ ] Build About page (`app/about/page.tsx`)
+- [ ] Build Resume page (`app/resume/page.tsx`)
+- [ ] Build Contact page (`app/contact/page.tsx`)
+- [ ] Define and implement PersonalAgent mobile interaction
+- [ ] Wire MyWorks to Supabase (`projects` table) when Works page is ready
+- [ ] Wire PersonalAgent to `/api/agent` (Anthropic SDK)

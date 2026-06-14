@@ -87,7 +87,7 @@ const MyWorks = () => {
       </HeaderContainer>
 
       <WorkCard
-        gradient="linear-gradient(174.51deg, rgb(245,255,241) 72.22%, rgb(212,242,199) 86.11%)"
+        gradient="linear-gradient(173.56697364842574deg, rgb(229, 248, 220) 10.248%, rgb(212, 242, 199) 89.79%)"
         tags={['Consumer Web App', 'Waste Management']}
         title="Urban Trash"
         description="Urban Trash is a B2B waste aggregation platform dedicated to sustainable waste management. They provide solutions for businesses, ensuring efficient waste collection."
@@ -100,7 +100,7 @@ const MyWorks = () => {
       />
 
       <WorkCard
-        gradient="linear-gradient(174.51deg, rgb(246,251,255) 72.22%, rgb(230,244,255) 86.11%)"
+        gradient="linear-gradient(174.1003339126334deg, rgb(238, 247, 255) 9.6176%, rgb(230, 244, 255) 90.443%)"
         tags={['Landing Showcase', 'Review Management']}
         title="ReputeUp AI"
         description="ReputeUp is your all-in-one tool for gathering reviews and showcasing testimonials that can drive revenue. Generate and collect Google reviews through WhatsApp/QR/SMS/Email"
@@ -112,7 +112,7 @@ const MyWorks = () => {
       />
 
       <WorkCard
-        gradient="linear-gradient(174.51deg, rgb(255,254,251) 72.22%, rgb(255,241,206) 86.11%)"
+        gradient="linear-gradient(173.92240614026673deg, rgb(255, 247, 228) 9.8046%, rgb(255, 241, 206) 90.195%)"
         tags={['Landing Showcase', 'Government NGO']}
         title="Unnathi"
         description="Unnathi (Kerala Empowerment Society) is an initiative by the Government of Kerala, registered under the Travancore-Cochin Literary, Scientific and Charitable Societies Registration Act."
@@ -308,7 +308,7 @@ const ImageArea = styled.div`
     flex: none;
     width: 100%;
     height: auto;
-    aspect-ratio: 660 / 394;
+    overflow: hidden;
     border-radius: ${({ theme }) => theme.radii.lg};
   }
 `
@@ -321,8 +321,10 @@ const ShowcaseImg = styled.img`
   object-position: right center;
 
   ${mq.mobile} {
-    object-fit: cover;
-    object-position: center;
+    width: 100%;
+    height: auto;
+    object-fit: unset;
+    object-position: unset;
   }
 `
 
