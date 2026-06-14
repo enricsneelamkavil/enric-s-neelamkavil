@@ -114,14 +114,6 @@ const Article = styled.div`
   border: 1px solid ${({ theme }) => theme.colors.border.tertiary};
   border-radius: ${({ theme }) => theme.radii['3xl']};
 
-  ${mq.tablet} {
-    flex-direction: column;
-    align-items: stretch;
-    gap: ${({ theme }) => theme.spacing[6]};
-    border-radius: ${({ theme }) => theme.radii.xl};
-    padding: ${({ theme }) => theme.spacing[4]};
-  }
-
   ${mq.mobile} {
     flex-direction: column;
     align-items: stretch;
@@ -143,9 +135,8 @@ const ImagePanel = styled.div`
   background: linear-gradient(to bottom, #f3efe6, #ebe5d8);
 
   ${mq.tablet} {
-    width: 100%;
-    height: 280px;
-    flex-shrink: 1;
+    flex: 1 0 0;
+    width: auto;
   }
 
   ${mq.mobile} {
@@ -174,11 +165,6 @@ const CardImage = styled.img`
   width: 193.263px;
   max-width: none;
 
-  ${mq.tablet} {
-    width: 140px;
-    top: 50%;
-  }
-
   ${mq.mobile} {
     width: 138.536px;
     top: 50%;
@@ -196,7 +182,7 @@ const Content = styled.div`
   height: 100%;
   min-width: 0;
 
-  ${mq.tabletDown} {
+  ${mq.mobile} {
     flex: none;
     height: auto;
   }

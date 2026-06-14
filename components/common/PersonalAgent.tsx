@@ -123,7 +123,6 @@ const Wrapper = styled.div<{ $visible: boolean }>`
   z-index: 100;
   padding: 6px;
   border-radius: ${({ theme }) => theme.radii.xl};
-  /* complete clear glass effect */
   background-color: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);

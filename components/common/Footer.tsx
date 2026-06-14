@@ -62,7 +62,9 @@ const Footer = () => (
                 Product &amp; Experience Designer mapping complex user flows into clean,
                 developer-friendly products. Based in Kerala, India.
               </BioText>
-              <Button label="Start a project" href="#" />
+              <ButtonWrapper>
+                <Button label="Start a project" href="#" />
+              </ButtonWrapper>
             </DesignerCol>
 
             {/* Cols 2+3 — Pages and Connect, grouped so they sit side-by-side on mobile */}
@@ -232,6 +234,11 @@ const InfoRow = styled.div`
   align-items: flex-start;
   width: 100%;
 
+  ${mq.tablet} {
+    overflow: visible;
+    flex-wrap: wrap;
+  }
+
   ${mq.mobile} {
     flex-direction: column;
     gap: 40px;
@@ -239,16 +246,28 @@ const InfoRow = styled.div`
 `
 
 const DesignerCol = styled.div`
-  flex: 1 0 0;
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: none;
+  overflow: hidden;
+  word-break: break-word;
   display: flex;
   flex-direction: column;
   gap: 24px;
   align-items: flex-start;
 
+  ${mq.tablet} {
+    overflow: visible;
+  }
+
   ${mq.mobile} {
     flex: none;
     width: 100%;
   }
+`
+
+const ButtonWrapper = styled.div`
+  flex-shrink: 0;
 `
 
 const BioText = styled.p`
@@ -270,24 +289,29 @@ const LinksGroup = styled.div`
     flex-direction: row;
     gap: 40px;
     width: 100%;
+
+    & > div {
+      flex: 1 1 0;
+      width: auto;
+      max-width: none;
+    }
   }
 `
 
 const NavCol = styled.div`
-  width: 240px;
-  flex-shrink: 0;
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: none;
+  overflow: hidden;
+  word-break: break-word;
   display: flex;
   flex-direction: column;
   gap: 16px;
   align-items: flex-start;
 
-  ${mq.tablet} {
-    width: 160px;
-  }
-
   ${mq.mobile} {
-    flex: 1 0 0;
-    width: auto;
+    flex: none;
+    width: 100%;
   }
 `
 
@@ -324,6 +348,9 @@ const ReachOutContent = styled.div`
   display: flex;
   flex-direction: column;
   gap: 12px;
+  min-width: 0;
+  max-width: 100%;
+  overflow: hidden;
 `
 
 const EmailText = styled.p`
@@ -333,6 +360,11 @@ const EmailText = styled.p`
   font-size: 16px;
   line-height: 24px;
   color: ${({ theme }) => theme.colors.text.primary};
+  display: block;
+  width: 100%;
+  white-space: normal;
+  word-break: break-all;
+  overflow-wrap: anywhere;
 `
 
 const VisitorBlock = styled.div`

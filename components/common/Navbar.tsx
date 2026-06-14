@@ -6,6 +6,12 @@ import { usePathname } from 'next/navigation'
 import styled from 'styled-components'
 import { mq } from '@/styles/theme'
 
+// ─── Assets ───────────────────────────────────────────────────────────────────
+
+// Agent icon from Figma SM navbar (node 185:866) — replace with a permanent
+// public asset once the Figma URL expires (~7 days from generation).
+const AGENT_ICON = 'https://www.figma.com/api/mcp/asset/0a941ed2-d955-4719-95b2-f1086e2ee203'
+
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
 const NAV_LINKS = [
@@ -63,6 +69,14 @@ const Navbar = () => {
             </MobileNavLink>
           )
         })}
+        <MobileSeparator aria-hidden="true" />
+        <AgentTriggerButton
+          type="button"
+          aria-label="Ask Enric AI"
+          onClick={() => {}}
+        >
+          <img src={AGENT_ICON} alt="" width={32} height={23} />
+        </AgentTriggerButton>
       </MobileNavWrapper>
     </>
   )
@@ -84,8 +98,6 @@ const DesktopNavWrapper = styled.nav<{ $scrolled: boolean }>`
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid rgba(255, 255, 255, 0.2);
   transition: box-shadow 0.2s ease, background-color 0.2s ease;
-  box-shadow: ${({ $scrolled }) =>
-    $scrolled ? '0 4px 24px rgba(0, 0, 0, 0.08)' : 'none'};
 
   ${mq.mobile} {
     display: none;
@@ -108,7 +120,7 @@ const NavItem = styled.li`
   display: contents;
 `
 
-const NavLink = styled(Link)<{ $active: boolean }>`
+const NavLink = styled(Link) <{ $active: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
@@ -155,7 +167,32 @@ const MobileNavWrapper = styled.nav`
   }
 `
 
-const MobileNavLink = styled(Link)<{ $active: boolean }>`
+const MobileSeparator = styled.div`
+  width: 1px;
+  height: 20px;
+  background-color: ${({ theme }) => theme.colors.border.tertiary};
+  flex-shrink: 0;
+`
+
+const AgentTriggerButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+
+  img {
+    display: block;
+    width: 32px;
+    height: 23px;
+    object-fit: contain;
+  }
+`
+
+const MobileNavLink = styled(Link) <{ $active: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;

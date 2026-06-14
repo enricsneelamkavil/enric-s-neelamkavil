@@ -220,8 +220,6 @@ const ProductContainer = styled.div`
   height: 100%;
 
   ${mq.tablet} {
-    width: 100%;
-    flex-shrink: 1;
     height: auto;
     gap: ${({ theme }) => theme.spacing[6]};
   }
