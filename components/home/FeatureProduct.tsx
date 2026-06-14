@@ -244,8 +244,8 @@ const FeatureText = styled.p`
   margin: 0;
   font-family: ${({ theme }) => theme.fonts.sans};
   font-weight: ${({ theme }) => theme.fontWeights.regular};
-  font-size: ${({ theme }) => theme.fontSizes.xs};
-  line-height: ${({ theme }) => theme.lineHeights.tight};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  line-height: ${({ theme }) => theme.lineHeights.normal};
   color: ${({ theme }) => theme.colors.text.secondary};
   white-space: normal;
 `
