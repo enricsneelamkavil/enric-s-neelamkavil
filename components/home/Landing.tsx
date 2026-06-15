@@ -5,11 +5,11 @@ import { mq } from '@/styles/theme'
 
 // ─── Assets ──────────────────────────────────────────────────────────────────
 
-const IMG_APPLE_ICON = 'https://www.figma.com/api/mcp/asset/9d335656-3da1-4e16-aaa5-c0659c20541e'
+const IMG_APPLE_ICON = '/icons/apple.svg'
 
-const IMG_LEFT = '/landing/left.png'
-const IMG_MAIN = '/landing/main.png'
-const IMG_RIGHT = '/landing/right.png'
+const IMG_LEFT = '/home/lander/left.png'
+const IMG_MAIN = '/home/lander/main.png'
+const IMG_RIGHT = '/home/lander/right.png'
 
 const LOGO_PATHS = [
   '/company logos/karghewale-logo.svg',
@@ -162,8 +162,8 @@ const TagText = styled.span`
 `
 
 const AppleIcon = styled.img`
-  width: 8.293px;
-  height: 10.2px;
+  width: 16px;
+  height: 16px;
   max-width: none;
 `
 
@@ -171,7 +171,7 @@ const TextContainer = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing[3]};
+  gap: ${({ theme }) => theme.spacing[2]};
   width: 100%;
   text-align: center;
 `

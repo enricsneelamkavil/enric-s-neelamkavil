@@ -5,18 +5,15 @@ import styled, { css, keyframes } from 'styled-components'
 import Button from './Button'
 import { mq } from '@/styles/theme'
 
-// ─── Assets ───────────────────────────────────────────────────────────────────
 
-const BG_IMAGE = 'https://www.figma.com/api/mcp/asset/fa710887-2012-4664-a010-ef19a012ab66'
 
-const SHAPE_A = 'https://www.figma.com/api/mcp/asset/fcfe8a51-0e1f-4bfd-bf8a-c07bd21c1060'
-const SHAPE_B = 'https://www.figma.com/api/mcp/asset/4275419a-1c6c-469c-9100-c56d31ea3550'
-const SHAPE_C = 'https://www.figma.com/api/mcp/asset/bd0b7ea1-66b9-46ef-b575-f2bd3f950e3d'
-const SHAPE_D = 'https://www.figma.com/api/mcp/asset/9e9cb64d-8b29-40e7-87be-259ad440c5a8'
-const HEART_ICON = 'https://www.figma.com/api/mcp/asset/a6f6440a-7543-4800-a2ad-d370a1518148'
-const HOURGLASS_ICON = 'https://www.figma.com/api/mcp/asset/79311a5c-b44a-4c9a-a28b-340cc79d2a9f'
+const SHAPE_A = '/shapes/shape-1.svg'
+const SHAPE_B = '/shapes/shape-2.svg'
+const SHAPE_C = '/shapes/shape-3.svg'
+const SHAPE_D = '/shapes/shape-4.svg'
+const HEART_ICON = '/icons/heart.svg'
+const HOURGLASS_ICON = '/icons/hourglass.svg'
 
-// ─── Data ─────────────────────────────────────────────────────────────────────
 
 const SHAPES = [
   { src: SHAPE_A, w: 64 },
@@ -108,97 +105,97 @@ const Footer = () => {
   return (
     <FooterWrapper>
 
-    <ContentCard>
-      <ContentInner>
-        <CTAHeading>
-          <CTALine>Let&apos;s build</CTALine>
-          <CTALine>
-            <CTAMuted>something real</CTAMuted>
-            <CTADot>.</CTADot>
-          </CTALine>
-        </CTAHeading>
+      <ContentCard>
+        <ContentInner>
+          <CTAHeading>
+            <CTALine>Let&apos;s build</CTALine>
+            <CTALine>
+              <CTAMuted>something real</CTAMuted>
+              <CTADot>.</CTADot>
+            </CTALine>
+          </CTAHeading>
 
-        <InfoSection>
-          <InfoRow>
+          <InfoSection>
+            <InfoRow>
 
-            {/* Col 1 — bio + CTA */}
-            <DesignerCol>
-              <BioText>
-                Product &amp; Experience Designer mapping complex user flows into clean,
-                developer-friendly products. Based in Kerala, India.
-              </BioText>
-              <ButtonWrapper>
-                <Button label="Start a project" href="#" />
-              </ButtonWrapper>
-            </DesignerCol>
+              {/* Col 1 — bio + CTA */}
+              <DesignerCol>
+                <BioText>
+                  Product &amp; Experience Designer mapping complex user flows into clean,
+                  developer-friendly products. Based in Kerala, India.
+                </BioText>
+                <ButtonWrapper>
+                  <Button label="Start a project" href="#" />
+                </ButtonWrapper>
+              </DesignerCol>
 
-            {/* Cols 2+3 — Pages and Connect, grouped so they sit side-by-side on mobile */}
-            <LinksGroup>
+              {/* Cols 2+3 — Pages and Connect, grouped so they sit side-by-side on mobile */}
+              <LinksGroup>
+                <NavCol>
+                  <ColLabel>Pages</ColLabel>
+                  <ColLinks>
+                    {PAGE_LINKS.map(({ label, href }) => (
+                      <ColLink key={label} href={href}>{label}</ColLink>
+                    ))}
+                  </ColLinks>
+                </NavCol>
+
+                <NavCol>
+                  <ColLabel>Connect</ColLabel>
+                  <ColLinks>
+                    {SOCIAL_LINKS.map(({ label, href }) => (
+                      <ColExtLink key={label} href={href} target="_blank" rel="noopener noreferrer">
+                        {label}
+                      </ColExtLink>
+                    ))}
+                  </ColLinks>
+                </NavCol>
+              </LinksGroup>
+
+              {/* Col 4 — Reach out */}
               <NavCol>
-                <ColLabel>Pages</ColLabel>
-                <ColLinks>
-                  {PAGE_LINKS.map(({ label, href }) => (
-                    <ColLink key={label} href={href}>{label}</ColLink>
-                  ))}
-                </ColLinks>
+                <ColLabel>Reach out</ColLabel>
+                <ReachOutContent>
+                  <EmailText>enricsneelamkavil@gmail.com</EmailText>
+                  <VisitorBlock>
+                    <VisitorLabel>You&apos;re visitor number:</VisitorLabel>
+                    <VisitorCount>
+                      {visitorCount !== null ? String(visitorCount).padStart(3, '0') : '---'}
+                    </VisitorCount>
+                  </VisitorBlock>
+                </ReachOutContent>
               </NavCol>
 
-              <NavCol>
-                <ColLabel>Connect</ColLabel>
-                <ColLinks>
-                  {SOCIAL_LINKS.map(({ label, href }) => (
-                    <ColExtLink key={label} href={href} target="_blank" rel="noopener noreferrer">
-                      {label}
-                    </ColExtLink>
-                  ))}
-                </ColLinks>
-              </NavCol>
-            </LinksGroup>
+            </InfoRow>
+          </InfoSection>
+        </ContentInner>
+      </ContentCard>
 
-            {/* Col 4 — Reach out */}
-            <NavCol>
-              <ColLabel>Reach out</ColLabel>
-              <ReachOutContent>
-                <EmailText>enricsneelamkavil@gmail.com</EmailText>
-                <VisitorBlock>
-                  <VisitorLabel>You&apos;re visitor number:</VisitorLabel>
-                  <VisitorCount>
-                    {visitorCount !== null ? String(visitorCount).padStart(3, '0') : '---'}
-                  </VisitorCount>
-                </VisitorBlock>
-              </ReachOutContent>
-            </NavCol>
+      {/* ── Red bottom: shapes + copyright ── */}
+      <BottomSection>
 
-          </InfoRow>
-        </InfoSection>
-      </ContentInner>
-    </ContentCard>
+        <ShapesRow>
+          {Array.from({ length: 5 }).flatMap((_, i) =>
+            SHAPES.map((shape, j) => (
+              <ShapeBox key={`${i}-${j}`} $w={shape.w}>
+                <ShapeImg src={shape.src} alt="" />
+              </ShapeBox>
+            ))
+          )}
+        </ShapesRow>
 
-    {/* ── Red bottom: shapes + copyright ── */}
-    <BottomSection>
+        {/* Mobile: two lines centered. Desktop: single row. */}
+        <CopyrightRow>
+          <CopyrightFirstLine>
+            <CopyrightText>© 2026 DESIGNED WITH</CopyrightText>
+            <HeartIcon />
+          </CopyrightFirstLine>
+          <CopyrightText>BY ENRIC S NEELAMKAVIL</CopyrightText>
+        </CopyrightRow>
 
-      <ShapesRow>
-        {Array.from({ length: 5 }).flatMap((_, i) =>
-          SHAPES.map((shape, j) => (
-            <ShapeBox key={`${i}-${j}`} $w={shape.w}>
-              <ShapeImg src={shape.src} alt="" />
-            </ShapeBox>
-          ))
-        )}
-      </ShapesRow>
+      </BottomSection>
 
-      {/* Mobile: two lines centered. Desktop: single row. */}
-      <CopyrightRow>
-        <CopyrightFirstLine>
-          <CopyrightText>© 2026 DESIGNED WITH</CopyrightText>
-          <HeartIcon />
-        </CopyrightFirstLine>
-        <CopyrightText>BY ENRIC S NEELAMKAVIL</CopyrightText>
-      </CopyrightRow>
-
-    </BottomSection>
-
-  </FooterWrapper>
+    </FooterWrapper>
   )
 }
 
@@ -469,7 +466,6 @@ const BottomSection = styled.div`
   align-items: center;
   gap: 72px;
   padding: 80px 0 40px;
-  background-image: url('${BG_IMAGE}');
   background-size: cover;
   background-position: center;
 

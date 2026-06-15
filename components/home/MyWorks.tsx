@@ -7,11 +7,10 @@ import SectionHeader from '@/components/shared/SectionHeader'
 import DiamondBullet from '@/components/shared/DiamondBullet'
 import { mq } from '@/styles/theme'
 
-// ─── Assets (Figma URLs — expire 7 days from generation) ─────────────────────
 
-const IMG_URBAN_TRASH = 'https://www.figma.com/api/mcp/asset/8cee8bf9-eaf3-4809-8f96-47a9dae3fd2a'
-const IMG_REPUTE_UP = 'https://www.figma.com/api/mcp/asset/3855e47a-8b50-497a-bb0c-02d2c0d10f7f'
-const IMG_UNNATHI = 'https://www.figma.com/api/mcp/asset/dc0632b6-12a7-4dcb-aab9-18e65b4264e7'
+const IMG_URBAN_TRASH = '/works/urban-trash-showcase.png'
+const IMG_REPUTE_UP = '/works/repute-up-showcase.png'
+const IMG_UNNATHI = '/works/unnathi-showcase.png'
 
 // ─── WorkCard sub-component ───────────────────────────────────────────────────
 

@@ -7,12 +7,10 @@ import SectionHeader from '@/components/shared/SectionHeader'
 import DiamondBullet from '@/components/shared/DiamondBullet'
 import { mq } from '@/styles/theme'
 
-// ─── Assets (Figma URLs — expire 7 days from generation) ─────────────────────
 
-const IMG_BG        = 'https://www.figma.com/api/mcp/asset/c015d0a9-0331-4740-ba41-f3d5d1626013'
-const IMG_PLUSH_LOGO = 'https://www.figma.com/api/mcp/asset/1e9b7871-d1f8-4421-857b-5e5fd925dbc0'
+const IMG_BG = '/home/plush-feature.png'
+const IMG_PLUSH_LOGO = 'home/plush-logo.svg'
 
-// ─── Data ─────────────────────────────────────────────────────────────────────
 
 const FEATURES = [
   'Discover the right card based on your lifestyle & spending habits.',
@@ -20,7 +18,7 @@ const FEATURES = [
   'Learn real experiences, card combinations, and community insights.',
 ] as const
 
-// ─── Component ────────────────────────────────────────────────────────────────
+
 
 const FeatureProduct = () => {
   return (

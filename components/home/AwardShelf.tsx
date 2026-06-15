@@ -5,40 +5,37 @@ import SectionLabel from '@/components/shared/SectionLabel'
 import SectionHeader from '@/components/shared/SectionHeader'
 import { mq } from '@/styles/theme'
 
-// ─── Assets (Figma URLs — expire 7 days from generation) ─────────────────────
-
-const IMG_GARLAND        = 'https://www.figma.com/api/mcp/asset/18f3a216-31d7-4837-ae55-d0c1e79fcc7b'
-// ─── Data ─────────────────────────────────────────────────────────────────────
+const IMG_GARLAND = '/home/garland.png'
 
 const AWARDS = [
   {
-    name:     'Awwwards Young Jury',
+    name: 'Awwwards Young Jury',
     subtitle: 'Jury Member (2026, 2025)',
-    logo:     '/awards/awwwards-logo.svg',
+    logo: '/logos/awwwards.svg',
   },
   {
-    name:     'Awwwards Honors',
+    name: 'Awwwards Honors',
     subtitle: 'enric.design (2025)',
-    logo:     '/awards/awwwards-logo.svg',
+    logo: '/logos/awwwards.svg',
   },
   {
-    name:     'Config APAC Attendee',
+    name: 'Config APAC Attendee',
     subtitle: 'Marina Bay Sands, Singapore (2024)',
-    logo:     '/awards/figma-logo.svg',
+    logo: '/logos/figma.svg',
   },
   {
-    name:     'Huddle Designers Award',
+    name: 'Huddle Designers Award',
     subtitle: 'Kelp Kookies (2023)',
-    logo:     '/awards/ksum-logo.svg',
+    logo: '/logos/ksum.svg',
   },
 ] as const
 
 // ─── AwardCard sub-component ──────────────────────────────────────────────────
 
 interface AwardCardProps {
-  name:     string
+  name: string
   subtitle: string
-  logo:     string
+  logo: string
 }
 
 const AwardCard = ({ name, subtitle, logo }: AwardCardProps) => (
@@ -170,6 +167,8 @@ const AwardLogo = styled.img`
   top: calc(50% - 27.78px);
   left: 50%;
   transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
 `
 
 const AwardInfo = styled.div`
