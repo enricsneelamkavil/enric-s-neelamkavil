@@ -35,6 +35,6 @@ const PageSections = styled.div`
   }
 
   ${mq.mobile} {
-    gap: 71px;
+    gap: 72px;
   }
 `

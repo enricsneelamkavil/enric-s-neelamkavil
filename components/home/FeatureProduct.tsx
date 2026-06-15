@@ -9,8 +9,7 @@ import { mq } from '@/styles/theme'
 
 // ─── Assets (Figma URLs — expire 7 days from generation) ─────────────────────
 
-const IMG_BG        = 'https://www.figma.com/api/mcp/asset/497ba364-d8f8-453b-83fd-11c3825c85f3'
-const IMG_CARD      = 'https://www.figma.com/api/mcp/asset/eff8d3bc-3b90-4e69-8c13-fdba142d7b32'
+const IMG_BG        = 'https://www.figma.com/api/mcp/asset/c015d0a9-0331-4740-ba41-f3d5d1626013'
 const IMG_PLUSH_LOGO = 'https://www.figma.com/api/mcp/asset/1e9b7871-d1f8-4421-857b-5e5fd925dbc0'
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
@@ -35,8 +34,6 @@ const FeatureProduct = () => {
         {/* ── Left: image panel ── */}
         <ImagePanel>
           <BgImage src={IMG_BG} alt="" />
-          {/* Credit card: Figma — left:50%, top:141px, translate(-50%,-50%), rotate(-61.11deg) */}
-          <CardImage src={IMG_CARD} alt="Plush credit card mockup" />
         </ImagePanel>
 
         {/* ── Right: content ── */}
@@ -119,7 +116,7 @@ const Article = styled.div`
     align-items: stretch;
     gap: 32px;
     border-radius: ${({ theme }) => theme.radii.xl};
-    padding: 12px;
+    padding: 24px;
   }
 `
 
@@ -155,20 +152,6 @@ const BgImage = styled.img`
   height: 100%;
   object-fit: cover;
   object-position: bottom;
-`
-
-const CardImage = styled.img`
-  position: absolute;
-  left: 50%;
-  top: 141px;
-  transform: translate(-50%, -50%) rotate(-61.11deg);
-  width: 193.263px;
-  max-width: none;
-
-  ${mq.mobile} {
-    width: 138.536px;
-    top: 50%;
-  }
 `
 
 // ── Right content ─────────────────────────────────────────────────────────────
@@ -230,7 +213,7 @@ const FeatureList = styled.div`
   gap: ${({ theme }) => theme.spacing[1]};
 
   ${mq.mobile} {
-    gap: 8px;
+    display: none;
   }
 `
 

@@ -121,7 +121,7 @@ const Section = styled.section`
   }
 
   ${mq.mobile} {
-    padding-top: 5rem;
+    padding-top: 40px;
     gap: ${({ theme }) => theme.spacing[10]};
   }
 `
@@ -147,7 +147,7 @@ const WelcomeTag = styled.div`
   display: inline-flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing[2]};
-  padding: ${({ theme }) => `${theme.spacing[3]} ${theme.spacing[4]}`};
+  padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[4]}`};
   border: 1px solid ${({ theme }) => theme.colors.border.tertiary};
   border-radius: ${({ theme }) => theme.radii.lg};
 `

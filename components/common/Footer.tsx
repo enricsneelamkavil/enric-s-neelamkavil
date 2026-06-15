@@ -83,11 +83,19 @@ const Footer = () => {
 
   useEffect(() => {
     const fetchCount = async () => {
+      // Check session storage first to avoid duplicate views per session
+      const cachedCount = sessionStorage.getItem('visitorCount')
+      if (cachedCount) {
+        setVisitorCount(parseInt(cachedCount, 10))
+        return
+      }
+
       try {
         const res = await fetch('/api/visitor', { method: 'POST' })
         const data = await res.json()
         if (data && data.count !== null) {
           setVisitorCount(data.count)
+          sessionStorage.setItem('visitorCount', data.count.toString())
         }
       } catch (err) {
         console.error('Failed to fetch visitor count', err)
