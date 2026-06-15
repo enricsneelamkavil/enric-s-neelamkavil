@@ -5,7 +5,7 @@ import SectionLabel from '@/components/shared/SectionLabel'
 import SectionHeader from '@/components/shared/SectionHeader'
 import { mq } from '@/styles/theme'
 
-const IMG_GARLAND = '/home/garland.png'
+const IMG_GARLAND = '/home/garland.webp'
 
 const AWARDS = [
   {

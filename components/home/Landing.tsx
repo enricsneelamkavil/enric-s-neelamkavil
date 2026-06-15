@@ -7,9 +7,9 @@ import { mq } from '@/styles/theme'
 
 const IMG_APPLE_ICON = '/icons/apple.svg'
 
-const IMG_LEFT = '/home/lander/left.png'
-const IMG_MAIN = '/home/lander/main.png'
-const IMG_RIGHT = '/home/lander/right.png'
+const IMG_LEFT = '/home/lander/left.webp'
+const IMG_MAIN = '/home/lander/main.webp'
+const IMG_RIGHT = '/home/lander/right.webp'
 
 const LOGO_PATHS = [
   '/company logos/remax-logo.svg',

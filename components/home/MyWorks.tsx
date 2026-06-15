@@ -8,9 +8,9 @@ import DiamondBullet from '@/components/shared/DiamondBullet'
 import { mq } from '@/styles/theme'
 
 
-const IMG_URBAN_TRASH = '/works/urban-trash-showcase.png'
-const IMG_REPUTE_UP = '/works/repute-up-showcase.png'
-const IMG_UNNATHI = '/works/unnathi-showcase.png'
+const IMG_URBAN_TRASH = '/works/urban-trash-showcase.webp'
+const IMG_REPUTE_UP = '/works/repute-up-showcase.webp'
+const IMG_UNNATHI = '/works/unnathi-showcase.webp'
 
 // ─── WorkCard sub-component ───────────────────────────────────────────────────
 
