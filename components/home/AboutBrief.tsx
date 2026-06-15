@@ -226,11 +226,15 @@ const StatLabel = styled.p`
   width: 100%;
   font-family: ${({ theme }) => theme.fonts.sans};
   font-weight: ${({ theme }) => theme.fontWeights.regular};
-  font-size: ${({ theme }) => theme.fontSizes.xs};
-  line-height: ${({ theme }) => theme.lineHeights.tight};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  line-height: ${({ theme }) => theme.lineHeights.normal};
   color: ${({ theme }) => theme.colors.text.tertiary};
   text-transform: uppercase;
-  text-align: left;
+  text-align: center;
+
+  ${mq.mobile} {
+    text-align: left;
+  }
 `
 
 // Replaces Figma's imgSeparator asset — a plain 1px vertical rule

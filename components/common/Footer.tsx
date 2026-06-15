@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import styled, { css } from 'styled-components'
+import styled, { css, keyframes } from 'styled-components'
 import Button from './Button'
 import { mq } from '@/styles/theme'
 
@@ -13,7 +13,8 @@ const SHAPE_A = 'https://www.figma.com/api/mcp/asset/fcfe8a51-0e1f-4bfd-bf8a-c07
 const SHAPE_B = 'https://www.figma.com/api/mcp/asset/4275419a-1c6c-469c-9100-c56d31ea3550'
 const SHAPE_C = 'https://www.figma.com/api/mcp/asset/bd0b7ea1-66b9-46ef-b575-f2bd3f950e3d'
 const SHAPE_D = 'https://www.figma.com/api/mcp/asset/9e9cb64d-8b29-40e7-87be-259ad440c5a8'
-const HEART_ICON = 'https://www.figma.com/api/mcp/asset/2afd27d0-04e0-42aa-b80f-7d4d596d165d'
+const HEART_ICON = 'https://www.figma.com/api/mcp/asset/a6f6440a-7543-4800-a2ad-d370a1518148'
+const HOURGLASS_ICON = 'https://www.figma.com/api/mcp/asset/79311a5c-b44a-4c9a-a28b-340cc79d2a9f'
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
@@ -40,7 +41,42 @@ const SOCIAL_LINKS = [
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+
+const HeartIcon = () => {
+  const [showHourglass, setShowHourglass] = useState(false)
+  const [isJiggling, setIsJiggling] = useState(false)
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const handleMouseEnter = () => {
+    if (showHourglass) return
+    setIsJiggling(true)
+    timerRef.current = setTimeout(() => {
+      setIsJiggling(false)
+      setShowHourglass(true)
+    }, 400)
+  }
+
+  const handleMouseLeave = () => {
+    if (timerRef.current) clearTimeout(timerRef.current)
+    setIsJiggling(false)
+    setShowHourglass(false)
+  }
+
+  return (
+    <IconContainer onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+      {showHourglass ? (
+        <a href="https://archive.enric.design" target="_blank" rel="noopener noreferrer">
+          <HourglassImg src={HOURGLASS_ICON} alt="visit archive" />
+        </a>
+      ) : (
+        <IconWrapper $jiggling={isJiggling}>
+          <HeartImg src={HEART_ICON} alt="♥" />
+        </IconWrapper>
+      )}
+    </IconContainer>
+  )
+}
 
 const Footer = () => {
   const [visitorCount, setVisitorCount] = useState<number | null>(null)
@@ -147,7 +183,7 @@ const Footer = () => {
       <CopyrightRow>
         <CopyrightFirstLine>
           <CopyrightText>© 2026 DESIGNED WITH</CopyrightText>
-          <HeartImg src={HEART_ICON} alt="♥" />
+          <HeartIcon />
         </CopyrightFirstLine>
         <CopyrightText>BY ENRIC S NEELAMKAVIL</CopyrightText>
       </CopyrightRow>
@@ -494,9 +530,40 @@ const CopyrightText = styled.span`
   white-space: nowrap;
 `
 
+const jiggle = keyframes`
+  0%   { transform: rotate(0deg); }
+  20%  { transform: rotate(-15deg); }
+  40%  { transform: rotate(15deg); }
+  60%  { transform: rotate(-10deg); }
+  80%  { transform: rotate(10deg); }
+  100% { transform: rotate(0deg); }
+`
+
+const IconContainer = styled.span`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+`
+
+const IconWrapper = styled.span<{ $jiggling: boolean }>`
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  animation: ${({ $jiggling }) =>
+    $jiggling ? css`${jiggle} 0.4s ease forwards` : 'none'};
+`
+
 const HeartImg = styled.img`
   display: block;
   width: 17px;
+  height: 16px;
+  max-width: none;
+`
+
+const HourglassImg = styled.img`
+  display: block;
+  width: 13px;
   height: 16px;
   max-width: none;
 `

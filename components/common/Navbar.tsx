@@ -22,6 +22,13 @@ const NAV_LINKS = [
   { label: 'Contact', href: '#' },
 ] as const
 
+const MOBILE_NAV_LINKS = [
+  { label: 'Home', href: '/' },
+  { label: 'About', href: '#' },
+  { label: 'Work', href: '#' },
+  { label: 'Contact', href: '#' },
+] as const
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 const Navbar = () => {
@@ -56,17 +63,18 @@ const Navbar = () => {
 
       {/* ── Mobile: bottom-fixed solid pill ── */}
       <MobileNavWrapper aria-label="Mobile navigation">
-        {NAV_LINKS.map(({ label, href }) => {
+        {MOBILE_NAV_LINKS.map(({ label, href }) => {
           const active = pathname === href
           return (
-            <MobileNavLink
-              key={href}
-              href={href}
-              $active={active}
-              aria-current={active ? 'page' : undefined}
-            >
-              {label}
-            </MobileNavLink>
+            <MobileNavItem key={href}>
+              <MobileNavLink
+                href={href}
+                $active={active}
+                aria-current={active ? 'page' : undefined}
+              >
+                {label}
+              </MobileNavLink>
+            </MobileNavItem>
           )
         })}
         <MobileSeparator aria-hidden="true" />
@@ -192,11 +200,18 @@ const AgentTriggerButton = styled.button`
   }
 `
 
+const MobileNavItem = styled.div`
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`
+
 const MobileNavLink = styled(Link) <{ $active: boolean }>`
   display: flex;
   align-items: center;
   justify-content: center;
-  flex: 1;
   padding: 4px 10px;
   border-radius: ${({ theme }) => theme.radii.md};
   font-family: ${({ theme }) => theme.fonts.sans};
