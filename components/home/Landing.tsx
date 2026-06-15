@@ -12,15 +12,15 @@ const IMG_MAIN = '/home/lander/main.png'
 const IMG_RIGHT = '/home/lander/right.png'
 
 const LOGO_PATHS = [
-  '/company logos/karghewale-logo.svg',
+  '/company logos/remax-logo.svg',
   '/company logos/apro-it-logo.svg',
   '/company logos/urbantrash-logo.svg',
-  '/company logos/unnathi-logo.svg',
+  '/company logos/irisholidays-logo.svg',
   '/company logos/ust-logo.svg',
   '/company logos/vurse-logo.svg',
   '/company logos/fundesigns-logo.svg',
   '/company logos/opengrad-logo.svg',
-  '/company logos/cce-logo.svg',
+  '/company logos/deep5-logo.svg',
   '/company logos/mulearn-logo.svg',
 ] as const
 

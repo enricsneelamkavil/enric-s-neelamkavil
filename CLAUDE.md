@@ -87,9 +87,10 @@ export const mq = {
 - `Footer InfoRow`: `flex-wrap: wrap` at tablet to prevent button clipping
 
 ## Navbar — Mobile Bottom Pill
-- 5 nav links + vertical separator + agent icon button (placeholder, `onClick={() => {}}`)
+- **Desktop**: 5 nav links (Home, About, Work, Resume, Contact) — glass pill, fixed top-center
+- **Mobile**: 4 nav links (Home, About, Work, Contact) — **Resume omitted on mobile** — solid bottom pill
+- Mobile pill ends with: vertical separator + agent icon button (placeholder, `onClick={() => {}}`)
 - Agent icon: Figma asset node `185:866` — stored as `AGENT_ICON` constant in Navbar.tsx
-- **⚠️ The Figma asset URL expires in ~7 days from generation** — replace with permanent `/public/` asset
 - PersonalAgent is fully hidden (`display: none`) everywhere — mobile interaction TBD
 
 ## PersonalAgent
@@ -146,12 +147,13 @@ export default ComponentName
 ## Home Page Sections — All Complete ✅
 1. `SectionLabel.tsx`   → shared — plain uppercase eyebrow text, `colors.text.tertiary`, no chip/pill
 2. `SectionHeader.tsx`  → shared — mixed-weight headings (notch font)
-3. `Landing.tsx`        → hero, photo row (bleed on mobile), marquee (full-bleed via negative margin)
+3. `Landing.tsx`        → hero, photo row (bleed on mobile), marquee (full-bleed via negative margin), company logo strip (local SVGs from `public/company logos/`)
 4. `AboutBrief.tsx`     → bio + 3 animated count-up stats
 5. `Interests.tsx`      → scrolling ticker
 6. `FeatureProduct.tsx` → Plush feature card, horizontal at tablet+desktop, stacks only on mobile
 7. `AwardShelf.tsx`     → four award medallions, horizontal scroll on mobile/tablet
 8. `MyWorks.tsx`        → 3 WorkCards, exact Figma gradients, images natural-proportion on mobile
+   `Footer.tsx`         → visitor counter + HeartIcon: heart ↔ hourglass toggle (hover → delay → hourglass, unhover → back to heart)
 9. `app/page.tsx`       → composes all sections
 
 ## Figma
@@ -175,12 +177,16 @@ export const supabase = createClient(
 
 ## Environment Variables
 ```
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
+NEXT_PUBLIC_SUPABASE_URL=https://rdkhdnbzhuwvthxagzdz.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_630z8GqkaL53xi1EXO_1HQ_VZ-t3EoZ
 ```
 
+## Landing — Company Logo Marquee
+- 10 logos, all local SVGs: `public/company logos/{remax,apro-it,urbantrash,irisholidays,ust,vurse,fundesigns,opengrad,deep5,mulearn}-logo.svg`
+- Defined as `LOGO_PATHS` constant in `Landing.tsx` — doubled in JSX for seamless infinite marquee
+- Marquee pauses on hover; full-viewport-width on mobile via negative-margin escape
+
 ## What's Next
-- [ ] Replace expiring Navbar agent icon URL with permanent `/public/` asset
 - [ ] Build Works page (`app/works/page.tsx`)
 - [ ] Build About page (`app/about/page.tsx`)
 - [ ] Build Resume page (`app/resume/page.tsx`)
