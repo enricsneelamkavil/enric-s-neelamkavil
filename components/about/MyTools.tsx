@@ -91,8 +91,6 @@ const Section = styled.section`
   display: flex;
   justify-content: center;
   width: 100%;
-  /* extra vertical space so risen icons aren't clipped by sibling sections */
-  padding: ${RISE}px 0 0;
 `
 
 const DockContainer = styled.div`
