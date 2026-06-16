@@ -6,6 +6,8 @@ import IntroSection from '@/components/about/IntroSection'
 import ProfileImage from '@/components/about/ProfileImage'
 import AboutDescription from '@/components/about/AboutDescription'
 import MyTools from '@/components/about/MyTools'
+import Companies from '@/components/about/Companies'
+import AwardShelf from '@/components/about/AwardShelf'
 
 export default function About() {
   return (
@@ -14,6 +16,8 @@ export default function About() {
       <ProfileImage />
       <AboutDescription />
       <MyTools />
+      <Companies />
+      <AwardShelf />
     </PageSections>
   )
 }
