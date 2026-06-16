@@ -34,7 +34,7 @@ const TOOLS: Tool[] = [
   { name: 'Premiere Pro', src: '/tools/premiere-pro.svg', variant: 'flat', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
 ]
 
-const RISE = 24 // px — hovered icon rise
+const RISE = 16 // px — hovered icon rise
 const RISE_NEIGHBOR = RISE / 2
 
 // ─── Component ────────────────────────────────────────────────────────────────

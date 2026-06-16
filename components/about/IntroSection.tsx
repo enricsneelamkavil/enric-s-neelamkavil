@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import styled from 'styled-components'
 import { mq } from '@/styles/theme'
+import ModeToggle from '@/components/shared/ModeToggle'
 
 // ─── Assets ───────────────────────────────────────────────────────────────────
 
@@ -11,26 +12,6 @@ const IMG_APPLE = '/icons/apple.svg'
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type Mode = 'professional' | 'personal'
-
-// ─── Inline SVG ───────────────────────────────────────────────────────────────
-// Uses currentColor so theme color is applied via CSS on the styled wrapper.
-
-const ArrowSvg = ({ className }: { className?: string }) => (
-  <svg
-    className={className}
-    width="16"
-    height="16"
-    viewBox="0 0 16 16"
-    fill="none"
-    xmlns="http://www.w3.org/2000/svg"
-    aria-hidden="true"
-  >
-    <path
-      d="M2.68848 7.55273C2.56797 7.67034 2.5 7.8316 2.5 8C2.5 8.1684 2.56797 8.32966 2.68848 8.44727L7.82227 13.4473L8.25879 13L8.69434 12.5527L4.66211 8.625H14.125V7.375H4.66211L8.69434 3.44727L8.25879 3L7.82227 2.55273L2.68848 7.55273Z"
-      fill="currentColor"
-    />
-  </svg>
-)
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -63,22 +44,10 @@ const IntroSection = () => {
             PROFESSIONAL
           </ModeLabel>
 
-          <TogglePill>
-            <ToggleBtn
-              $selected={mode === 'professional'}
-              onClick={() => setMode('professional')}
-              aria-label="Switch to Professional mode"
-            >
-              {mode === 'professional' && <ArrowIcon $flip />}
-            </ToggleBtn>
-            <ToggleBtn
-              $selected={mode === 'personal'}
-              onClick={() => setMode('personal')}
-              aria-label="Switch to Personal mode"
-            >
-              {mode === 'personal' && <ArrowIcon />}
-            </ToggleBtn>
-          </TogglePill>
+          <ModeToggle
+            selection={mode === 'professional' ? 'left' : 'right'}
+            onToggle={(side) => setMode(side === 'left' ? 'professional' : 'personal')}
+          />
 
           <ModeLabel $active={mode === 'personal'} onClick={() => setMode('personal')}>
             PERSONAL
@@ -246,51 +215,6 @@ const ModeLabel = styled.button<ModeLabelProps>`
     font-size: ${({ theme }) => theme.fontSizes.sm};
     line-height: ${({ theme }) => theme.lineHeights.normal};
   }
-`
-
-const TogglePill = styled.div`
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing[1]};
-  padding: 6px;
-  background: ${({ theme }) => theme.colors.surface.tertiary};
-  border-radius: ${({ theme }) => theme.radii.full};
-`
-
-interface ToggleBtnProps {
-  $selected: boolean
-}
-
-const ToggleBtn = styled.button<ToggleBtnProps>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 40px;
-  height: 40px;
-  border-radius: ${({ theme }) => theme.radii.full};
-  background: ${({ theme, $selected }) =>
-    $selected ? theme.colors.surface.primary : 'transparent'};
-  border: ${({ theme, $selected }) =>
-    $selected ? `1px solid ${theme.colors.border.tertiary}` : 'none'};
-  cursor: pointer;
-  transition: background 0.2s ease, border-color 0.2s ease;
-  flex-shrink: 0;
-
-  ${mq.mobile} {
-    width: 32px;
-    height: 32px;
-  }
-`
-
-interface ArrowIconProps {
-  $flip?: boolean
-}
-
-const ArrowIcon = styled(ArrowSvg)<ArrowIconProps>`
-  color: ${({ theme }) => theme.colors.icon.primary};
-  transform: ${({ $flip }) => ($flip ? 'scaleX(-1)' : 'none')};
-  display: block;
-  flex-shrink: 0;
 `
 
 // ── Personal placeholder ──────────────────────────────────────────────────────
