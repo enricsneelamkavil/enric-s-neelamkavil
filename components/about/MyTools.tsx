@@ -9,10 +9,10 @@ import { mq } from '@/styles/theme'
 type Variant = 'flat' | 'rounded-fit' | 'rounded-overflow'
 
 interface Tool {
-  name:     string
-  src:      string
-  variant:  Variant
-  shadow?:  string
+  name: string
+  src: string
+  variant: Variant
+  shadow?: string
 }
 
 // "rounded-overflow" = image is ~124% of the 64px box, clipped by border-radius
@@ -20,18 +20,18 @@ interface Tool {
 // "flat"             = SVG, no radius, no shadow
 
 const TOOLS: Tool[] = [
-  { name: 'Figma',         src: '/tools/figma.png',         variant: 'rounded-overflow', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
-  { name: 'Photoshop',     src: '/tools/photoshop.svg',     variant: 'flat' },
-  { name: 'Sketch',        src: '/tools/sketch.png',        variant: 'rounded-overflow', shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
-  { name: 'Illustrator',   src: '/tools/illustrator.svg',   variant: 'flat' },
-  { name: 'Lovable',       src: '/tools/lovable.png',       variant: 'rounded-fit',      shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
-  { name: 'XD',            src: '/tools/xd.svg',            variant: 'flat' },
-  { name: 'Gemini',        src: '/tools/gemini.png',        variant: 'rounded-fit',      shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
-  { name: 'ChatGPT',       src: '/tools/chatgpt.png',       variant: 'rounded-fit',      shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
-  { name: 'Claude',        src: '/tools/claude.png',        variant: 'rounded-fit',      shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
-  { name: 'CorelDraw',     src: '/tools/coreldraw.png',     variant: 'rounded-overflow', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
-  { name: 'After Effects', src: '/tools/after-effects.svg', variant: 'flat' },
-  { name: 'Premiere Pro',  src: '/tools/premiere-pro.svg',  variant: 'flat' },
+  { name: 'Figma', src: '/tools/figma.png', variant: 'rounded-overflow', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
+  { name: 'Photoshop', src: '/tools/photoshop.svg', variant: 'flat', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
+  { name: 'Sketch', src: '/tools/sketch.png', variant: 'rounded-overflow', shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
+  { name: 'Illustrator', src: '/tools/illustrator.svg', variant: 'flat', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
+  { name: 'Lovable', src: '/tools/lovable.png', variant: 'rounded-fit', shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
+  { name: 'XD', src: '/tools/xd.svg', variant: 'flat', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
+  { name: 'Gemini', src: '/tools/gemini.png', variant: 'rounded-fit', shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
+  { name: 'ChatGPT', src: '/tools/chatgpt.png', variant: 'rounded-fit', shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
+  { name: 'Claude', src: '/tools/claude.png', variant: 'rounded-fit', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
+  { name: 'CorelDraw', src: '/tools/coreldraw.png', variant: 'rounded-overflow', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
+  { name: 'After Effects', src: '/tools/after-effects.svg', variant: 'flat', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
+  { name: 'Premiere Pro', src: '/tools/premiere-pro.svg', variant: 'flat', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
 ]
 
 const RISE = 24 // px — hovered icon rise

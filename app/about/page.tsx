@@ -8,6 +8,7 @@ import AboutDescription from '@/components/about/AboutDescription'
 import MyTools from '@/components/about/MyTools'
 import Companies from '@/components/about/Companies'
 import AwardShelf from '@/components/about/AwardShelf'
+import Journey from '@/components/about/Journey'
 
 export default function About() {
   return (
@@ -16,6 +17,7 @@ export default function About() {
       <ProfileImage />
       <AboutDescription />
       <MyTools />
+      <Journey />
       <Companies />
       <AwardShelf />
     </PageSections>
