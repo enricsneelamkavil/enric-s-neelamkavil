@@ -5,6 +5,7 @@ import { mq } from '@/styles/theme'
 import IntroSection from '@/components/about/IntroSection'
 import ProfileImage from '@/components/about/ProfileImage'
 import AboutDescription from '@/components/about/AboutDescription'
+import MyTools from '@/components/about/MyTools'
 
 export default function About() {
   return (
@@ -12,6 +13,7 @@ export default function About() {
       <IntroSection />
       <ProfileImage />
       <AboutDescription />
+      <MyTools />
     </PageSections>
   )
 }
