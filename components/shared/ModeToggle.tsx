@@ -1,3 +1,6 @@
+'use client'
+
+import { useState } from 'react'
 import styled from 'styled-components'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -9,46 +12,58 @@ interface Props {
   onToggle: (side: ToggleSelection) => void
 }
 
-// ─── Inline SVGs ─────────────────────────────────────────────────────────────
-// Arrow: Figma node I230:744;211:379 — viewBox 0 0 17.4375 16.3418
-// Uses currentColor so theme highlight (#E8342A) is applied via the wrapper.
-// Left arrow = same path mirrored with scaleX(-1).
+// ─── SVGs ─────────────────────────────────────────────────────────────────────
 
-interface ArrowProps { $flip?: boolean }
+interface ArrowSvgProps { $side: ToggleSelection }
 
 const ArrowSvg = styled.svg.attrs({
   viewBox: '0 0 17.4375 16.3418',
   fill: 'none',
   xmlns: 'http://www.w3.org/2000/svg',
   'aria-hidden': 'true',
-})<ArrowProps>`
+})<ArrowSvgProps>`
   display: block;
   width: 100%;
   height: 100%;
   overflow: visible;
-  transform: ${({ $flip }) => ($flip ? 'scaleX(-1)' : 'none')};
+  transform-origin: center;
+  transform: ${({ $side }) => $side === 'left' ? 'rotate(180deg)' : 'rotate(0deg)'};
+  transition: transform 0.3s ease-in-out;
   color: ${({ theme }) => theme.colors.text.highlight};
 `
 
-// Not-selected ring: Figma node imgNotSelected — 40×40 circle stroke at 30% opacity
+interface RingSvgProps { $visible: boolean }
+
 const RingSvg = styled.svg.attrs({
   viewBox: '0 0 40 40',
   fill: 'none',
   xmlns: 'http://www.w3.org/2000/svg',
   'aria-hidden': 'true',
-})`
+})<RingSvgProps>`
   display: block;
   width: 40px;
   height: 40px;
   flex-shrink: 0;
   color: ${({ theme }) => theme.colors.text.highlight};
+  opacity: ${({ $visible }) => ($visible ? 1 : 0)};
+  transform: ${({ $visible }) => ($visible ? 'scale(1)' : 'scale(0.8)')};
+  transition: all 0.3s ease-in-out;
 `
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-const ArrowIcon = ({ flip }: { flip?: boolean }) => (
+const IconBox = styled.div`
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`
+
+const ArrowIcon = ({ side }: { side: ToggleSelection }) => (
   <IconBox>
-    <ArrowSvg $flip={flip}>
+    <ArrowSvg $side={side}>
       <path
         d="M17.1548 7.5C17.3355 7.67641 17.4375 7.91829 17.4375 8.1709C17.4375 8.4235 17.3355 8.66538 17.1548 8.8418L9.4541 16.3418L8.79932 15.6709L8.146 15L14.1943 9.1084H0V7.2334H14.1943L8.146 1.3418L8.79932 0.670898L9.4541 0L17.1548 7.5Z"
         fill="currentColor"
@@ -57,37 +72,61 @@ const ArrowIcon = ({ flip }: { flip?: boolean }) => (
   </IconBox>
 )
 
-const NotSelectedRing = () => (
-  <RingSvg>
+const NotSelectedRing = ({ visible }: { visible: boolean }) => (
+  <RingSvg $visible={visible}>
     <circle cx="20" cy="20" r="10" stroke="currentColor" strokeWidth="4" opacity="0.3" />
   </RingSvg>
 )
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-const ModeToggle = ({ selection, onToggle }: Props) => (
-  <Pill>
-    <CircleBtn
-      $selected={selection === 'left'}
-      onClick={() => onToggle('left')}
-      aria-label="Select Professional"
-    >
-      {selection === 'left' ? <ArrowIcon flip /> : <NotSelectedRing />}
-    </CircleBtn>
+const ModeToggle = ({ selection, onToggle }: Props) => {
+  const [isHovered, setIsHovered] = useState(false)
 
-    <CircleBtn
-      $selected={selection === 'right'}
-      onClick={() => onToggle('right')}
-      aria-label="Select Personal"
+  // On hover the knob previews the opposite side; on leave it returns.
+  const previewSide: ToggleSelection = isHovered
+    ? (selection === 'left' ? 'right' : 'left')
+    : selection
+
+  const handleClick = () => {
+    // Clear hover so the knob settles at its new resting position after click.
+    setIsHovered(false)
+    onToggle(selection === 'left' ? 'right' : 'left')
+  }
+
+  return (
+    <Pill
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
+      onClick={handleClick}
+      role="button"
+      tabIndex={0}
+      aria-label="Toggle mode"
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          handleClick()
+        }
+      }}
     >
-      {selection === 'right' ? <ArrowIcon /> : <NotSelectedRing />}
-    </CircleBtn>
-  </Pill>
-)
+      <Knob $side={previewSide}>
+        <ArrowIcon side={previewSide} />
+      </Knob>
+
+      <Slot>
+        <NotSelectedRing visible={previewSide !== 'left'} />
+      </Slot>
+      <Slot>
+        <NotSelectedRing visible={previewSide !== 'right'} />
+      </Slot>
+    </Pill>
+  )
+}
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
 const Pill = styled.div`
+  position: relative;
   display: flex;
   align-items: center;
   gap: 4px;
@@ -95,11 +134,33 @@ const Pill = styled.div`
   background: ${({ theme }) => theme.colors.surface.tertiary};
   border-radius: ${({ theme }) => theme.radii.full};
   flex-shrink: 0;
+  cursor: pointer;
+  user-select: none;
 `
 
-interface CircleBtnProps { $selected: boolean }
+interface KnobProps { $side: ToggleSelection }
 
-const CircleBtn = styled.button<CircleBtnProps>`
+const Knob = styled.div<KnobProps>`
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: 40px;
+  height: 40px;
+  border-radius: ${({ theme }) => theme.radii.full};
+  background: ${({ theme }) => theme.colors.surface.primary};
+  border: 1px solid ${({ theme }) => theme.colors.border.tertiary};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform: ${({ $side }) => $side === 'left' ? 'translateX(0)' : 'translateX(44px)'};
+  transition: transform 0.3s ease-in-out;
+  pointer-events: none;
+  z-index: 1;
+`
+
+const Slot = styled.div`
+  position: relative;
+  z-index: 0;
   width: 40px;
   height: 40px;
   border-radius: ${({ theme }) => theme.radii.full};
@@ -107,23 +168,6 @@ const CircleBtn = styled.button<CircleBtnProps>`
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  cursor: pointer;
-  padding: 0;
-  overflow: hidden;
-  background: ${({ theme, $selected }) =>
-    $selected ? theme.colors.surface.primary : 'transparent'};
-  border: ${({ theme, $selected }) =>
-    $selected ? `1px solid ${theme.colors.border.tertiary}` : 'none'};
-`
-
-const IconBox = styled.div`
-  width: 24px;
-  height: 24px;
-  overflow: hidden;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
 `
 
 export default ModeToggle

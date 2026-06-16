@@ -8,13 +8,12 @@ import { mq } from '@/styles/theme'
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
 const INTERESTS = [
-  'Photography',
-  'Interaction',
-  'Experience',
-  'Product',
-  'Travel',
-  'Food',
   'Credit Cards',
+  'Travel',
+  'User Experience',
+  'Food',
+  'Product Design',
+  'Photography',
   'Music',
 ] as const
 

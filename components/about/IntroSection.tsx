@@ -40,7 +40,7 @@ const IntroSection = () => {
         </CommonHeader>
 
         <ModeSwitch>
-          <ModeLabel $active={mode === 'professional'} onClick={() => setMode('professional')}>
+          <ModeLabel type="button" $active={mode === 'professional'} onClick={() => setMode('professional')}>
             PROFESSIONAL
           </ModeLabel>
 
@@ -49,7 +49,7 @@ const IntroSection = () => {
             onToggle={(side) => setMode(side === 'left' ? 'professional' : 'personal')}
           />
 
-          <ModeLabel $active={mode === 'personal'} onClick={() => setMode('personal')}>
+          <ModeLabel type="button" $active={mode === 'personal'} onClick={() => setMode('personal')}>
             PERSONAL
           </ModeLabel>
         </ModeSwitch>
@@ -102,7 +102,7 @@ const WelcomeTag = styled.div`
   display: inline-flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing[2]};
-  padding: ${({ theme }) => `${theme.spacing[3]} ${theme.spacing[4]}`};
+  padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[4]}`};
   border: 1px solid ${({ theme }) => theme.colors.border.tertiary};
   border-radius: ${({ theme }) => theme.radii.lg};
 `

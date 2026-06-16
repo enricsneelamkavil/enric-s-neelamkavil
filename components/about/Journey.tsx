@@ -217,7 +217,7 @@ const DateTag = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[4]}`};
+  padding: ${({ theme }) => `${theme.spacing[1]} ${theme.spacing[4]}`};
   background: ${({ theme }) => theme.colors.surface.tertiary};
   border: 1px solid ${({ theme }) => theme.colors.border.tertiary};
   border-radius: ${({ theme }) => theme.radii.lg};
