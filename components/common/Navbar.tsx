@@ -16,7 +16,7 @@ const AGENT_ICON = 'https://www.figma.com/api/mcp/asset/0a941ed2-d955-4719-95b2-
 
 const NAV_LINKS = [
   { label: 'Home', href: '/' },
-  { label: 'About', href: '#' },
+  { label: 'About', href: '/about' },
   { label: 'Work', href: '#' },
   { label: 'Resume', href: '#' },
   { label: 'Contact', href: '#' },
@@ -24,7 +24,7 @@ const NAV_LINKS = [
 
 const MOBILE_NAV_LINKS = [
   { label: 'Home', href: '/' },
-  { label: 'About', href: '#' },
+  { label: 'About', href: '/about' },
   { label: 'Work', href: '#' },
   { label: 'Contact', href: '#' },
 ] as const
@@ -81,7 +81,7 @@ const Navbar = () => {
         <AgentTriggerButton
           type="button"
           aria-label="Ask Enric AI"
-          onClick={() => {}}
+          onClick={() => { }}
         >
           <img src={AGENT_ICON} alt="" width={32} height={23} />
         </AgentTriggerButton>
