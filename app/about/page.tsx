@@ -4,12 +4,14 @@ import styled from 'styled-components'
 import { mq } from '@/styles/theme'
 import IntroSection from '@/components/about/IntroSection'
 import ProfileImage from '@/components/about/ProfileImage'
+import AboutDescription from '@/components/about/AboutDescription'
 
 export default function About() {
   return (
     <PageSections>
       <IntroSection />
       <ProfileImage />
+      <AboutDescription />
     </PageSections>
   )
 }
