@@ -1,368 +1,384 @@
 # About Page — Design Spec
 
 Figma file: `cGxPfzhfg2zi9MivaiE7dX`
-Source frame: **About - Professional** — node `230:425`
-Canvas position: x=0, y=5597 | Size: **1920 × 4007px**
+**Desktop frame:** `248:1175` — "About - Professional" — 1920 × 4033px  
+**Mobile frame:** `251:729` — "About - Professional (Mobile)" — 402 × 4394px
 
-> **Mode note:** The design has a Professional / Personal toggle. Only the **Professional** mode is fully designed. Personal mode exists as a toggle state but has no content designed yet — build Professional only for now; toggle is rendered as a static UI element with no functional switching.
+> **Mode note:** Professional / Personal toggle exists. Only Professional is designed. Toggle renders as static UI only — no functional mode switching needed until Personal content is designed.
 
-> **Mobile:** No mobile About frame exists in the Figma canvas yet. Build desktop-first; mobile responsive rules to follow the same patterns as the Home page.
-
----
-
-## Section Inventory
-
-| # | Section Name (Figma layer) | Node ID | y-offset (in frame) | Width | Height | Type |
-|---|---|---|---|---|---|---|
-| — | **Navigation Bar** | `230:613` | 16 | 473 | 68 | Static |
-| 1 | **Intro Section** | `230:428` | 140 | 1168 | 256 | Static |
-| 2 | **Profile Image** | `230:446` | 476 | ~710 | ~470 | Static |
-| 3 | **About Description** | `230:461` | 1026 | 1168 | 256 | Static |
-| 4 | **My Tools** | `230:486` | 1359 | 992 | 96 | Static |
-| 5 | **My Journey** | `230:499` | 1503 | 1168 | 793 | Static |
-| 6 | **Companies** | `230:548` | 2330 | 1168 | 424 | Static |
-| 7 | **Award Shelf** | `230:582` | 2831 | 1168 | 276 | Static |
-| 8 | **Footer** (shared component) | `230:612` | 3183 | 1920 | 824 | Static |
+> **Previous spec reference:** The old spec (node `230:425`) is superseded. This document reflects the **updated Figma** fetched fresh on 2026-06-18.
 
 ---
 
-## Section Details
+## Desktop Diff — What Changed vs. Current Code
 
-### Navigation Bar — `230:613`
-- Absolute positioned at top of frame, sticky on scroll (`data-development-annotations: "Navigation bar sticky at the top."`)
-- Reuses the existing `Navbar` component
-- Active state: **About** tab has dark (inverse) background; all other tabs are plain text
-- Same glass pill as Home — the `Navbar` component already handles active state via route
+### Section 1 — IntroSection
 
----
+#### ❌ REMOVED
+- **WelcomeTag pill** ("ABOUT 🍎 ENRIC S NEELAMKAVIL") — not present in frame `248:1178`. Remove `MainLander`, `WelcomeTag`, `TagText`, `AppleIcon` styled components and the `IMG_APPLE` asset import.
 
-### 1. Intro Section — `230:428`
+#### ✏️ CHANGED
 
-**Structure:**
-```
-Welcome Tag (pill)          → "ABOUT · 🍎 · ENRIC S NEELAMKAVIL"
-Common Header               → Title + Subtitle
-  Title: "About Me."        → "About Me" text-primary, "." text-secondary
-                               Stack Sans Notch Medium, 64px, tracking -1.28px
-  Subtitle: "Two sides of one designer"
-                             → Stack Sans Headline Regular, 16px, text-secondary
-Mode switch                 → PROFESSIONAL ←toggle→ PERSONAL
-```
-
-**Welcome Tag** (`230:430`):
-- Same pill as Home landing — `border: 1px solid border-tertiary`, `border-radius: 12px`, `padding: 12px 16px`, `gap: 8px`
-- Children: "ABOUT" text + apple icon (12px) + "ENRIC S NEELAMKAVIL" text
-- Font: Stack Sans Headline Regular, 12px, text-secondary
-
-**Mode Switch** (`230:438`, toggle instance `230:780`):
-- Horizontal row, centered, `gap: 24px`
-- Left label "PROFESSIONAL": Stack Sans Notch Bold, 32px, **text-highlight (#e8342a)** — active state
-- Toggle pill (`230:780`): `surface-tertiary` bg, `border-radius: 999px`, `padding: 6px`, `gap: 4px`
-  - Left button (`I230:780;230:743` — "Selected"): white bg, `border: 1px solid border-tertiary`, 40×40px circle, arrow-left icon (mirrored: `-scale-x-100`), 24px
-  - Right button (`I230:780;230:745` — "Not selected"): greyed-out circle, 40×40px
-- Right label "PERSONAL": Stack Sans Notch Bold, 32px, **text-primary** (#171717) — inactive state
-- **Annotation:** `"Toggle to switch modes between 'Professional' and 'Personal'"` — render as static UI only; personal mode not yet designed
-
----
-
-### 2. Profile Image — `230:446`
-
-_(Layer renamed from "Profile Section" → "Profile Image" in latest Figma revision)_
-
-**Structure:**
-- Centered profile photo with circular mask crop
-- Name/location strip image overlaid at bottom of photo
-- Three floating decorative icons positioned around the photo absolutely:
-
-| Icon | Node | Position (relative to section) | Size |
-|---|---|---|---|
-| Icon 2 | `230:452` | left: 0, top: 219px | 72×72px |
-| Icon 1 | `230:455` | left: 609px, top: 18px | 72×72px |
-| Icon 3 | `230:458` | left: 637px, top: 360px | 72×72px |
-
-_(Third icon renamed from "Avatar Container" → "Icon 3")_
-
-**Profile photo:**
-- Main circular crop (`230:450`, `230:448`): `IMG_5295 2` — 430.98 × 430.98px, mask applied, `object-bottom`
-- Bottom name strip (`230:451`): `IMG_5295 3` — 216 × 48px, `object-bottom`, positioned at top-left offset 114px within photo group
-
----
-
-### 3. About Description — `230:461`
-
-**Structure:**
-```
-Title container
-  SectionLabel → "A SUMMARY"       (text-tertiary, uppercase, 16px)
-  SectionHeader → "Know me as I am."
-
-About Section  (flex row, gap: 40px)
-  Left  (flex-1):  Bio text
-  Right (453px):   Highlights table — 3 rows
-```
-
-**Section header** (`230:464`) mixed weights, 32px:
-- "Know " → Stack Sans Notch Regular, text-primary
-- "me " → text-secondary (#5c5c5c)
-- "as I am" → text-primary
-- "." → text-primary
-
-**Bio text** (`230:466`) — Stack Sans Headline Light, 24px, `line-height: 32px`:
-- First span: text-highlight (#e8342a) → *"I design products that get out of the way."*
-- Second span: text-primary → *" 4+ years across fintech, SaaS and consumer apps — from the brief to the build. I care about clarity, calmness and the boring details no one notices when they're done right. "*
-
-**Highlights table** (`230:467`) — 453px wide, each row `border-top: 1px solid border-tertiary`, last row also `border-bottom`:
-
-| Row | Node | Label (120px max, 12px, uppercase, text-secondary) | Value |
-|---|---|---|---|
-| 1 | `230:468` | "BASED" | "Trivandrum, IN" ◆ **[live IST clock]** |
-| 2 | `230:475` | "CURRENTLY" | "Product Designer" ◆ "UST" |
-| 3 | `230:482` | "DOMAIN" | "User Experience Design" |
-
-- Row padding: `py: 13px` (rows 1–2), `py: 14px` (row 3)
-- Label font: Stack Sans Headline Regular, 12px, uppercase, text-secondary
-- Value font (before bullet): Stack Sans Notch Light, 16px, text-primary
-- Value font (after bullet): Stack Sans Notch Regular, 16px, text-primary
-- Diamond bullet: 6×6px square rotated 45°, icon-highlight (#e8342a), `border-radius: 2px`
-
-**Live clock annotation** on `230:474`: `"Live time at 'Kerala, India'"` → render as a live clock displaying the current time in IST (UTC+5:30), updating every minute.
-
----
-
-### 4. My Tools — `230:486`
-
-**Container:**
-- `background: surface-tertiary`, `border: 1px solid border-tertiary`, `border-radius: 24px`, `padding: 16px 24px`, `gap: 16px`
-- Width: 992px (not full 1168px — centered within page)
-
-**Icons (12 total, each 64×64px, left to right):**
-
-| # | Tool | Node | Style |
-|---|---|---|---|
-| 1 | Figma | `230:487` | `border-radius: 16px`, shadow `0px 0px 12px rgba(0,0,0,0.25)`, image slightly overflows (+24%) |
-| 2 | Photoshop | `230:488` | flat SVG, no radius |
-| 3 | Sketch | `230:489` | `border-radius: 16px`, shadow `rgba(0,0,0,0.15)`, image slightly overflows (+24%) |
-| 4 | Illustrator | `230:490` | flat SVG, no radius |
-| 5 | Lovable | `230:491` | `border-radius: 16px`, shadow `rgba(0,0,0,0.15)`, `object-cover` |
-| 6 | XD | `230:492` | flat SVG, no radius |
-| 7 | Gemini | `230:493` | `border-radius: 16px`, shadow `rgba(0,0,0,0.15)`, `object-cover` |
-| 8 | ChatGPT | `230:494` | `border-radius: 16px`, shadow `rgba(0,0,0,0.15)`, `object-cover` |
-| 9 | Claude | `230:495` | `border-radius: 16px`, shadow `rgba(0,0,0,0.25)`, `object-cover` |
-| 10 | CorelDraw | `230:496` | `border-radius: 16px`, shadow `rgba(0,0,0,0.25)`, image slightly overflows (+24%) |
-| 11 | After Effects | `230:497` | flat SVG, no radius |
-| 12 | Premiere Pro | `230:498` | flat SVG, no radius |
-
-**Interaction annotation** on `230:486`: `"Hovering on each icon will trigger a 'MacOS toolbar' similar interaction (the hovered icon will be risen up and the just left and just right neighbours are also rose by half the rose height.)"` → MacOS dock magnification: hovered icon translates up (and scales), direct neighbours translate up half as much.
-
----
-
-### 5. My Journey — `230:499`
-
-_(Frame renamed from "Section - Companies / Worked with" → "My Journey")_
-
-**Dimensions:** 1168 × 793px (grew from 721px — description rows are taller with real content)
-
-**Section label** (`230:501`): "THE JOURNEY · 2018 → 2026" — Stack Sans Headline Regular, 16px, uppercase, text-tertiary
-**Section header** (`230:502`) mixed weights, 32px:
-- "How I got " → text-primary
-- "here" → text-secondary (#5c5c5c)
-- "." → text-primary
-
-**Timeline structure** — 3 entries. Each entry = an Entry row + a Description row.
-
-**Entry row anatomy:**
-- Circle bullet (24px ellipse + 12px inner fill ellipse — `Bullet selection` node)
-- Company logo icon (26–28px wide SVG) — **clickable link, opens in new tab**
-- Role title — Stack Sans Notch Medium, 24px, text-primary
-- Date tag pill — surface-tertiary bg, 1px border-tertiary, border-radius 12px, padding 8px 16px, Stack Sans Headline Regular, 12px, text-secondary
-
-**Description row anatomy:**
-- Connector (24px wide SVG vertical line) — aligns under the bullet
-- 4 text columns, each ~240–243px wide, `gap: 40px`, `padding: 24px 0`
-- Font: Stack Sans Headline Light, 16px, line-height 24px, text-tertiary (#a3a3a3)
-
----
-
-#### Entry 1 — UST
-
-| Field | Value |
-|---|---|
-| Logo node | `230:506` — `ust-logo-icon` |
-| Logo link | `https://ust.com` (open in new tab) |
-| Role | Associate Product Designer |
-| Dates | August 2024 – Present |
-| Tag node | `230:508` |
-
-**Description columns** (nodes `230:514` container, left→right by x-position):
-
-| Column | Node | Text |
+| Element | Current Code | Figma `248:1178` |
 |---|---|---|
-| 1 | `230:515` | "Building the world's most human centred travel app, personalised recommendations, and stress-free travel all in one place." |
-| 2 | `230:516` | "Developed wireframes and interactive prototypes, accelerating timelines to enhance design approval rates." |
-| 3 | `230:517` | "Handling end-to-end flows for expense management module solving complex problems with business thinking." |
-| 4 | `230:518` | "Handling complex B2B use cases for admin dashboard designs, connecting end-to-end modules seamlessly." |
+| Gap between CommonHeader and ModeSwitch | `spacing[10]` (40px) via `Header` | **32px** (Intro Section direct `gap: 32px`) |
+| ModeLabel font-size | `theme.fontSizes.lg` | **32px**, `Stack_Sans_Notch:Bold`, line-height 40px |
+| Toggle container padding | current ModeToggle impl | padding: 6px, gap: 4px, border-radius: 999px |
+| Toggle "Selected" button | current impl | size: 40×40px, padding: 12px, border-radius: 999px, bg: surface-primary, border: 1px border-tertiary |
+| Toggle arrow icon | current impl | **24×24px** |
+| Toggle "Not Selected" button | current impl | size: 40×40px, no bg |
+
+The outer `Section` gap and `PageTitle` / `PageSubtitle` are unchanged.
 
 ---
 
-#### Entry 2 — Fundesigns
+### Section 2 — ProfileImage
 
-| Field | Value |
-|---|---|
-| Logo node | `230:522` — `fundesigns-logo-icon` |
-| Logo link | `https://fundesign.in` (open in new tab) |
-| Role | Lead UI Designer |
-| Dates | May 2024 – July 2024 |
-| Tag node | `230:524` |
+#### ✏️ CHANGED — Significant structural update
 
-**Description columns** (nodes `230:529` container, order by x-position — note node IDs are out of sequence in Figma):
-
-| Column | Node | x | Text |
-|---|---|---|---|
-| 1 | `230:531` | 0 | "Crafting user-centric products and the best experiences delivering the promise for clients all over the world." |
-| 2 | `230:530` | 280 | "Led a design team to complete 15+ major projects, improving experiences for multiple clients for the company." |
-| 3 | `230:532` | 560 | "Shipped projects with tight deadlines, with zero compromise on design quality or user experience." |
-| 4 | `230:533` | 843 | "Worked across multiple domains solving problems across various industries and agencies ensuring user experience." |
-
----
-
-#### Entry 3 — CCE (Education)
-
-| Field | Value |
-|---|---|
-| Logo node | `230:537` — `cce-logo-icon` |
-| Logo link | `https://cce.edu.in` (open in new page) |
-| Role | Bachelors in Technology (Computer Science) |
-| Dates | September 2020 – June 2024 |
-| Tag node | `230:539` |
-
-**Description columns** (nodes `230:543` container, order by x-position — note node IDs are out of sequence in Figma):
-
-| Column | Node | x | Text | Bold spans |
-|---|---|---|---|---|
-| 1 | `230:544` | 0 | "Head of student community (CODe) of department of Computer Science, Christ College of Engineering" | — |
-| 2 | `230:546` | 280 | "Formulated the first ever Design week in colleges across Kerala **CODe Design Week '23**, hosted the sequel event in 2024." | "CODe Design Week '23" → Stack Sans Headline Medium |
-| 3 | `230:545` | 563 | "Hosted the flagship event , **BEACH HACK 5** which is South India's one and only beach hackathon." | "BEACH HACK 5" → Stack Sans Headline Medium |
-| 4 | `230:547` | 843 | "Joined in the Design team for reimagining the official website of Christ College of Engineering, associating with **tegain**." | "tegain" → Stack Sans Headline Medium |
-
-> Note: The CCE description columns have **inline bold spans** — render with `<strong>` or a bold styled span inside the text-tertiary paragraph.
-
----
-
-### 6. Companies — `230:548`
-
-_(Frame renamed from "Section - Companies / Worked with" → "Companies")_
-
-**Section label** (`230:550`): "WORKED WITH THEM" — uppercase, 16px, text-tertiary
-**Section header** (`230:551`) mixed weights, 32px:
-- "Teams that " → text-primary
-- "trusted " → text-secondary (#5c5c5c)
-- "my work." → text-primary
-
-**Companies grid** (`230:552`) — 4 columns × 3 rows = 12 logos, rendered as a single flattened image in Figma:
-- Grid size: 1168 × 320px
-- Horizontal separators at y=105 and y=215
-- Vertical separators at x=314, x=610.5, x=907.5
-
-| Col | Row 1 | Row 2 | Row 3 |
-|---|---|---|---|
-| Col 1 | RE/MAX | UST | OpenGrad |
-| Col 2 | Deep5 | Vurse | FunDesigns |
-| Col 3 | ReputeUp | Karghewale | Iris Holidays |
-| Col 4 | Urban Trash | Apro IT | mulearn |
-
-All 10 logos that overlap with the Home marquee are local SVGs in `public/company logos/`. Verify `reputeup-logo` and `karghewale-logo` exist there before building — they may need to be added.
-
----
-
-### 7. Award Shelf — `230:582`
-
-**Section label** (`230:584`): "RECOGNITION" — uppercase, 16px, text-tertiary
-**Section header** (`230:585`) mixed weights, 32px:
-- "A " → text-primary
-- "shelf " → text-secondary (#5c5c5c)
-- "of awards" → text-primary
-- "." → text-primary
-
-**Awards row** (`230:586`) — 5 cards, `justify-between`, each card 212px wide:
-
-| # | Node | Seal image (node) | Title | Detail |
-|---|---|---|---|---|
-| 1 | `230:587` | `230:588` awwwards-seal | Awwwards Young Jury | Jury Member (2026, 2025) |
-| 2 | `230:592` | `230:593` ust-seal | USTAR | Best Performer (2025) |
-| 3 | `230:597` | `230:598` awwwards-seal | Awwwards Honors | enric.design (2025) |
-| 4 | `230:602` | `230:603` figma-seal | Config APAC Attendee | Marina Bay Sands, Singapore (2024) |
-| 5 | `230:607` | `230:608` ksum-seal | Huddle Designers Award | Kelp Kookies (2023) |
-
-Each card:
-- Seal: 120×120px, `object-cover`, circular
-- Title: Stack Sans Notch Medium, 16px, text-primary, centered
-- Detail: Stack Sans Headline Light, 12px, text-secondary, centered
-- Card inner gap: 8px
-
-This section is **structurally identical** to `AwardShelf.tsx` on the Home page (which already handles 5 cards and the same styling). Consider moving `AwardShelf.tsx` to `components/shared/` and reusing it directly.
-
----
-
-### 8. Footer — `230:612`
-
-- Instance of the shared `Footer` component — identical to Home page
-- Reuse `components/common/Footer.tsx` as-is, no changes
-
----
-
-## Toggle Component Detail — `230:780`
-
-```
-[PROFESSIONAL]  [ ◀ | ○ ]  [PERSONAL]
-```
-
-| Part | Node | Spec |
+| Element | Current Code | Figma `248:1186` |
 |---|---|---|
-| "PROFESSIONAL" label | `230:439` | Stack Sans Notch Bold, 32px, text-highlight (#e8342a) |
-| Toggle pill | `230:780` | surface-tertiary, border-radius 999px, padding 6px, gap 4px |
-| Selected button | `I230:780;230:743` | white bg, border 1px border-tertiary, 40×40px circle, left-arrow icon (mirrored) |
-| Unselected button | `I230:780;230:745` | greyed-out circle, 40×40px |
-| "PERSONAL" label | `230:445` | Stack Sans Notch Bold, 32px, text-primary (#171717) |
+| Container strategy | Absolute-positioned group, **710px wide** | Full content width: **1168px**, `overflow: clip`, height: 470px |
+| Photo position | `absolute, left: ~140px` within 710px group | Centered within 1168px wrapper |
+| Photo size | 431px circle | **430.983px** (same) |
+| Hair image (IMG_5295 3) | Merged into `profile-group.png` | Separate element — **216×48px**, `object-bottom`, positioned at `left: 114.43px, top: 0` atop the circle |
+| Floating icon count | **3 icons** | **6 icons** |
 
-**Build as static UI only.** Personal mode content is not yet designed in Figma — no functional toggle logic needed now.
+**New icon layout** (all 72×72px, absolute within 1168×470px container):
 
----
+| Icon | Approx position | Rotation |
+|---|---|---|
+| Icon 2 (cube) | left: 95.57px, top: 41.12px | **-12.29°** |
+| Icon 6 (sparkle/vector) | left: 1052px, top: 150px | **+14.87°** |
+| Icon 3 (cursor) | left: 235.11px, top: 219.91px | **+3.42°** |
+| Icon 5 (new) | left: 929.25px, top: 315.93px | **-8.74°** |
+| Icon 4 (new) | left: 873px, top: 75px | 0° |
+| Icon 1 (new) | left: 29.76px, top: 331.64px | **+12.94°** |
 
-## Annotations Summary
-
-| Location | Node | Type | Note |
-|---|---|---|---|
-| Toggle | `230:780` | Interaction | "Toggle to switch modes between 'Professional' and 'Personal'" |
-| My Tools bar | `230:486` | Interaction | MacOS dock magnification hover — hovered icon rises, neighbours rise at half height |
-| UTC time | `230:474` | Development | "Live time at 'Kerala, India'" → live IST clock (UTC+5:30), updates every minute |
-| Navigation Bar | `230:613` | Development | Sticky at top on scroll |
-| UST logo | `230:506` | Development | "Open https://ust.com in new tab" |
-| Fundesigns logo | `230:522` | Development | "Open https://fundesign.in in new tab" |
-| CCE logo | `230:537` | Development | "Open https://cce.edu.in in new page" |
+Icons 4, 5, 6 are new assets that need to be sourced/downloaded from Figma. Hide all 6 icons on `tabletDown` (same pattern as before).
 
 ---
 
-## Component Plan (files to create)
+### Section 3 — AboutDescription
 
+#### ✏️ CHANGED
+
+| Element | Current Code | Figma `248:1224–1244` |
+|---|---|---|
+| Bio font-size | `theme.fontSizes.md` (~18px) | **24px** |
+| Bio line-height | `theme.lineHeights.relaxed` | **32px** |
+| Bio font weight | `fontWeights.light` | Light (same) |
+| BASED time value display | Live IST clock ("10:30 AM") | Figma static shows "UTC +5:30" — annotation says `"Live time at 'Kerala, India'"` → **keep live IST clock** |
+
+No content changes. Table rows unchanged.
+
+---
+
+### Section 4 — MyTools
+
+#### ✅ NO CHANGES
+
+All 12 tools, same dock layout, same hover animation.
+
+---
+
+### Section 5 — Journey
+
+#### ❌ REMOVED: CCE (university) entry — 3 entries → 2 entries (UST + FunDesigns only)
+
+#### ✏️ CHANGED
+
+| Element | Current Code | Figma `248:1258–1291` |
+|---|---|---|
+| Section label text | "The Journey · 2018 → 2026" | **"CAREER LADDER"** |
+| UST bullet visual | `<Bullet>` circle div + `<BulletDot>` div | Image asset `imgBulletShimmer` — 24×24px shimmer/glowing dot |
+| FunDesigns bullet | Same plain circle | Image asset `imgBulletContainer` — 24×24px plain circle image |
+
+Entry row structure and description column structure unchanged (4 columns × 240px, gap 40px, 16px font, line-height 24px).
+
+---
+
+### Section 6 — ProfessionalTimeline *(NEW COMPONENT)*
+
+Does not exist in current codebase. Create `components/about/ProfessionalTimeline.tsx`.
+
+**Figma node:** `248:1292` — "Professional Timeline"
+
+**Outer layout:** `flex-col`, `gap: 40px`, `width: 1168px`
+
+#### Title row (node `251:981`): `flex`, `gap: 40px`, `align-items: center`, `width: 100%`
+
+**Left — Title block** (`flex: 1 0 0`):
+- Label: "MY JOURNEY 2022 → 2026" — 16px, Stack Sans Headline Regular, uppercase, text-tertiary
+- Header: "Being through " (text-primary) + "so far" (text-secondary) + "." (text-primary) — 32px Stack Sans Notch Regular
+
+**Right — Nav buttons** (node `251:1001`): `gap: 12px`, `align-items: center`
+- Both buttons: `padding: 16px`, `bg: surface-tertiary`, `border: 1px solid border-tertiary`, `border-radius: 12px`
+- Left arrow icon: 18×18px
+- Right arrow icon: 18×18px
+- **Interaction:** clicking slides the timeline. Disable respective button at the scroll ends.
+
+#### Timeline (node `248:1296`): `flex-col`, `gap: 24px`
+Horizontally scrollable (annotated: "In scroll element, scrollable to the right for full view").
+
+**Top events row** (node `I248:1296;248:1007`): `flex`, `gap: 240px`, `padding-left: 240px`, `align-items: center`
+
+**Image strip** (node `I248:1296;248:1039`): 12 photos in a single horizontal row, height **169px**, masked using `imgShapeMask`
+- Each photo has a **red overlay: `rgba(232,52,42,0.5)`** as an absolutely inset div on top
+- Photo aspect ratios vary (see Figma for exact values)
+- Year labels are absolutely positioned over the strip in white:
+  - `"> 2022"`, `"> 2023"`, `"> 2024"`, `"> 2025"`
+  - Font: **80px**, `Stack_Sans_Notch:Bold`, tracking: **-1.6px**, color: text-inverse (white), line-height 100px
+
+**Bottom events row** (node `I248:1296;248:1058`): `flex`, `gap: 240px`, `padding-right: 240px`, `align-items: center`
+
+#### Event typography
+| Property | Value |
+|---|---|
+| Title | 24px, `Stack_Sans_Notch:Medium`, line-height 32px, text-primary |
+| Subtitle (event name) | 16px, `Stack_Sans_Headline:Regular`, line-height 24px, **text-highlight (#e8342a)** |
+| Description | 12px, `Stack_Sans_Headline:Light`, line-height 16px, text-secondary |
+| Event block structure | `flex-col`, gap: 4px; title+subtitle container has no gap |
+
+#### Top row events (left → right)
+| Title | Subtitle | Description |
+|---|---|---|
+| Co-host | BEACH HACK 5 | Co-hosted the 5th edition of the flagship event Beach hackathon. |
+| Founder Host | CODe Design Week (CDW '23) | Hosted the first ever Design Week, in Engineering Colleges across Kerala. |
+| Designers Award | Huddle Global | Secured the position in Top 13 Designers in Branding Challenge. |
+| Speaker | Christ College of Engieering | Handled multiple sessions on interface design for digital products. |
+| Invited Attendee | Config APAC | Figma's first Config APAC at Marina Bay Sands Conventional Center, Singapore. |
+| Attendee | Figma India Launch | Attended Figma's India office Launch representing Strollby Design. |
+
+#### Bottom row events (left → right)
+| Title | Subtitle | Description |
+|---|---|---|
+| Chairman | Community of Developers (CODe) | Association of Department of Computer Science, Christ College of Engineering. |
+| UI Designer | GTech MuLearn | First Internship as UI Designer, led a team, mentored junior designers. |
+| Attendee | Lollypop Designathon | Shortlisted attendee for Designathon 2024 hosted by Lollypop Design Studio. |
+| Lead Host | DESIGNATHON 2024 | Hosted second edition of Designathon, after CODe Design Week '23. |
+| Graduation | Christ College of Engieering | Graduated Bachelors of Engineering in Computer Science & Engineering. |
+| Young Jury 2025 | Awwwards. | Selected as a jury member, evaluating and rating top digital designs globally. |
+
+#### Photo assets
+12 photos needed in `public/about/timeline/` as `tl-image-1.jpg` through `tl-image-12.jpg`. Download from Figma asset URLs. All get the red overlay rendered in CSS (`rgba(232,52,42,0.5)` div absolutely inset), so the images themselves do not need pre-processing.
+
+---
+
+### Section 7 — Companies
+
+#### ❌ COMPLETELY REMOVED
+
+No Companies section exists in Figma `248:1175`. Remove from page composition. The component file can remain but should not be imported in `app/about/page.tsx`.
+
+---
+
+### Section 8 — AwardShelf
+
+#### ✅ NO CHANGES
+
+5 awards, same layout, same data, same typography. Unchanged.
+
+---
+
+### Page Composition — `app/about/page.tsx`
+
+| # | Old | New |
+|---|---|---|
+| LandingGroup | Intro + ProfileImage + AboutDescription | Same |
+| 1 | MyTools | MyTools |
+| 2 | Journey | Journey (2 entries, new bullet assets) |
+| 3 | Companies | **ProfessionalTimeline (NEW)** |
+| 4 | AwardShelf | AwardShelf |
+
+Remove `Companies` import. Add `ProfessionalTimeline` import.
+
+---
+
+## Mobile Spec — Frame `251:729`
+
+**Frame width:** 402px · **Content width:** 354px (24px horizontal padding each side)  
+**Outer layout:** `flex-col`, `gap: 72px`, `padding-top: 40px`, `padding-x: 24px`
+
+---
+
+### Mobile Intro (Profile Section — node `253:1043`)
+
+**Text Container** (node `251:736`) — centered:
+- Title: "About Me." — **32px**, `Stack_Sans_Notch:Medium`, tracking: -0.64px, line-height: 40px
+- Subtitle: "Two sides of one designer" — **12px**, `Stack_Sans_Headline:Regular`, line-height: 16px
+
+**Tab Navigation / Mode Switch** (node `253:1009`): `gap: 16px`
+- "PROFESSIONAL": **16px**, `Stack_Sans_Notch:Bold`, line-height: 24px
+- "PERSONAL": **16px**, `Stack_Sans_Notch:Bold`, line-height: 24px
+- Toggle: `padding: 4px`, `gap: 2px`, `border-radius: 999px`
+  - Selected button: **24×24px**, `padding: 12px`, `border-radius: 999px`
+  - Arrow icon inside: **16×16px**
+  - Not-selected button: **24×24px**
+
+**vs desktop:** Title 32→64px · Subtitle 12→16px · Mode labels 16→32px · Toggle button 24→40px
+
+---
+
+### Mobile Image Banner (node `253:1079`)
+
+- Container: **402px wide** (full bleed), height: **161.764px**, `overflow: clip`
+- Profile photo circle: **148.335×148.335px** (mask same approach)
+- Hair image (IMG_5295 3): **74.342×16.521px** at scaled position
+- All 6 floating icons present at scaled-down positions (~24.781px each)
+- Icons are **visible on mobile** (not hidden unlike the old 3-icon version)
+
+**vs desktop:** Height 161→470px · Photo 148→431px · Icons proportionally scaled
+
+---
+
+### Mobile About Description (node `253:1114`)
+
+Container: `354px` wide, `gap: 12px` between TitleBlock and content (vs 40px desktop)
+
+| Element | Mobile | Desktop |
+|---|---|---|
+| Section label | **12px**, line-height 16px | 16px, line-height 24px |
+| Section header | **24px**, line-height 32px | 32px, line-height 40px |
+| Bio font-size | **16px**, `Stack_Sans_Headline:Light`, line-height 24px | 24px |
+| Layout | `flex-col` (bio then table, stacked) | `flex-row` |
+| Table value font | **12px** notch:Light / notch:Regular | 16px |
+| Table label font | **12px** | 12px (same) |
+
+---
+
+### Mobile My Tools (node `253:1140`)
+
+| Property | Mobile | Desktop |
+|---|---|---|
+| Container width | **304px** | Flexible (≤1168px) |
+| Layout | `flex-wrap`, `content-start` | Single row |
+| Container border-radius | **12px** | 24px |
+| Padding | **12px** | 16px 24px |
+| Gap | **8px** | 16px |
+| Icon size | **40×40px** | 64×64px |
+| Rounded icon border-radius | **4px** | 16px |
+| Hover animation | **None** | MacOS dock bounce |
+
+---
+
+### Mobile Journey / Career Ladder (node `253:1154`)
+
+| Element | Mobile | Desktop |
+|---|---|---|
+| Section label | **"CAREER LADDER"**, 12px | "CAREER LADDER", 16px |
+| Section header | **24px** | 32px |
+| Date tags | **REMOVED** | Present |
+| Connector line | **REMOVED** | Present |
+| Bullet type | Diamond: 8×8px red square rotated 45°, gap 12px to text | Circle image (shimmer/container) |
+| Description layout | Vertical bullet list (2 bullets per entry) | 4 horizontal columns |
+| Bullet text font | 16px, `Stack_Sans_Headline:Light`, line-height 24px | Same |
+| UST role label | **"Assoc. Product Designer"** (abbreviated) | "Associate Product Designer" |
+
+**Entry structure per company (mobile):**
 ```
-components/about/
-  ├── AboutHero.tsx          # Section 1 — Welcome tag + title + mode switch
-  ├── ProfileImage.tsx       # Section 2 — Profile photo + 3 floating icons
-  ├── AboutDescription.tsx   # Section 3 — "Know me as I am" bio + highlights table + live clock
-  ├── MyTools.tsx            # Section 4 — Tools icon row with dock hover animation
-  ├── Journey.tsx            # Section 5 — Timeline: 3 entries with real descriptions
-  └── Companies.tsx          # Section 6 — 4×3 logo grid
-  # Section 7 AwardShelf — reuse from components/home/ or move to components/shared/
-app/
-  └── about/page.tsx         # Composes all sections
+[Logo] [Role Title]          ← Journey Role row, gap: 16px, items: flex-start
+[◆] [Bullet text 1]         ← Journey Bullet row, gap: 12px
+[◆] [Bullet text 2]         ← Journey Bullet row, gap: 12px
 ```
+Gap between the two company entries: **32px**.
+
+UST shows bullets 1+2. FunDesigns shows bullets 1+2. (2 of 4 columns each.)
 
 ---
 
-## Content Flags
+### Mobile Professional Timeline (nodes `261:977`, `261:1062`)
 
-1. **Profile photo** — `IMG_5295` series. Needs a local asset saved to `public/`.
-2. **Floating icons** (Icon 1, Icon 2, Icon 3 around the profile photo) — Figma image assets, need to be downloaded and stored locally.
-3. **Company logos** — verify `reputeup-logo.svg` and `karghewale-logo.svg` exist in `public/company logos/` before building the Companies grid.
-4. **CCE description bold spans** — inline `Stack Sans Headline Medium` weight within text-tertiary paragraphs (event names: "CODe Design Week '23", "BEACH HACK 5", "tegain").
-5. **Journey logo links** — all 3 logos (UST, Fundesigns, CCE) must be wrapped in `<a target="_blank">` per Figma annotations.
+Container: `354px` wide, `gap: 40px`, `flex-col`
+
+**Title block** (node `261:973`):
+- Label: "MY JOURNEY 2022 → 2026" — **12px**, text-tertiary
+- Header: "Being through " + muted "so far" + "." — **24px**
+
+**Timeline component** (node `261:1062`): `354px` wide, `flex`, `gap: 8px`
+
+The mobile timeline is a **vertical strip** — the horizontal desktop photo strip is rotated 90° and placed in the center. The events are placed in columns flanking it.
+
+| Column | Width | Content |
+|---|---|---|
+| Left | 100px | 6 top-row events, `justify-between`, `padding-top: 100px` |
+| Center | 137px | Photo strip rotated 90°, height 1304px |
+| Right | 100px | 6 bottom-row events, `justify-between`, `padding-bottom: 100px` |
+
+**Year labels** (on the strip): `"> 2025"`, `"> 2024"`, `"> 2023"`, `"> 2022"` — **32px**, `Stack_Sans_Notch:Bold`, tracking: -0.64px, white, rotated to read vertically.
+
+**Mobile event typography** (vs desktop):
+| Property | Mobile | Desktop |
+|---|---|---|
+| Event title | **16px**, notch:Medium | 24px |
+| Event subtitle | **12px**, headline:Regular, line-height 16px | 16px |
+| Event description | **10px**, headline:Light, line-height 14px | 12px |
+| Event block gap | **8px** | 4px |
+| Column width | **100px** | ~180–240px |
+
+No nav arrows on mobile. No horizontal scrolling — full height (≈1306px) renders vertically in the page flow.
+
+---
+
+### Mobile Award Shelf (node `253:1211`)
+
+| Element | Mobile | Desktop |
+|---|---|---|
+| Section label | **12px** | 16px |
+| Section header | **24px** | 32px |
+| Awards row | `flex`, `gap: 24px`, **horizontal scroll** (5 × 212px = 1060px > 354px container) | `justify-between` |
+| Card, seal, text sizes | Same as desktop (212px card, 120px seal, 16px/12px text) | Same |
+
+---
+
+### Mobile Footer (node `251:879`)
+
+| Element | Mobile | Desktop |
+|---|---|---|
+| Heading | **40px**, line-height 48px, tracking -0.8px | 64px, line-height 80px, tracking -1.28px |
+| Border section padding | `py: 32px` | `py: 80px` |
+| Info layout | `flex-col`, gap: 40px — description+button stacked, then 2-col footer links | 4 columns side-by-side |
+| Footer links | Pages + Connect as `flex`, `gap: 40px` row; Reach Out as separate row below | All in one row |
+| Footer bottom background | **Red** (`surface-highlight`, `#e8342a`) | Dark (footer image) |
+| Copyright layout | **Two lines**, center-aligned | Single line |
+
+---
+
+## File Changes Summary
+
+| File | Action |
+|---|---|
+| `components/about/IntroSection.tsx` | Remove WelcomeTag; update ModeLabel to 32px; reduce Header gap to 32px |
+| `components/about/ProfileImage.tsx` | Widen to 1168px container; add 3 new icons (Icons 4, 5, 6); add hair image element |
+| `components/about/AboutDescription.tsx` | Bio font-size: 24px desktop, 16px mobile |
+| `components/about/Journey.tsx` | Label → "CAREER LADDER"; remove CCE entry; swap bullets to image assets |
+| `components/about/ProfessionalTimeline.tsx` | **CREATE NEW** — horizontal scrollable timeline with nav arrows |
+| `components/about/Companies.tsx` | Keep file, remove from page (do not delete in case of reuse) |
+| `app/about/page.tsx` | Remove Companies; add ProfessionalTimeline after Journey |
+
+---
+
+## Annotations (Desktop)
+
+| Location | Node | Note |
+|---|---|---|
+| Toggle | `248:1184` | "Toggle to switch modes between 'Professional' and 'Personal'" — static UI |
+| My Tools | `248:1245` | MacOS dock magnification — hovered icon rises, direct neighbours rise half height |
+| BASED time | `248:1233` | "Live time at 'Kerala, India'" — live IST clock, updates every minute |
+| Navigation | `248:1328` | Sticky at top on scroll |
+| UST logo | `248:1265` | "Open https://ust.com in new tab" |
+| FunDesigns logo | `248:1281` | "Open https://fundesign.in in new tab" |
+| Timeline nav | `251:1001` | "Click to slide the timeline below. Disable respective icons at the ends." |
+| Timeline scroll | `248:1296` | "In scroll element, scrollable to the right for full view." |
+
+## Annotations (Mobile)
+
+| Location | Node | Note |
+|---|---|---|
+| Toggle | `253:1031` | Same mode toggle — static UI |
+| UST logo | `253:1161` | "Open https://ust.com in new tab" |
+| FunDesigns logo | `253:1177` | "Open https://fundesign.in in new tab" |
+| Footer button | `251:886` | "Redirect to the Contact page" |
+| Footer info layout | `251:883` | "Changed the layout to 1/2/1 format" |
+| Copyright | `251:932` | "Changed to two line and center aligned" |
+| Nav bar | `251:937` | "Navigation bar sticky at the bottom" |

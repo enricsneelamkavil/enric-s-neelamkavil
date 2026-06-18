@@ -5,10 +5,6 @@ import styled from 'styled-components'
 import { mq } from '@/styles/theme'
 import ModeToggle from '@/components/shared/ModeToggle'
 
-// ─── Assets ───────────────────────────────────────────────────────────────────
-
-const IMG_APPLE = '/icons/apple.svg'
-
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 type Mode = 'professional' | 'personal'
@@ -20,15 +16,6 @@ const IntroSection = () => {
 
   return (
     <Section>
-
-      {/* Welcome pill */}
-      <MainLander>
-        <WelcomeTag>
-          <TagText>About</TagText>
-          <AppleIcon src={IMG_APPLE} alt="" aria-hidden="true" />
-          <TagText>Enric S Neelamkavil</TagText>
-        </WelcomeTag>
-      </MainLander>
 
       {/* Title + subtitle + mode toggle */}
       <Header>
@@ -85,50 +72,13 @@ const Section = styled.section`
   }
 `
 
-// ── Welcome Tag ───────────────────────────────────────────────────────────────
-
-const MainLander = styled.div`
-  display: flex;
-  justify-content: center;
-  width: 100%;
-  max-width: ${({ theme }) => theme.layout.maxWidth};
-
-  ${mq.tabletDown} {
-    max-width: none;
-  }
-`
-
-const WelcomeTag = styled.div`
-  display: inline-flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing[2]};
-  padding: ${({ theme }) => `${theme.spacing[2]} ${theme.spacing[4]}`};
-  border: 1px solid ${({ theme }) => theme.colors.border.tertiary};
-  border-radius: ${({ theme }) => theme.radii.lg};
-`
-
-const TagText = styled.span`
-  font-family: ${({ theme }) => theme.fonts.sans};
-  font-weight: ${({ theme }) => theme.fontWeights.regular};
-  font-size: ${({ theme }) => theme.fontSizes.xs};
-  line-height: ${({ theme }) => theme.lineHeights.tight};
-  color: ${({ theme }) => theme.colors.text.secondary};
-  text-transform: uppercase;
-`
-
-const AppleIcon = styled.img`
-  width: 12px;
-  height: 12px;
-  flex-shrink: 0;
-`
-
 // ── Header ────────────────────────────────────────────────────────────────────
 
 const Header = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing[10]};
+  gap: ${({ theme }) => theme.spacing[8]};
   width: 100%;
   max-width: ${({ theme }) => theme.layout.maxWidth};
 
