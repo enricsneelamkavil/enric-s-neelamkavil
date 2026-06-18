@@ -6,28 +6,25 @@ import SectionHeader from '@/components/shared/SectionHeader'
 // ─── Company data ─────────────────────────────────────────────────────────────
 
 interface Company {
-  name:    string
-  logo?:   string   // undefined = missing asset, renders text fallback
-  href?:   string
+  name: string
+  logo?: string   // undefined = missing asset, renders text fallback
+  href?: string
 }
 
 // Grid order: left→right, top→bottom (4 cols × 3 rows)
-// ⚠️  reputeup-logo.svg is missing from public/company logos/ — text fallback used
 const COMPANIES: Company[] = [
-  { name: 'RE/MAX',        logo: '/company logos/remax-logo.svg' },
-  { name: 'Deep5',         logo: '/company logos/deep5-logo.svg' },
-  { name: 'ReputeUp'       /* logo missing */                    },
-  { name: 'Urban Trash',   logo: '/company logos/urbantrash-logo.svg' },
-
-  { name: 'UST',           logo: '/company logos/ust-logo.svg',         href: 'https://ust.com' },
-  { name: 'Vurse',         logo: '/company logos/vurse-logo.svg' },
-  { name: 'Karghewale',    logo: '/company logos/karghewale-logo.svg' },
-  { name: 'Apro IT',       logo: '/company logos/apro-it-logo.svg' },
-
-  { name: 'OpenGrad',      logo: '/company logos/opengrad-logo.svg' },
-  { name: 'FunDesigns',    logo: '/company logos/fundesigns-logo.svg',   href: 'https://fundesign.in' },
-  { name: 'Iris Holidays', logo: '/company logos/irisholidays-logo.svg' },
-  { name: 'mulearn',       logo: '/company logos/mulearn-logo.svg' },
+  { name: 'RE/MAX', logo: '/company-logos/remax-logo.svg' },
+  { name: 'Deep5', logo: '/company-logos/deep5-logo.svg' },
+  { name: 'Repute Up', logo: '/company-logos/reputeup-logo.svg' },
+  { name: 'Urban Trash', logo: '/company-logos/urbantrash-logo.svg' },
+  { name: 'UST', logo: '/company-logos/ust-logo.svg' },
+  { name: 'Vurse', logo: '/company-logos/vurse-logo.svg' },
+  { name: 'Karghewale', logo: '/company-logos/karghewale-logo.svg' },
+  { name: 'Apro IT Solutions', logo: '/company-logos/apro-it-logo.svg' },
+  { name: 'OpenGrad', logo: '/company-logos/opengrad-logo.svg' },
+  { name: 'Fun Designs', logo: '/company-logos/fundesigns-logo.svg' },
+  { name: 'Iris Holidays', logo: '/company-logos/irisholidays-logo.svg' },
+  { name: 'GTech MuLearn', logo: '/company-logos/mulearn-logo.svg' },
 ]
 
 // ─── Component ────────────────────────────────────────────────────────────────

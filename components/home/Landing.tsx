@@ -18,10 +18,11 @@ const LOGO_PATHS = [
   '/home/company-logos/irisholidays-logo.svg',
   '/home/company-logos/ust-logo.svg',
   '/home/company-logos/vurse-logo.svg',
-  '/home/company-logos/undesigns-logo.svg',
+  '/home/company-logos/fundesigns-logo.svg',
   '/home/company-logos/opengrad-logo.svg',
   '/home/company-logos/deep5-logo.svg',
   '/home/company-logos/mulearn-logo.svg',
+  'home/company-logos/reputeup-logo.svg',
 ] as const
 
 // ─── Animation ───────────────────────────────────────────────────────────────
