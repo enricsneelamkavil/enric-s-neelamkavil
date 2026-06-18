@@ -123,11 +123,6 @@ const BioParagraph = styled.p`
   line-height: ${({ theme }) => theme.lineHeights.relaxed};
   color: ${({ theme }) => theme.colors.text.primary};
 
-  ${mq.tablet} {
-    font-size: ${({ theme }) => theme.fontSizes.sm};
-    line-height: ${({ theme }) => theme.lineHeights.normal};
-  }
-
   ${mq.mobile} {
     font-size: ${({ theme }) => theme.fontSizes.sm};
     line-height: ${({ theme }) => theme.lineHeights.normal};

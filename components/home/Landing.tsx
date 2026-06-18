@@ -12,16 +12,16 @@ const IMG_MAIN = '/home/lander/main.webp'
 const IMG_RIGHT = '/home/lander/right.webp'
 
 const LOGO_PATHS = [
-  '/company logos/remax-logo.svg',
-  '/company logos/apro-it-logo.svg',
-  '/company logos/urbantrash-logo.svg',
-  '/company logos/irisholidays-logo.svg',
-  '/company logos/ust-logo.svg',
-  '/company logos/vurse-logo.svg',
-  '/company logos/fundesigns-logo.svg',
-  '/company logos/opengrad-logo.svg',
-  '/company logos/deep5-logo.svg',
-  '/company logos/mulearn-logo.svg',
+  '/home/company-logos/remax-logo.svg',
+  '/home/company-logos/apro-it-logo.svg',
+  '/home/company-logos/urbantrash-logo.svg',
+  '/home/company-logos/irisholidays-logo.svg',
+  '/home/company-logos/ust-logo.svg',
+  '/home/company-logos/vurse-logo.svg',
+  '/home/company-logos/undesigns-logo.svg',
+  '/home/company-logos/opengrad-logo.svg',
+  '/home/company-logos/deep5-logo.svg',
+  '/home/company-logos/mulearn-logo.svg',
 ] as const
 
 // ─── Animation ───────────────────────────────────────────────────────────────

@@ -11,22 +11,22 @@ const AWARDS = [
   {
     name: 'Awwwards Young Jury',
     subtitle: 'Jury Member (2026, 2025)',
-    logo: '/logos/awwwards.svg',
+    logo: 'home/company-logos/awwwards.svg',
   },
   {
     name: 'Awwwards Honors',
     subtitle: 'enric.design (2025)',
-    logo: '/logos/awwwards.svg',
+    logo: 'home/company-logos/awwwards.svg',
   },
   {
     name: 'Config APAC Attendee',
     subtitle: 'Marina Bay Sands, Singapore (2024)',
-    logo: '/logos/figma.svg',
+    logo: 'home/company-logos/figma.svg',
   },
   {
     name: 'Huddle Designers Award',
     subtitle: 'Kelp Kookies (2023)',
-    logo: '/logos/ksum.svg',
+    logo: 'home/company-logos/ksum.svg',
   },
 ] as const
 
