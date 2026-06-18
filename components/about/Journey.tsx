@@ -4,33 +4,35 @@ import { mq } from '@/styles/theme'
 import SectionLabel from '@/components/shared/SectionLabel'
 import SectionHeader from '@/components/shared/SectionHeader'
 
-// ─── Inline bold span for CCE event names ────────────────────────────────────
+// ─── Assets ───────────────────────────────────────────────────────────────────
 
-const Bold = styled.span`
-  font-weight: ${({ theme }) => theme.fontWeights.medium};
-`
+const IMG_BULLET_SHIMMER    = '/about/journey/bullet-shimmer.svg'
+const IMG_BULLET_DOT        = '/about/journey/bullet-dot.svg'
+const IMG_BULLET_CONTAINER  = '/about/journey/bullet-container.svg'
 
 // ─── Entry data ───────────────────────────────────────────────────────────────
 
 interface JourneyEntry {
-  key:     string
-  logo:    string
-  logoW:   number
-  logoH:   number
-  href:    string
-  role:    string
-  dates:   string
-  columns: React.ReactNode[]
+  key:        string
+  bullet:     'shimmer' | 'container'
+  logo:       string
+  logoW:      number
+  logoH:      number
+  href:       string
+  role:       string
+  dates:      string
+  columns:    React.ReactNode[]
 }
 
 const ENTRIES: JourneyEntry[] = [
   {
-    key:   'ust',
-    logo:  '/about/journey/ust-icon.svg',
+    key:    'ust',
+    bullet: 'shimmer',
+    logo:   '/about/journey/ust-icon.svg',
     logoW: 26, logoH: 28,
-    href:  'https://ust.com',
-    role:  'Associate Product Designer',
-    dates: 'August 2024 – Present',
+    href:   'https://ust.com',
+    role:   'Associate Product Designer',
+    dates:  'August 2024 – Present',
     columns: [
       "Building the world's most human centred travel app, personalised recommendations, and stress-free travel all in one place.",
       'Developed wireframes and interactive prototypes, accelerating timelines to enhance design approval rates.',
@@ -39,31 +41,18 @@ const ENTRIES: JourneyEntry[] = [
     ],
   },
   {
-    key:   'fundesigns',
-    logo:  '/about/journey/fundesigns-icon.svg',
+    key:    'fundesigns',
+    bullet: 'container',
+    logo:   '/about/journey/fundesigns-icon.svg',
     logoW: 28, logoH: 28,
-    href:  'https://fundesign.in',
-    role:  'Lead UI Designer',
-    dates: 'May 2024 – July 2024',
+    href:   'https://fundesign.in',
+    role:   'Lead UI Designer',
+    dates:  'May 2024 – July 2024',
     columns: [
       'Crafting user-centric products and the best experiences delivering the promise for clients all over the world.',
       'Led a design team to complete 15+ major projects, improving experiences for multiple clients for the company.',
       'Shipped projects with tight deadlines, with zero compromise on design quality or user experience.',
       'Worked across multiple domains solving problems across various industries and agencies ensuring user experience.',
-    ],
-  },
-  {
-    key:   'cce',
-    logo:  '/about/journey/cce-icon.svg',
-    logoW: 27, logoH: 28,
-    href:  'https://cce.edu.in',
-    role:  'Bachelors in Technology (Computer Science)',
-    dates: 'September 2020 – June 2024',
-    columns: [
-      'Head of student community (CODe) of department of Computer Science, Christ College of Engineering',
-      <>Formulated the first ever Design week in colleges across Kerala <Bold>CODe Design Week &apos;23</Bold>, hosted the sequel event in 2024.</>,
-      <>Hosted the flagship event , <Bold>BEACH HACK 5</Bold> which is South India&apos;s one and only beach hackathon.</>,
-      <>Joined in the Design team for reimagining the official website of Christ College of Engineering, associating with <Bold>tegain</Bold>.</>,
     ],
   },
 ]
@@ -73,7 +62,7 @@ const ENTRIES: JourneyEntry[] = [
 const Journey = () => (
   <Section>
     <TitleBlock>
-      <SectionLabel>The Journey · 2018 → 2026</SectionLabel>
+      <SectionLabel>CAREER LADDER</SectionLabel>
       <SectionHeader before="How I got " muted="here" after="." />
     </TitleBlock>
 
@@ -84,9 +73,14 @@ const Journey = () => (
           <Fragment key={entry.key}>
             {/* Entry row — bullet + logo + role + date tag */}
             <EntryRow>
-              <Bullet>
-                <BulletDot />
-              </Bullet>
+              <BulletImg
+                src={entry.bullet === 'shimmer' ? IMG_BULLET_SHIMMER : IMG_BULLET_CONTAINER}
+                alt=""
+                aria-hidden="true"
+              />
+              {entry.bullet === 'shimmer' && (
+                <BulletInnerDot src={IMG_BULLET_DOT} alt="" aria-hidden="true" />
+              )}
 
               <LogoLink href={entry.href} target="_blank" rel="noopener noreferrer">
                 <LogoIcon
@@ -154,6 +148,7 @@ const JourneySection = styled.div`
 // ── Entry row ─────────────────────────────────────────────────────────────────
 
 const EntryRow = styled.div`
+  position: relative;
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing[6]};
@@ -165,22 +160,23 @@ const EntryRow = styled.div`
   }
 `
 
-const Bullet = styled.div`
+const BulletImg = styled.img`
+  display: block;
   width: 24px;
   height: 24px;
-  border-radius: ${({ theme }) => theme.radii.full};
-  background: ${({ theme }) => theme.colors.border.tertiary};
-  display: flex;
-  align-items: center;
-  justify-content: center;
   flex-shrink: 0;
+  pointer-events: none;
 `
 
-const BulletDot = styled.div`
+const BulletInnerDot = styled.img`
+  position: absolute;
+  left: 6px;
+  top: 50%;
+  transform: translateY(-50%);
   width: 12px;
   height: 12px;
-  border-radius: ${({ theme }) => theme.radii.full};
-  background: ${({ theme }) => theme.colors.text.primary};
+  display: block;
+  pointer-events: none;
 `
 
 const LogoLink = styled.a`

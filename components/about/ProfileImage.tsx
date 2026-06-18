@@ -4,12 +4,12 @@ import { mq } from '@/styles/theme'
 // ─── Assets ───────────────────────────────────────────────────────────────────
 
 const IMG_PHOTO = '/about/profile-group.png'
-const ICON_1    = '/about/icons/Icon 1.svg'
-const ICON_2    = '/about/icons/Icon 2.svg'
-const ICON_3    = '/about/icons/Icon 3.svg'
-const ICON_4    = '/about/icons/Icon 4.svg'
-const ICON_5    = '/about/icons/Icon 5.svg'
-const ICON_6    = '/about/icons/Icon 6.svg'
+const ICON_1 = '/about/icons/icon-1.svg'
+const ICON_2 = '/about/icons/icon-2.svg'
+const ICON_3 = '/about/icons/icon-3.svg'
+const ICON_4 = '/about/icons/icon-4.svg'
+const ICON_5 = '/about/icons/icon-5.svg'
+const ICON_6 = '/about/icons/icon-6.svg'
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
