@@ -6,27 +6,27 @@ import SectionHeader from '@/components/shared/SectionHeader'
 // ─── Seal assets ──────────────────────────────────────────────────────────────
 // RGBA PNGs — circular seal shape baked into transparency
 
-const SEAL_AWWWARDS = '/about/seals/awwwards.png'
-const SEAL_UST      = '/about/seals/ust.png'
-const SEAL_FIGMA    = '/about/seals/figma.png'
-const SEAL_KSUM     = '/about/seals/ksum.png'
+const SEAL_AWWWARDS = '/about/seals/awwwards.webp'
+const SEAL_UST = '/about/seals/ust.webp'
+const SEAL_FIGMA = '/about/seals/figma.webp'
+const SEAL_KSUM = '/about/seals/ksum.webp'
 
 // ─── Award data ───────────────────────────────────────────────────────────────
 
 const AWARDS = [
-  { name: 'Awwwards Young Jury',   subtitle: 'Jury Member (2026, 2025)',              seal: SEAL_AWWWARDS },
-  { name: 'USTAR',                 subtitle: 'Best Performer (2025)',                 seal: SEAL_UST      },
-  { name: 'Awwwards Honors',       subtitle: 'enric.design (2025)',                   seal: SEAL_AWWWARDS },
-  { name: 'Config APAC Attendee',  subtitle: 'Marina Bay Sands, Singapore (2024)',    seal: SEAL_FIGMA    },
-  { name: 'Huddle Designers Award',subtitle: 'Kelp Kookies (2023)',                   seal: SEAL_KSUM     },
+  { name: 'Awwwards Young Jury', subtitle: 'Jury Member (2026, 2025)', seal: SEAL_AWWWARDS },
+  { name: 'USTAR', subtitle: 'Best Performer (2025)', seal: SEAL_UST },
+  { name: 'Awwwards Honors', subtitle: 'enric.design (2025)', seal: SEAL_AWWWARDS },
+  { name: 'Config APAC Attendee', subtitle: 'Marina Bay Sands, Singapore (2024)', seal: SEAL_FIGMA },
+  { name: 'Huddle Designers Award', subtitle: 'Kelp Kookies (2023)', seal: SEAL_KSUM },
 ] as const
 
 // ─── AwardCard ────────────────────────────────────────────────────────────────
 
 interface AwardCardProps {
-  name:     string
+  name: string
   subtitle: string
-  seal:     string
+  seal: string
 }
 
 const AwardCard = ({ name, subtitle, seal }: AwardCardProps) => (
