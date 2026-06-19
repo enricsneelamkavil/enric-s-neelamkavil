@@ -138,7 +138,7 @@ const PageSubtitle = styled.p`
 // ── Mode Switch ───────────────────────────────────────────────────────────────
 
 const ModeSwitch = styled.div`
-  display: flex;
+  display: none; /* Hidden as requested, do not delete */
   align-items: center;
   gap: ${({ theme }) => theme.spacing[6]};
 
