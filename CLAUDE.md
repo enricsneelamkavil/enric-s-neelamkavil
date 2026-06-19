@@ -49,7 +49,8 @@ portfolio/                        # project root
 │   ├── resume/
 │   │   ├── PageHeader.tsx        ✅ Done — centered "Resume." title + subtitle
 │   │   ├── Toolbar.tsx           ✅ Done — PDF metadata + zoom/print (desktop only)
-│   │   ├── ResumeCanvas.tsx      ✅ Done — react-pdf viewer, CSS transform zoom
+│   │   ├── ResumeCanvas.tsx      ✅ Done — next/dynamic wrapper (ssr: false) for SSR safety
+│   │   ├── ResumeCanvasClient.tsx ✅ Done — all react-pdf code, client-only
 │   │   └── DownloadSection.tsx   ✅ Done — dark card, Download + Email Enric CTAs
 │   ├── contact/
 │   └── shared/
@@ -62,7 +63,8 @@ portfolio/                        # project root
 │   ├── GlobalStyle.ts            ✅ Done
 │   └── StyledComponentsRegistry.tsx  ✅ Done — SSR fix for styled-components + Next.js
 ├── lib/
-│   └── supabase.ts               ✅ Done
+│   ├── supabase.ts               ✅ Done
+│   └── pdfWorker.ts              ✅ Done — sets pdfjs worker URL (currently unused; worker set in ResumeCanvasClient.tsx instead)
 ├── hooks/                        # Custom hooks (useProjects, etc.)
 ├── types/                        # Shared TypeScript interfaces
 └── CLAUDE.md                     # This file
@@ -92,6 +94,7 @@ portfolio/                        # project root
 - `components/resume/PageHeader.tsx` ✅
 - `components/resume/Toolbar.tsx` ✅
 - `components/resume/ResumeCanvas.tsx` ✅
+- `components/resume/ResumeCanvasClient.tsx` ✅
 - `components/resume/DownloadSection.tsx` ✅
 
 ## Breakpoint System
@@ -293,7 +296,7 @@ PageSections (62px gap)
 ### Resume ✅ Done
 **Figma frames:** Desktop `282:772` · Mobile `306:1320`
 
-**Page file:** `app/resume/page.tsx` — `'use client'` (zoom state lives here)
+**Page file:** `app/resume/page.tsx` — `'use client'` (zoom state lives here) + `export const dynamic = 'force-dynamic'` (prevents static prerendering that would pull in react-pdf on the server)
 
 **Dependencies:** `react-pdf@10.4.1` — installed via `npm install react-pdf`
 
@@ -329,16 +332,28 @@ PageSections (pt: 140px desktop / 6rem tablet / 40px mobile)
 - Max-width: 880px
 
 #### ResumeCanvas.tsx ✅
-- Uses `react-pdf` — `Document` + `Page` components
-- Worker: `pdfjs.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url).toString()`
+- Thin `next/dynamic` wrapper — imports `ResumeCanvasClient` with `ssr: false`
+- Shows a `#f7f7f7` placeholder div (600px tall) while the client bundle loads
+- **Never import react-pdf here** — this file is the SSR firewall
+
+#### ResumeCanvasClient.tsx ✅
+- All react-pdf code lives here — only ever loaded client-side
+- **Worker:** `pdfjs.GlobalWorkerOptions.workerSrc = \`https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs\`` — set at module level (safe because this file is never server-evaluated)
 - Import `'react-pdf/dist/Page/TextLayer.css'` for text selection layer
 - **Zoom approach — CSS transform only (never re-renders on zoom):**
-  - Page always renders at `CARD_W = 820px` fixed width
+  - `Page` always renders at `CARD_W = 820px` fixed width
   - `PdfCard` gets `transform: scale(zoom / 100)` + `transform-origin: top center`
-  - `Canvas` height = `CANVAS_PADDING_V * 2 + CARD_H * (zoom / 100)` (explicit — transform is visual-only)
-- **Mobile:** `mobileWidth = window.innerWidth - 80` (resize listener), Page renders at mobile width, `PdfCard transform: none`
-- `loading={<></>}` on both Document and Page — suppresses flash during initial load
-- PDF file: `public/resume.pdf` — place manually, no dynamic fetch
+  - `Canvas` height = `CANVAS_PADDING_V * 2 + CARD_H * (zoom / 100)` (explicit — `transform` is visual-only, DOM layout unchanged)
+- **Mobile:** `mobileWidth = window.innerWidth - 80` via resize listener; `Page` renders at mobile width; `PdfCard transform: none`
+- `loading={<></>}` on both `Document` and `Page` — suppresses flash
+- `onError` on `Document` logs to console for diagnosis
+- PDF asset: `public/resume.pdf` — place manually
+
+#### SSR pattern for react-pdf (do not change)
+react-pdf uses `DOMMatrix` internally which does not exist in Node.js. The two-file split is the correct fix:
+- `ResumeCanvas.tsx` → `next/dynamic(..., { ssr: false })` — Next.js never evaluates the module graph below this point during SSR/build
+- `ResumeCanvasClient.tsx` → all react-pdf imports, safe at module scope
+- `page.tsx` → `export const dynamic = 'force-dynamic'` — belt-and-suspenders against static prerendering
 
 #### DownloadSection.tsx ✅
 - Dark `surface.inverse` card, max-width 1168px
