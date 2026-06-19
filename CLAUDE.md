@@ -16,7 +16,7 @@
 portfolio/                        # project root
 ├── app/
 │   ├── page.tsx                  # Home ✅ Done
-│   ├── about/page.tsx            # About 🚧 In Progress — 'use client'
+│   ├── about/page.tsx            # About ✅ Done — 'use client'
 │   ├── works/page.tsx            # Works — not started
 │   ├── resume/page.tsx           # Resume — not started
 │   ├── contact/page.tsx          # Contact — not started
@@ -38,17 +38,19 @@ portfolio/                        # project root
 │   ├── about/
 │   │   ├── IntroSection.tsx      ✅ Done — title, subtitle, professional/personal mode toggle
 │   │   ├── ProfileImage.tsx      ✅ Done — 1168px banner, 6 floating SVG icons, profile photo
-│   │   ├── AboutDescription.tsx  ✅ Done — bio paragraph
-│   │   ├── MyTools.tsx           ✅ Done — tool dock with hover animation
-│   │   ├── Journey.tsx           🚧 Needs updates — label, remove CCE entry
-│   │   ├── Companies.tsx         ⚠️  Remove from page — no longer in Figma spec
+│   │   ├── AboutDescription.tsx  ✅ Done — bio paragraph, IST clock, highlights table
+│   │   ├── MyTools.tsx           ✅ Done — desktop dock + separate MobileGrid (6×2 static grid)
+│   │   ├── Journey.tsx           ✅ Done — CAREER LADDER label, UST + FunDesigns only, shimmer bullets
+│   │   ├── ProfessionalTimeline.tsx         ✅ Done — desktop horizontal scrollable timeline
+│   │   ├── ProfessionalTimelineMobile.tsx   ✅ Done — mobile vertical timeline
+│   │   ├── Companies.tsx         ⚠️  Removed from page — no longer in Figma spec
 │   │   └── AwardShelf.tsx        ✅ Done — 5 award cards with seal images
 │   ├── works/
 │   ├── resume/
 │   ├── contact/
 │   └── shared/
-│       ├── SectionLabel.tsx      ✅ Done — plain uppercase <p>, no pill/chip styling
-│       ├── SectionHeader.tsx     ✅ Done
+│       ├── SectionLabel.tsx      ✅ Done — 16px desktop / 12px mobile, no pill/chip styling
+│       ├── SectionHeader.tsx     ✅ Done — 32px/40px desktop / 24px/32px mobile
 │       ├── DiamondBullet.tsx     ✅ Done
 │       └── ModeToggle.tsx        ✅ Done — left/right knob toggle, hover-preview animation
 ├── styles/
@@ -79,7 +81,9 @@ portfolio/                        # project root
 - `components/about/ProfileImage.tsx` ✅
 - `components/about/AboutDescription.tsx` ✅
 - `components/about/MyTools.tsx` ✅
-- `components/about/Journey.tsx` ✅ (needs edits — do not recreate)
+- `components/about/Journey.tsx` ✅
+- `components/about/ProfessionalTimeline.tsx` ✅
+- `components/about/ProfessionalTimelineMobile.tsx` ✅
 - `components/about/AwardShelf.tsx` ✅
 
 ## Breakpoint System
@@ -101,12 +105,13 @@ export const mq = {
 - `FeatureProduct`: horizontal at tablet AND desktop — stacks only on mobile
 - `MyWorks WorkCard`: side-by-side at tablet AND desktop — stacks only on mobile
 - `Footer InfoRow`: `flex-wrap: wrap` at tablet
+- Full-bleed escape in centered flex parent: use `align-self: stretch; width: auto; margin-left: -24px; margin-right: -24px` (not `calc(100% + 48px)`)
 
 ## Navbar — Mobile Bottom Pill
 - **Desktop**: 5 nav links (Home, About, Work, Resume, Contact) — glass pill, fixed top-center
 - **Mobile**: 4 nav links (Home, About, Work, Contact) — **Resume omitted** — solid bottom pill
 - Mobile pill ends with: vertical separator + agent icon button (placeholder, `onClick={() => {}}`)
-- Agent icon: Figma asset node `185:866` — stored as `AGENT_ICON` constant in Navbar.tsx
+- Agent icon: `/icons/agent.svg` — stored as `AGENT_ICON` constant in Navbar.tsx
 - PersonalAgent is fully hidden (`display: none`) everywhere — mobile interaction TBD
 
 ## PersonalAgent
@@ -121,9 +126,11 @@ export const mq = {
 - Exception: Figma-derived layout measurements (icon positions, photo dimensions) may be hardcoded px constants at the top of the component file
 - Exception: breakpoint media queries use `mq.*` imported directly (not via ThemeProvider)
 
+
 ## Key Theme Tokens (quick reference)
 ```ts
 fontSizes:   xs=12px, sm=16px, md=24px, lg=32px, xl=40px, 2xl=48px, 3xl=64px
+lineHeights: tight=16px, snug=20px, normal=24px, relaxed=32px, loose=40px
 spacing:     [1]=4px, [2]=8px, [3]=12px, [4]=16px, [6]=24px, [8]=32px, [10]=40px
 layout.maxWidth = '1168px'
 radii:       lg=12px, xl=16px, 2xl=20px, 3xl=24px, full=9999px
@@ -175,12 +182,12 @@ export default ComponentName
 - [x] `MyWorks.tsx` — 3 WorkCards with Figma gradients
 - [x] `Footer.tsx` — visitor counter, heart ↔ hourglass toggle
 
-### About 🚧 In Progress
-**Figma frames:** Desktop `248:1175` · Mobile `251:729`
+### About ✅ Done
+**Figma frames:** Desktop `248:1175` · Mobile `284:834`
 
 **Page file:** `app/about/page.tsx` — marked `'use client'`
 
-**Composition (current):**
+**Composition:**
 ```
 PageSections (62px gap)
   └── LandingGroup (80px gap)
@@ -189,24 +196,19 @@ PageSections (62px gap)
         └── AboutDescription
   MyTools
   Journey
-  Companies     ← REMOVE (no longer in Figma spec)
+  ProfessionalTimeline        ← desktop (hidden on mobile)
+  ProfessionalTimelineMobile  ← mobile (hidden on desktop)
   AwardShelf
 ```
-
-**Still needed:**
-- `ProfessionalTimeline.tsx` — NEW component: horizontal scrollable timeline, photo strip, year labels, nav arrows (top/bottom event rows)
-- Remove `Companies` from page composition
-- `Journey.tsx` edits: rename label to `"CAREER LADDER"`, remove CCE entry, swap bullet to shimmer image assets
-- Mobile responsiveness pass on all sections
 
 #### IntroSection.tsx ✅
 - `'use client'`, `useState<Mode>('professional' | 'personal')`
 - PageTitle "About Me." (Period in `colors.text.secondary`)
 - PageSubtitle "Two sides of one designer"
 - ModeToggle (from `components/shared/ModeToggle.tsx`) between two ModeLabel buttons
-- ModeLabel: `fontSizes.lg` (32px), notch bold, color changes on `$active`
+- ModeLabel: `fontSizes.sm` (16px) on mobile, `fontSizes.lg` (32px) desktop, notch bold, color changes on `$active`
 - PersonalNote renders when `mode === 'personal'`
-- Header gap: `spacing[8]` (32px)
+- Mobile: padding-top 40px, reduced gaps
 
 #### ProfileImage.tsx ✅
 - Figma node: `248:1186` (Image Banner)
@@ -214,10 +216,10 @@ PageSections (62px gap)
   - On `tabletDown`: `display: flex; justify-content: center; height: auto; overflow: visible`
 - **PhotoCenter**: `position: absolute; inset: 0; display: flex; align-items: center; justify-content: center`
   - On `tabletDown`: `position: static; display: contents` (passes children to Banner flex)
-- **PhotoGroup**: `431px` wide on desktop, `360px` tablet, `min(300px, 100%)` mobile
+- **PhotoGroup**: `431px` wide on desktop, `360px` tablet, `min(257px, 100%)` mobile
 - **CirclePhoto**: `profile-group.png` — 431×470 RGBA, renders `width: 100%; height: auto`
 - **6 floating icons**: `IconBox` (position + rotation) + `IconImg` (size) — hidden on `tabletDown`
-  - Icon sources: `/about/icons/Icon 1.svg` … `Icon 6.svg`
+  - Icon sources: `/about/icons/icon-1.svg` … `icon-6.svg`
   - Positions/rotations from Figma (all absolute within Banner):
     - Icon 1: left 29.76, top 331.64, rotate +12.94°, img 65×72
     - Icon 2: left 95.57, top 41.12, rotate −12.29°, img 72×68.174
@@ -232,17 +234,51 @@ PageSections (62px gap)
 - `Pill` div (not a native button) — `role="button"`, `tabIndex={0}`, `cursor: pointer`
 - `Knob`: `position: absolute; top: 6px; left: 6px; 40×40px; pointer-events: none; z-index: 1`
   - Animates via `transform: translateX(0)` (left) ↔ `translateX(44px)` (right)
-- Two `Slot` divs (40×40, `position: relative; z-index: 0`) contain `NotSelectedRing` SVGs
+  - Mobile: 24×24px, translateX(26px)
+- Two `Slot` divs (40×40 desktop, 24×24 mobile, `position: relative; z-index: 0`) contain `NotSelectedRing` SVGs
 - `ArrowSvg` rotates 180° when on left side
 
-#### Journey.tsx 🚧
-- 3 entries: UST (Aug 2024–present), FunDesigns (May–Jul 2024), CCE (Sep 2020–Jun 2024)
-- **Pending**: rename section label to `"CAREER LADDER"`, remove CCE entry
-- ConnectorLine between entries (vertical 1px line); horizontal scroll on `tabletDown`
+#### AboutDescription.tsx ✅
+- TitleBlock: `SectionLabel` + `SectionHeader`, no gap (Figma spec)
+- Bio paragraph: `fontSizes.md` (24px) desktop, `fontSizes.sm` (16px) mobile
+- Highlights table: 453px desktop, 360px tablet, 100% mobile
+- ContentRow: side-by-side desktop, stacked mobile
+- IST clock live in `ValueRegular` span
 
-#### AwardShelf.tsx ✅
+#### MyTools.tsx ✅
+- **Desktop** (`DockContainer`): flex row, 64×64px icons, `translateY` hover magnification (RISE=16px, RISE_NEIGHBOR=8px), `border-radius: 24px`
+  - Hidden on mobile via `display: none` in `mq.mobile`
+- **Mobile** (`MobileGrid`): completely separate DOM element, `display: none` on desktop, `display: grid` on mobile
+  - `grid-template-columns: repeat(6, min(40px, calc((100% - 24px - 40px) / 6)))` — icons capped at 40px, fluid below
+  - `width: 100%; justify-content: start; padding: 12px; box-sizing: border-box`
+  - `MobileCell`: `aspect-ratio: 1/1; border-radius: 12px; overflow: hidden`
+  - No `$y` prop, no hover, no magnification — immune to styled-components dynamic class cascade
+- ⚠️ Do NOT add mobile styles to `IconSlot` or `DockContainer` — the cascade issue (styled-components dynamic classes overriding media queries) is avoided by the separate MobileGrid approach
+
+#### Journey.tsx ✅
+- Label: `"CAREER LADDER"` — SectionLabel + SectionHeader, no gap
+- 2 entries only: UST (Aug 2024–Present), FunDesigns (May–Jul 2024) — CCE removed
+- Bullet assets: `bullet-shimmer.svg`, `bullet-dot.svg`, `bullet-container.svg`
+- Desktop: horizontal description columns (4 per entry), ConnectorLine between entries
+- Mobile: vertical layout, BulletImg/BulletInnerDot/DateTag hidden, ConnectorCol hidden
+  - RoleTitle: `white-space: normal; word-break: break-word` on mobile
+  - Column: `::before` CSS diamond bullet (8px rotate 45deg, `colors.text.highlight`), only first 2 columns shown
+
+#### AwardShelf.tsx ✅ (about)
 - 5 awards: Awwwards Young Jury, USTAR, Awwwards Honors, Config APAC, Huddle Designers
+- Label swaps on mobile: "Recognition" (desktop) → "ACHIEVEMENTS" (mobile) via `DesktopLabel`/`MobileLabel` wrappers
 - Seals from `public/about/seals/`: `awwwards.png`, `ust.png`, `figma.png`, `ksum.png`
+- AwardsRow: horizontal scroll on mobile with `scroll-snap-type: x mandatory`
+
+#### ProfessionalTimeline.tsx ✅ (desktop)
+- Hidden on mobile (`display: none` in `mq.mobile`)
+- Horizontal scrollable timeline with photo strip and year labels
+- TitleBlock: no gap (Figma spec)
+
+#### ProfessionalTimelineMobile.tsx ✅ (mobile)
+- Hidden on desktop (`display: none` above `mq.mobile`)
+- Vertical timeline layout
+- TitleBlock: no gap (Figma spec)
 
 ---
 
@@ -258,8 +294,20 @@ PageSections (62px gap)
 | Section | Desktop | Mobile |
 |---|---|---|
 | Full page | `136:3016` | — |
-| About (professional) | `248:1175` | `251:729` |
+| About (professional) | `248:1175` | `284:834` |
 | About — Image Banner | `248:1186` | — |
+
+### Title Container — Figma Spec (applies everywhere SectionLabel + SectionHeader are stacked)
+| | Desktop (LG) | Mobile (SM) |
+|---|---|---|
+| SectionLabel font-size | `fontSizes.sm` = 16px | `fontSizes.xs` = 12px |
+| SectionLabel line-height | `lineHeights.normal` = 24px | `lineHeights.tight` = 16px |
+| SectionHeader font-size | `fontSizes.lg` = 32px | `fontSizes.md` = 24px |
+| SectionHeader line-height | `lineHeights.loose` = 40px | `lineHeights.relaxed` = 32px |
+| Gap between label + header | **0** | **0** |
+| Padding on container | none | none |
+
+> These values are implemented in `SectionLabel.tsx` and `SectionHeader.tsx` — do not add gap to any `TitleBlock`/`TitleContainer` wrapper.
 
 ---
 
@@ -268,12 +316,12 @@ PageSections (62px gap)
 public/about/
 ├── profile-group.png          # 431×470 RGBA — composited circle photo (hair + circle baked in)
 ├── icons/
-│   ├── Icon 1.svg             # floating icon — bottom-left
-│   ├── Icon 2.svg             # floating icon — upper-left
-│   ├── Icon 3.svg             # floating icon — left-center
-│   ├── Icon 4.svg             # floating icon — right-top
-│   ├── Icon 5.svg             # floating icon — right-bottom
-│   └── Icon 6.svg             # floating icon — far-right (unified)
+│   ├── icon-1.svg             # floating icon — bottom-left
+│   ├── icon-2.svg             # floating icon — upper-left
+│   ├── icon-3.svg             # floating icon — left-center
+│   ├── icon-4.svg             # floating icon — right-top
+│   ├── icon-5.svg             # floating icon — right-bottom
+│   └── icon-6.svg             # floating icon — far-right (unified)
 ├── seals/
 │   ├── awwwards.png
 │   ├── ust.png
@@ -282,7 +330,9 @@ public/about/
 └── journey/
     ├── ust-icon.svg
     ├── fundesigns-icon.svg
-    └── cce-icon.svg
+    ├── bullet-shimmer.svg
+    ├── bullet-dot.svg
+    └── bullet-container.svg
 ```
 
 ---
@@ -312,14 +362,6 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_630z8GqkaL53xi1EXO_1HQ_VZ-t3EoZ
 ---
 
 ## What's Next
-
-### About Page (active branch: `feature/about-page`)
-- [ ] Remove `Companies` from `app/about/page.tsx` composition
-- [ ] `Journey.tsx` — rename label to "CAREER LADDER", remove CCE entry
-- [ ] `ProfessionalTimeline.tsx` — NEW: horizontal scrollable timeline, photo strip, year labels, nav arrows
-- [ ] Add `ProfessionalTimeline` to `app/about/page.tsx`
-- [ ] Mobile responsiveness pass on all About sections
-- [ ] `AboutDescription.tsx` — verify bio font-size matches Figma
 
 ### Other Pages
 - [ ] Build Works page (`app/works/page.tsx`)

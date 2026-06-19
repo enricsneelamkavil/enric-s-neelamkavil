@@ -20,18 +20,18 @@ interface Tool {
 // "flat"             = SVG, no radius, no shadow
 
 const TOOLS: Tool[] = [
-  { name: 'Figma',         src: 'about/tools/figma.png',         variant: 'rounded-overflow', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
-  { name: 'Photoshop',     src: 'about/tools/photoshop.svg',     variant: 'flat',             shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
-  { name: 'Sketch',        src: 'about/tools/sketch.png',        variant: 'rounded-overflow', shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
-  { name: 'Illustrator',   src: 'about/tools/illustrator.svg',   variant: 'flat',             shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
-  { name: 'Lovable',       src: 'about/tools/lovable.png',       variant: 'rounded-fit',      shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
-  { name: 'XD',            src: 'about/tools/xd.svg',            variant: 'flat',             shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
-  { name: 'Gemini',        src: 'about/tools/gemini.png',        variant: 'rounded-fit',      shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
-  { name: 'ChatGPT',       src: 'about/tools/chatgpt.png',       variant: 'rounded-fit',      shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
-  { name: 'Claude',        src: 'about/tools/claude.png',        variant: 'rounded-fit',      shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
-  { name: 'CorelDraw',     src: 'about/tools/coreldraw.png',     variant: 'rounded-overflow', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
-  { name: 'After Effects', src: 'about/tools/after-effects.svg', variant: 'flat',             shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
-  { name: 'Premiere Pro',  src: 'about/tools/premiere-pro.svg',  variant: 'flat',             shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
+  { name: 'Figma', src: 'about/tools/figma.webp', variant: 'rounded-overflow', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
+  { name: 'Photoshop', src: 'about/tools/photoshop.svg', variant: 'flat', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
+  { name: 'Sketch', src: 'about/tools/sketch.webp', variant: 'rounded-overflow', shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
+  { name: 'Illustrator', src: 'about/tools/illustrator.svg', variant: 'flat', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
+  { name: 'Lovable', src: 'about/tools/lovable.webp', variant: 'rounded-fit', shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
+  { name: 'XD', src: 'about/tools/xd.svg', variant: 'flat', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
+  { name: 'Gemini', src: 'about/tools/gemini.webp', variant: 'rounded-fit', shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
+  { name: 'ChatGPT', src: 'about/tools/chatgpt.webp', variant: 'rounded-fit', shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
+  { name: 'Claude', src: 'about/tools/claude.webp', variant: 'rounded-fit', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
+  { name: 'CorelDraw', src: 'about/tools/coreldraw.webp', variant: 'flat' },
+  { name: 'After Effects', src: 'about/tools/after-effects.svg', variant: 'flat', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
+  { name: 'Premiere Pro', src: 'about/tools/premiere-pro.svg', variant: 'flat', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
 ]
 
 const RISE = 16
@@ -53,7 +53,6 @@ const MyTools = () => {
   return (
     <Section>
 
-      {/* Desktop: animated dock — hidden on mobile */}
       <DockContainer>
         {TOOLS.map((tool, i) => (
           <IconSlot
@@ -82,7 +81,6 @@ const MyTools = () => {
         ))}
       </DockContainer>
 
-      {/* Mobile: static grid — no $y, no hover, no magnification */}
       <MobileGrid>
         {TOOLS.map((tool) => (
           <MobileCell key={tool.name} title={tool.name}>
@@ -203,7 +201,7 @@ const OverflowImg = styled.img`
 const MobileGrid = styled.div`
   display: none;
 
-  @media (max-width: 768px) {
+  ${mq.mobile} {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
@@ -218,7 +216,7 @@ const MobileGrid = styled.div`
 `
 
 const MobileCell = styled.div`
-  @media (max-width: 768px) {
+  ${mq.mobile} {
     width: clamp(36px, 11vw, 64px);
     height: clamp(36px, 11vw, 64px);
     flex-shrink: 0;

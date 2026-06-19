@@ -14,8 +14,8 @@ const SCROLL_STEP = 600    // px per nav click
 
 // ─── Assets ───────────────────────────────────────────────────────────────────
 
-const IMG_ARROW_LEFT = '/about/timeline/arrow-left.svg'
-const IMG_ARROW_RIGHT = '/about/timeline/arrow-right.svg'
+const IMG_ARROW_LEFT = '/icons/arrow-left.svg'
+const IMG_ARROW_RIGHT = '/icons/arrow-right.svg'
 const IMG_SHAPE_MASK = '/about/timeline/shape-mask.svg'
 
 // ─── Event data ───────────────────────────────────────────────────────────────
@@ -47,18 +47,18 @@ type SimplePhoto = { kind: 'simple'; src: string; ar: string; pos: 'bottom' | 'c
 type TLPhoto = PositionedPhoto | SimplePhoto
 
 const PHOTOS: TLPhoto[] = [
-  { kind: 'positioned', src: '/about/timeline/tl-image-1.jpg', ar: '181/137', w: '106.08%', h: '187.25%', l: '0', t: '-45.64%' },
-  { kind: 'positioned', src: '/about/timeline/tl-image-2.jpg', ar: '230/137', w: '213.27%', h: '238.72%', l: '-41.74%', t: '-87.61%' },
-  { kind: 'positioned', src: '/about/timeline/tl-image-3.jpg', ar: '180/137', w: '198.82%', h: '173.76%', l: '-45.86%', t: '-11.06%' },
-  { kind: 'positioned', src: '/about/timeline/tl-image-4.jpg', ar: '235/137', w: '146.23%', h: '336.59%', l: '-12.3%', t: '-144.43%' },
-  { kind: 'positioned', src: '/about/timeline/tl-image-5.jpg', ar: '188/137', w: '127.66%', h: '233.58%', l: '-25.53%', t: '-62.77%' },
-  { kind: 'positioned', src: '/about/timeline/tl-image-6.jpg', ar: '259/137', w: '114.99%', h: '144.94%', l: '0', t: '-25.96%' },
-  { kind: 'positioned', src: '/about/timeline/tl-image-7.jpg', ar: '181/137', w: '114.56%', h: '228.78%', l: '-0.31%', t: '-69.63%' },
-  { kind: 'simple', src: '/about/timeline/tl-image-8.png', ar: '170/137', pos: 'center' },
-  { kind: 'positioned', src: '/about/timeline/tl-image-9.jpg', ar: '149/137', w: '122.42%', h: '176.71%', l: '-13.56%', t: '-35.11%' },
-  { kind: 'positioned', src: '/about/timeline/tl-image-10.jpg', ar: '155/137', w: '113.55%', h: '171.8%', l: '0', t: '-45.74%' },
-  { kind: 'simple', src: '/about/timeline/tl-image-11.png', ar: '2363/3150', pos: 'center' },
-  { kind: 'positioned', src: '/about/timeline/tl-image-12.jpg', ar: '177/137', w: '105.4%', h: '181.46%', l: '-4.96%', t: '-49.93%' },
+  { kind: 'simple', src: '/about/timeline/tl-image-1.webp', ar: '181/137', pos: 'center' },
+  { kind: 'simple', src: '/about/timeline/tl-image-2.webp', ar: '230/137', pos: 'center' },
+  { kind: 'simple', src: '/about/timeline/tl-image-3.webp', ar: '180/137', pos: 'center' },
+  { kind: 'simple', src: '/about/timeline/tl-image-4.webp', ar: '235/137', pos: 'center' },
+  { kind: 'simple', src: '/about/timeline/tl-image-5.webp', ar: '188/137', pos: 'center' },
+  { kind: 'simple', src: '/about/timeline/tl-image-6.webp', ar: '259/137', pos: 'center' },
+  { kind: 'simple', src: '/about/timeline/tl-image-7.webp', ar: '181/137', pos: 'center' },
+  { kind: 'simple', src: '/about/timeline/tl-image-8.webp', ar: '170/137', pos: 'center' },
+  { kind: 'simple', src: '/about/timeline/tl-image-9.webp', ar: '149/137', pos: 'center' },
+  { kind: 'simple', src: '/about/timeline/tl-image-10.webp', ar: '155/137', pos: 'center' },
+  { kind: 'simple', src: '/about/timeline/tl-image-11.webp', ar: '2363/3150', pos: 'center' },
+  { kind: 'simple', src: '/about/timeline/tl-image-12.webp', ar: '177/137', pos: 'center' },
 ]
 
 // Year label absolute positions within the 2723px strip (from Figma)

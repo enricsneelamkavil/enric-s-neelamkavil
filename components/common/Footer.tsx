@@ -1,11 +1,10 @@
 'use client'
 
+import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import styled, { css, keyframes } from 'styled-components'
 import Button from './Button'
 import { mq } from '@/styles/theme'
-
-
 
 const SHAPE_A = '/shapes/shape-1.svg'
 const SHAPE_B = '/shapes/shape-2.svg'
@@ -37,8 +36,6 @@ const SOCIAL_LINKS = [
 ]
 
 // ─── Component ────────────────────────────────────────────────────────────────
-
-import { useEffect, useRef, useState } from 'react'
 
 const HeartIcon = () => {
   const [showHourglass, setShowHourglass] = useState(false)

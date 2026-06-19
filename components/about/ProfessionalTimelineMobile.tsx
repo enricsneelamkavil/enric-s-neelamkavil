@@ -6,11 +6,11 @@ import SectionHeader from '@/components/shared/SectionHeader'
 
 const STRIP_W = 137   // center column width, px
 const STRIP_H = 1304  // center column height, px
-const COL_H   = 1306  // event column height, px
-const COL_W   = 100   // event column width, px
+const COL_H = 1306  // event column height, px
+const COL_W = 100   // event column width, px
 
 // 10px and 14px are outside the theme scale — Figma-derived
-const MOBILE_DESC_FONT_SIZE   = '10px'
+const MOBILE_DESC_FONT_SIZE = '10px'
 const MOBILE_DESC_LINE_HEIGHT = '14px'
 // Year label tracking from Figma SM spec (-0.64px, differs from desktop -1.6px)
 const YEAR_TRACKING = '-0.64px'
@@ -22,42 +22,42 @@ const IMG_SHAPE_MASK = '/about/timeline/shape-mask.svg'
 interface TLEvent { title: string; sub: string; desc: string }
 
 const TOP_EVENTS: TLEvent[] = [
-  { title: 'Co-host',          sub: 'BEACH HACK 5',              desc: 'Co-hosted the 5th edition of the flagship event Beach hackathon.' },
-  { title: 'Founder Host',     sub: "CODe Design Week (CDW '23)", desc: 'Hosted the first ever Design Week, in Engineering Colleges across Kerala.' },
-  { title: 'Designers Award',  sub: 'Huddle Global',              desc: 'Secured the position in Top 13 Designers in Branding Challenge.' },
-  { title: 'Speaker',          sub: 'Christ College of Engieering', desc: 'Handled multiple sessions on interface design for digital products.' },
-  { title: 'Invited Attendee', sub: 'Config APAC',               desc: "Figma's first Config APAC at Marina Bay Sands Conventional Center, Singapore." },
-  { title: 'Attendee',         sub: 'Figma India Launch',         desc: "Attended Figma's India office Launch representing Strollby Design." },
+  { title: 'Co-host', sub: 'BEACH HACK 5', desc: 'Co-hosted the 5th edition of the flagship event Beach hackathon.' },
+  { title: 'Founder Host', sub: "CODe Design Week (CDW '23)", desc: 'Hosted the first ever Design Week, in Engineering Colleges across Kerala.' },
+  { title: 'Designers Award', sub: 'Huddle Global', desc: 'Secured the position in Top 13 Designers in Branding Challenge.' },
+  { title: 'Speaker', sub: 'Christ College of Engieering', desc: 'Handled multiple sessions on interface design for digital products.' },
+  { title: 'Invited Attendee', sub: 'Config APAC', desc: "Figma's first Config APAC at Marina Bay Sands Conventional Center, Singapore." },
+  { title: 'Attendee', sub: 'Figma India Launch', desc: "Attended Figma's India office Launch representing Strollby Design." },
 ]
 
 const BOTTOM_EVENTS: TLEvent[] = [
-  { title: 'Chairman',      sub: 'Community of Developers (CODe)', desc: 'Association of Department of Computer Science, Christ College of Engineering.' },
-  { title: 'UI Designer',   sub: 'GTech MuLearn',                  desc: 'First Internship as UI Designer, led a team, mentored junior designers.' },
-  { title: 'Attendee',      sub: 'Lollypop Designathon',           desc: 'Shortlisted attendee for Designathon 2024 hosted by Lollypop Design Studio.' },
-  { title: 'Lead Host',     sub: 'DESIGNATHON 2024',               desc: "Hosted second edition of Designathon, after CODe Design Week '23." },
-  { title: 'Graduation',    sub: 'Christ College of Engieering',    desc: 'Graduated Bachelors of Engineering in Computer Science & Engineering.' },
-  { title: 'Young Jury 2025', sub: 'Awwwards.',                   desc: 'Selected as a jury member, evaluating and rating top digital designs globally.' },
+  { title: 'Chairman', sub: 'Community of Developers (CODe)', desc: 'Association of Department of Computer Science, Christ College of Engineering.' },
+  { title: 'UI Designer', sub: 'GTech MuLearn', desc: 'First Internship as UI Designer, led a team, mentored junior designers.' },
+  { title: 'Attendee', sub: 'Lollypop Designathon', desc: 'Shortlisted attendee for Designathon 2024 hosted by Lollypop Design Studio.' },
+  { title: 'Lead Host', sub: 'DESIGNATHON 2024', desc: "Hosted second edition of Designathon, after CODe Design Week '23." },
+  { title: 'Graduation', sub: 'Christ College of Engieering', desc: 'Graduated Bachelors of Engineering in Computer Science & Engineering.' },
+  { title: 'Young Jury 2025', sub: 'Awwwards.', desc: 'Selected as a jury member, evaluating and rating top digital designs globally.' },
 ]
 
 // ─── Photo data (SM variant — aspect ratios from Figma 261:1062) ─────────────
 
 type PositionedPhoto = { kind: 'positioned'; src: string; ar: string; w: string; h: string; l: string; t: string }
-type SimplePhoto     = { kind: 'simple';     src: string; ar: string; pos: 'bottom' | 'center' }
+type SimplePhoto = { kind: 'simple'; src: string; ar: string; pos: 'bottom' | 'center' }
 type MobilePhoto = PositionedPhoto | SimplePhoto
 
 const MOBILE_PHOTOS: MobilePhoto[] = [
-  { kind: 'positioned', src: '/about/timeline/tl-image-1.jpg',  ar: '169/144',           w: '106.08%', h: '166.33%', l: '0',       t: '-29.43%'  },
-  { kind: 'positioned', src: '/about/timeline/tl-image-2.jpg',  ar: '202.30/120.5',      w: '213.27%', h: '238.72%', l: '-41.74%', t: '-87.61%'  },
-  { kind: 'positioned', src: '/about/timeline/tl-image-3.jpg',  ar: '158.32/120.5',      w: '198.82%', h: '173.76%', l: '-45.86%', t: '-11.06%'  },
-  { kind: 'positioned', src: '/about/timeline/tl-image-4.jpg',  ar: '206.70/120.5',      w: '146.23%', h: '336.59%', l: '-12.3%',  t: '-144.43%' },
-  { kind: 'positioned', src: '/about/timeline/tl-image-5.jpg',  ar: '165.36/120.5',      w: '127.66%', h: '233.58%', l: '-25.53%', t: '-62.77%'  },
-  { kind: 'positioned', src: '/about/timeline/tl-image-6.jpg',  ar: '227.81/120.5',      w: '114.99%', h: '144.94%', l: '0',       t: '-25.96%'  },
-  { kind: 'positioned', src: '/about/timeline/tl-image-7.jpg',  ar: '159.20/120.5',      w: '114.56%', h: '228.78%', l: '-0.31%',  t: '-69.63%'  },
-  { kind: 'simple',     src: '/about/timeline/tl-image-8.png',  ar: '149.53/120.5',      pos: 'bottom'  },
-  { kind: 'positioned', src: '/about/timeline/tl-image-9.jpg',  ar: '131.05/120.5',      w: '122.42%', h: '176.71%', l: '-13.56%', t: '-35.11%'  },
-  { kind: 'positioned', src: '/about/timeline/tl-image-10.jpg', ar: '136.33/120.5',      w: '113.55%', h: '171.8%',  l: '0',       t: '-45.74%'  },
-  { kind: 'simple',     src: '/about/timeline/tl-image-11.png', ar: '90.39/120.5',       pos: 'center'  },
-  { kind: 'positioned', src: '/about/timeline/tl-image-12.jpg', ar: '155.68/120.5',      w: '105.4%',  h: '181.46%', l: '-4.96%',  t: '-49.93%'  },
+  { kind: 'simple', src: '/about/timeline/tl-image-1.webp', ar: '181/137', pos: 'center' },
+  { kind: 'simple', src: '/about/timeline/tl-image-2.webp', ar: '230/137', pos: 'center' },
+  { kind: 'simple', src: '/about/timeline/tl-image-3.webp', ar: '180/137', pos: 'center' },
+  { kind: 'simple', src: '/about/timeline/tl-image-4.webp', ar: '235/137', pos: 'center' },
+  { kind: 'simple', src: '/about/timeline/tl-image-5.webp', ar: '188/137', pos: 'center' },
+  { kind: 'simple', src: '/about/timeline/tl-image-6.webp', ar: '259/137', pos: 'center' },
+  { kind: 'simple', src: '/about/timeline/tl-image-7.webp', ar: '181/137', pos: 'center' },
+  { kind: 'simple', src: '/about/timeline/tl-image-8.webp', ar: '170/137', pos: 'center' },
+  { kind: 'simple', src: '/about/timeline/tl-image-9.webp', ar: '149/137', pos: 'center' },
+  { kind: 'simple', src: '/about/timeline/tl-image-10.webp', ar: '155/137', pos: 'center' },
+  { kind: 'simple', src: '/about/timeline/tl-image-11.webp', ar: '2363/3150', pos: 'center' },
+  { kind: 'simple', src: '/about/timeline/tl-image-12.webp', ar: '177/137', pos: 'center' },
 ]
 
 // Year label vertical positions derived from Figma horizontal strip coords.
@@ -65,9 +65,9 @@ const MOBILE_PHOTOS: MobilePhoto[] = [
 // -90deg. After rotation: top_in_column = strip_width - horizontal_left.
 // Figma: 2025→left=279, 2024→731, 2023→983, 2022→1179
 const YEAR_LABELS = [
-  { text: '> 2022', top: 125  },
-  { text: '> 2023', top: 321  },
-  { text: '> 2024', top: 573  },
+  { text: '> 2022', top: 125 },
+  { text: '> 2023', top: 321 },
+  { text: '> 2024', top: 573 },
   { text: '> 2025', top: 1025 },
 ]
 

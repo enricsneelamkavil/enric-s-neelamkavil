@@ -38,7 +38,6 @@ const Landing = () => {
   return (
     <Section data-section="landing">
 
-      {/* 1 ── Main Lander */}
       <MainLander>
         <WelcomeTag>
           <TagText>Hello</TagText>
@@ -59,7 +58,6 @@ const Landing = () => {
         </TextContainer>
       </MainLander>
 
-      {/* 2 ── Header Photos */}
       <PhotoRow>
         <PhotoPanel>
           <PhotoFill
@@ -83,7 +81,6 @@ const Landing = () => {
         </PhotoPanel>
       </PhotoRow>
 
-      {/* 3 ── Company Logos */}
       <LogoSection>
         <TrustLabel>Trusted by multiple clients worldwide</TrustLabel>
         <MarqueeWrapper>

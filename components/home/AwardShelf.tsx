@@ -72,7 +72,7 @@ const AwardShelf = () => {
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const Section = styled.div`
+const Section = styled.section`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing[10]};

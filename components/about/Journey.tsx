@@ -71,7 +71,6 @@ const Journey = () => (
         const isLast = i === ENTRIES.length - 1
         return (
           <Fragment key={entry.key}>
-            {/* Entry row — bullet + logo + role + date tag */}
             <EntryRow>
               <BulletImg
                 src={entry.bullet === 'shimmer' ? IMG_BULLET_SHIMMER : IMG_BULLET_CONTAINER}
@@ -98,7 +97,6 @@ const Journey = () => (
               </DateTag>
             </EntryRow>
 
-            {/* Description row — connector + 4 text columns */}
             <DescriptionRow>
               <ConnectorCol>
                 {!isLast && <ConnectorLine />}

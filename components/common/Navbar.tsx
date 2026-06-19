@@ -8,9 +8,7 @@ import { mq } from '@/styles/theme'
 
 // ─── Assets ───────────────────────────────────────────────────────────────────
 
-// Agent icon from Figma SM navbar (node 185:866) — replace with a permanent
-// public asset once the Figma URL expires (~7 days from generation).
-const AGENT_ICON = 'https://www.figma.com/api/mcp/asset/0a941ed2-d955-4719-95b2-f1086e2ee203'
+const AGENT_ICON = '/icons/agent.svg'
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 

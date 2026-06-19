@@ -1,8 +1,5 @@
-
-
 'use client'
 
-import React from 'react'
 import styled, { ThemeProvider } from 'styled-components'
 import theme, { mq } from '@/styles/theme'
 import Navbar from '@/components/common/Navbar'
@@ -20,7 +17,6 @@ const Layout = ({ children }: Props) => {
         <Navbar />
         <Main>{children}</Main>
         <Footer />
-        {/* PersonalAgent renders on every page globally */}
         <PersonalAgent />
       </PageWrapper>
     </ThemeProvider>

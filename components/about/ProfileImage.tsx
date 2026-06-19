@@ -3,7 +3,7 @@ import { mq } from '@/styles/theme'
 
 // ─── Assets ───────────────────────────────────────────────────────────────────
 
-const IMG_PHOTO = '/about/profile-group.png'
+const IMG_PHOTO = '/about/professional-image.webp'
 const ICON_1 = '/about/icons/icon-1.svg'
 const ICON_2 = '/about/icons/icon-2.svg'
 const ICON_3 = '/about/icons/icon-3.svg'

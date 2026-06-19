@@ -108,7 +108,7 @@ const AboutBrief = () => {
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-const Section = styled.div`
+const Section = styled.section`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing[10]};
