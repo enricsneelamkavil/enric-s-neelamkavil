@@ -181,13 +181,13 @@ const MobileNavWrapper = styled.nav`
     left: 50%;
     transform: translateX(-50%);
     z-index: 1000;
-    width: 356px;
+    width: max-content;
     max-width: calc(100vw - 32px);
     background-color: ${({ theme }) => theme.colors.surface.tertiary};
     border: 1px solid ${({ theme }) => theme.colors.border.tertiary};
     border-radius: ${({ theme }) => theme.radii.md};
     padding: 6px;
-    gap: 0;
+    gap: 4px;
   }
 `
 
@@ -217,8 +217,6 @@ const AgentTriggerButton = styled.button`
 `
 
 const MobileNavItem = styled.div`
-  flex: 1;
-  min-width: 0;
   display: flex;
   align-items: center;
   justify-content: center;
