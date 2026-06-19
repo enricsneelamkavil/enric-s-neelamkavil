@@ -1,17 +1,17 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { Document, Page, pdfjs } from 'react-pdf'
+import dynamic from 'next/dynamic'
+import { Page } from 'react-pdf'
 import 'react-pdf/dist/Page/TextLayer.css'
 import styled from 'styled-components'
 import { mq } from '@/styles/theme'
 
-// ─── PDF.js worker ───────────────────────────────────────────────────────────
-
-pdfjs.GlobalWorkerOptions.workerSrc = new URL(
-  'pdfjs-dist/build/pdf.worker.min.mjs',
-  import.meta.url,
-).toString()
+// Document is client-only — react-pdf uses DOMMatrix which does not exist in Node.js
+const Document = dynamic(
+  () => import('react-pdf').then(m => m.Document),
+  { ssr: false }
+)
 
 // ─── Figma layout constants ───────────────────────────────────────────────────
 // Desktop canvas: node 282:801   PDF card: node 282:802
@@ -34,6 +34,9 @@ const ResumeCanvas = ({ zoom }: Props) => {
   const [mobileWidth, setMobileWidth] = useState(0)
 
   useEffect(() => {
+    // Load worker via CDN — must be client-side only
+    import('@/lib/pdfWorker')
+
     const update = () => setMobileWidth(
       window.innerWidth <= 768 ? window.innerWidth - 80 : 0
     )
@@ -49,7 +52,11 @@ const ResumeCanvas = ({ zoom }: Props) => {
   return (
     <Canvas $height={canvasHeight}>
       <PdfCard $scale={zoom / 100}>
-        <Document file={PDF_PATH} loading={<></>}>
+        <Document
+          file={PDF_PATH}
+          loading={<></>}
+          onError={(err) => console.error('PDF error:', err)}
+        >
           <Page
             pageNumber={1}
             width={mobileWidth > 0 ? mobileWidth : CARD_W}

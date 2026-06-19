@@ -8,6 +8,8 @@ import Toolbar, { ZOOM_MIN, ZOOM_MAX, ZOOM_STEP } from '@/components/resume/Tool
 import ResumeCanvas from '@/components/resume/ResumeCanvas'
 import DownloadSection from '@/components/resume/DownloadSection'
 
+export const dynamic = 'force-dynamic'
+
 export default function Resume() {
   const [zoom, setZoom] = useState(100)
 
