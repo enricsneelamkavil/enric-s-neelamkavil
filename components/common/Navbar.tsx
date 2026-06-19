@@ -16,7 +16,7 @@ const NAV_LINKS = [
   { label: 'Home', href: '/' },
   { label: 'About', href: '/about' },
   { label: 'Work', href: '#' },
-  { label: 'Resume', href: '#' },
+  { label: 'Resume', href: '/resume' },
   { label: 'Contact', href: '#' },
 ] as const
 

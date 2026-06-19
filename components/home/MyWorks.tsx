@@ -81,7 +81,7 @@ const MyWorks = () => {
         </TitleBlock>
         {/* Hidden on mobile via HeaderCTA wrapper */}
         <HeaderCTA>
-          <Button label="See all works" variant="secondary" href="/works" />
+          <Button label="See all works" variant="secondary" href="#" />
         </HeaderCTA>
       </HeaderContainer>
 
