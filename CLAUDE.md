@@ -47,6 +47,10 @@ portfolio/                        # project root
 │   │   └── AwardShelf.tsx        ✅ Done — 5 award cards with seal images
 │   ├── works/
 │   ├── resume/
+│   │   ├── PageHeader.tsx        ✅ Done — centered "Resume." title + subtitle
+│   │   ├── Toolbar.tsx           ✅ Done — PDF metadata + zoom/print (desktop only)
+│   │   ├── ResumeCanvas.tsx      ✅ Done — react-pdf viewer, CSS transform zoom
+│   │   └── DownloadSection.tsx   ✅ Done — dark card, Download + Email Enric CTAs
 │   ├── contact/
 │   └── shared/
 │       ├── SectionLabel.tsx      ✅ Done — 16px desktop / 12px mobile, no pill/chip styling
@@ -85,6 +89,10 @@ portfolio/                        # project root
 - `components/about/ProfessionalTimeline.tsx` ✅
 - `components/about/ProfessionalTimelineMobile.tsx` ✅
 - `components/about/AwardShelf.tsx` ✅
+- `components/resume/PageHeader.tsx` ✅
+- `components/resume/Toolbar.tsx` ✅
+- `components/resume/ResumeCanvas.tsx` ✅
+- `components/resume/DownloadSection.tsx` ✅
 
 ## Breakpoint System
 Defined in `styles/theme.ts` — import `mq` directly, never write raw media queries:
@@ -282,6 +290,65 @@ PageSections (62px gap)
 
 ---
 
+### Resume ✅ Done
+**Figma frames:** Desktop `282:772` · Mobile `306:1320`
+
+**Page file:** `app/resume/page.tsx` — `'use client'` (zoom state lives here)
+
+**Dependencies:** `react-pdf@10.4.1` — installed via `npm install react-pdf`
+
+**Composition:**
+```
+PageSections (pt: 140px desktop / 6rem tablet / 40px mobile)
+  └── HeaderGroup (gap: 80px desktop / 24px mobile)
+        ├── PageHeader
+        └── DetailsGroup (gap: 40px desktop / 32px mobile)
+              ├── Toolbar       zoom + onZoomIn + onZoomOut props
+              ├── ResumeCanvas  zoom prop
+              └── DownloadSection
+```
+
+**Zoom state (page.tsx):**
+- `useState(100)` — default 100%
+- `ZOOM_MIN / ZOOM_MAX / ZOOM_STEP` imported from `Toolbar.tsx` (50 / 150 / 10)
+- `onZoomIn`: `setZoom(z => Math.min(z + ZOOM_STEP, ZOOM_MAX))`
+- `onZoomOut`: `setZoom(z => Math.max(z - ZOOM_STEP, ZOOM_MIN))`
+
+#### PageHeader.tsx ✅
+- Centered "Resume." title — period in `colors.text.secondary`
+- Subtitle "The one pager" — `fonts.sans` regular, `fontSizes.sm` desktop / `fontSizes.xs` mobile
+
+#### Toolbar.tsx ✅
+- **Left — File info**: PDF icon (`/icons/pdf.svg`) + filename + `1 page · 1.25 MB · A4` metadata
+- **Right — Controls** (desktop only, `display: none` on mobile):
+  - `ControlsBox`: `surface.tertiary` bg, `radii.md`, zoom minus/label/plus + print icon
+  - Zoom buttons disabled at `ZOOM_MIN` (50) and `ZOOM_MAX` (150)
+  - Print: injects a hidden `position: fixed; top: -100px` iframe, loads `/resume.pdf`, calls `contentWindow.print()` — no new tab
+- Exports `ZOOM_MIN`, `ZOOM_MAX`, `ZOOM_STEP` constants for page.tsx
+- Icons from `/icons/`: `pdf.svg`, `minus.svg`, `add.svg`, `print.svg` — `<img>` tags, not inline SVGs
+- Max-width: 880px
+
+#### ResumeCanvas.tsx ✅
+- Uses `react-pdf` — `Document` + `Page` components
+- Worker: `pdfjs.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url).toString()`
+- Import `'react-pdf/dist/Page/TextLayer.css'` for text selection layer
+- **Zoom approach — CSS transform only (never re-renders on zoom):**
+  - Page always renders at `CARD_W = 820px` fixed width
+  - `PdfCard` gets `transform: scale(zoom / 100)` + `transform-origin: top center`
+  - `Canvas` height = `CANVAS_PADDING_V * 2 + CARD_H * (zoom / 100)` (explicit — transform is visual-only)
+- **Mobile:** `mobileWidth = window.innerWidth - 80` (resize listener), Page renders at mobile width, `PdfCard transform: none`
+- `loading={<></>}` on both Document and Page — suppresses flash during initial load
+- PDF file: `public/resume.pdf` — place manually, no dynamic fetch
+
+#### DownloadSection.tsx ✅
+- Dark `surface.inverse` card, max-width 1168px
+- Left: "TAKE IT WITH YOU" label + "Download the Resume." heading (Resume in `text.highlight`) + last updated date
+- Right: Download button (`<a href="/resume.pdf" download>`) + Email Enric (`mailto:`)
+- Mobile: stacks vertically, `gap: spacing[6]`
+- Button mobile: `padding: 12px 16px`, text `14px / 18px`, icon pill `16×16px`
+
+---
+
 ## Figma
 - File: https://www.figma.com/design/cGxPfzhfg2zi9MivaiE7dX/Enric-S-Neelamkavil-|-Portfolio?node-id=136-3016
 - Annotations in Figma are implementation instructions — always read and follow them
@@ -296,6 +363,12 @@ PageSections (62px gap)
 | Full page | `136:3016` | — |
 | About (professional) | `248:1175` | `284:834` |
 | About — Image Banner | `248:1186` | — |
+| Resume (full frame) | `282:772` | `306:1320` |
+| Resume — Page Header | `282:775` | `306:1323` |
+| Resume — Toolbar | `282:779` | `306:1599` |
+| Resume — Canvas | `282:801` | `306:1617` |
+| Resume — PDF Card | `282:802` | `306:1618` |
+| Resume — Download Section | `282:803` | `306:1649` |
 
 ### Title Container — Figma Spec (applies everywhere SectionLabel + SectionHeader are stacked)
 | | Desktop (LG) | Mobile (SM) |
@@ -365,8 +438,8 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_630z8GqkaL53xi1EXO_1HQ_VZ-t3EoZ
 
 ### Other Pages
 - [ ] Build Works page (`app/works/page.tsx`)
-- [ ] Build Resume page (`app/resume/page.tsx`)
 - [ ] Build Contact page (`app/contact/page.tsx`)
+- [x] ~~Build Resume page (`app/resume/page.tsx`)~~ ✅ Done
 
 ### Global
 - [ ] Wire MyWorks to Supabase (`projects` table) when Works page is ready
