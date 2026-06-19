@@ -8,13 +8,12 @@ import { mq } from '@/styles/theme'
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
 const INTERESTS = [
-  'Photography',
-  'Interaction',
-  'Experience',
-  'Product',
-  'Travel',
-  'Food',
   'Credit Cards',
+  'Travel',
+  'User Experience',
+  'Food',
+  'Product Design',
+  'Photography',
   'Music',
 ] as const
 
@@ -72,6 +71,13 @@ const Section = styled.section`
   border-top: 1px solid ${({ theme }) => theme.colors.border.tertiary};
   border-bottom: 1px solid ${({ theme }) => theme.colors.border.tertiary};
   padding: ${({ theme }) => theme.spacing[4]} 0;
+
+  ${mq.mobile} {
+    width: auto;
+    align-self: stretch;
+    margin-left: -24px;
+    margin-right: -24px;
+  }
 `
 
 const Track = styled.div`

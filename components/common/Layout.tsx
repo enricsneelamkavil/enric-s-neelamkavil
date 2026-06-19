@@ -4,7 +4,7 @@
 
 import React from 'react'
 import styled, { ThemeProvider } from 'styled-components'
-import theme from '@/styles/theme'
+import theme, { mq } from '@/styles/theme'
 import Navbar from '@/components/common/Navbar'
 import Footer from '@/components/common/Footer'
 import PersonalAgent from '@/components/common/PersonalAgent'
@@ -39,6 +39,11 @@ const Main = styled.main`
   flex: 1;
   display: flex;
   flex-direction: column;
+
+  ${mq.mobile} {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
 `
 
 export default Layout

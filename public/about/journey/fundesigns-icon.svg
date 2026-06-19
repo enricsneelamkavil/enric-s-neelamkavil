@@ -1,0 +1,13 @@
+<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 28 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="fundesigns-logo-icon">
+<path d="M0 0H9.33333V9.33333H0V0Z" fill="var(--fill-0, #FD2E35)"/>
+<path d="M9.33333 0H18.6667V9.33333H9.33333V0Z" fill="#D02B30"/>
+<path d="M18.6667 0H28V9.33333H18.6667V0Z" fill="#A4282C"/>
+<path d="M0 9.33333H9.33333V18.6667H0V9.33333Z" fill="#D02B30"/>
+<path d="M9.33333 9.33333H18.6667V18.6667H9.33333V9.33333Z" fill="#BA292E"/>
+<path d="M18.6667 9.33333H28V18.6667H18.6667V9.33333Z" fill="#612325"/>
+<path d="M0 18.6667H9.33333V28H0V18.6667Z" fill="#D02B30"/>
+<path d="M9.33333 18.6667H18.6667V28H9.33333V18.6667Z" fill="#612325"/>
+<path d="M18.6667 18.6667H28V28H18.6667V18.6667Z" fill="#342020"/>
+</g>
+</svg>

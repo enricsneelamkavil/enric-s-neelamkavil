@@ -12,16 +12,17 @@ const IMG_MAIN = '/home/lander/main.webp'
 const IMG_RIGHT = '/home/lander/right.webp'
 
 const LOGO_PATHS = [
-  '/company logos/remax-logo.svg',
-  '/company logos/apro-it-logo.svg',
-  '/company logos/urbantrash-logo.svg',
-  '/company logos/irisholidays-logo.svg',
-  '/company logos/ust-logo.svg',
-  '/company logos/vurse-logo.svg',
-  '/company logos/fundesigns-logo.svg',
-  '/company logos/opengrad-logo.svg',
-  '/company logos/deep5-logo.svg',
-  '/company logos/mulearn-logo.svg',
+  '/home/company-logos/remax-logo.svg',
+  '/home/company-logos/apro-it-logo.svg',
+  '/home/company-logos/urbantrash-logo.svg',
+  '/home/company-logos/irisholidays-logo.svg',
+  '/home/company-logos/ust-logo.svg',
+  '/home/company-logos/vurse-logo.svg',
+  '/home/company-logos/fundesigns-logo.svg',
+  '/home/company-logos/opengrad-logo.svg',
+  '/home/company-logos/deep5-logo.svg',
+  '/home/company-logos/mulearn-logo.svg',
+  'home/company-logos/reputeup-logo.svg',
 ] as const
 
 // ─── Animation ───────────────────────────────────────────────────────────────
@@ -137,7 +138,6 @@ const MainLander = styled.div`
   gap: ${({ theme }) => theme.spacing[6]};
 
   ${mq.mobile} {
-    padding: 0 24px;
     max-width: none;
     gap: ${({ theme }) => theme.spacing[6]};
   }
@@ -275,10 +275,6 @@ const LogoSection = styled.div`
   align-items: center;
   width: 100%;
   gap: ${({ theme }) => theme.spacing[6]};
-
-  ${mq.mobile} {
-    padding: 0 24px;
-  }
 `
 
 const TrustLabel = styled.p`
@@ -318,7 +314,7 @@ const MarqueeWrapper = styled.div`
   );
 
   ${mq.mobile} {
-    /* Escape the 24px padding on LogoSection so the marquee is full-viewport-width */
+    /* Escape Main's 24px global padding so the marquee is full-viewport-width */
     width: calc(100% + 48px);
     margin-left: -24px;
   }

@@ -117,14 +117,12 @@ const Section = styled.div`
 
   ${mq.tablet} {
     gap: ${({ theme }) => theme.spacing[8]};
-    padding: 0 24px;
   }
 
   ${mq.mobile} {
     flex-direction: column;
     align-items: flex-start;
     gap: 40px;
-    padding: 0 24px;
     max-width: none;
   }
 `
