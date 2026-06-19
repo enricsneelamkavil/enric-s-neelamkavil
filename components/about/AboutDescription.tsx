@@ -99,7 +99,6 @@ const Section = styled.section`
 const TitleBlock = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing[2]};
 `
 
 const ContentRow = styled.div`

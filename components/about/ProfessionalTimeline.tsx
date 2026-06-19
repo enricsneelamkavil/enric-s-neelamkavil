@@ -220,7 +220,6 @@ const TitleBlock = styled.div`
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing[1]};
 `
 
 const NavButtons = styled.div`

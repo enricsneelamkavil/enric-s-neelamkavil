@@ -34,19 +34,35 @@ const MOBILE_NAV_LINKS = [
 const Navbar = () => {
   const pathname = usePathname()
   const [scrolled, setScrolled] = useState(false)
+  const [hidden, setHidden] = useState(false)
 
   // "On Scroll" variant — add shadow to outer wrapper once page has scrolled
+  // "Hide on scroll down" — hide the navbar when scrolling down, show when scrolling up
   useEffect(() => {
-    const check = () => setScrolled(window.scrollY > 0)
-    check()
-    window.addEventListener('scroll', check, { passive: true })
-    return () => window.removeEventListener('scroll', check)
+    let lastScrollY = typeof window !== 'undefined' ? window.scrollY : 0
+
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY
+      setScrolled(currentScrollY > 0)
+
+      if (currentScrollY > lastScrollY && currentScrollY > 80) {
+        setHidden(true)
+      } else {
+        setHidden(false)
+      }
+
+      lastScrollY = currentScrollY
+    }
+
+    handleScroll()
+    window.addEventListener('scroll', handleScroll, { passive: true })
+    return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
   return (
     <>
       {/* ── Desktop: top-center glass pill ── */}
-      <DesktopNavWrapper $scrolled={scrolled} aria-label="Main navigation">
+      <DesktopNavWrapper $scrolled={scrolled} $hidden={hidden} aria-label="Main navigation">
         <NavPill role="list">
           {NAV_LINKS.map(({ label, href }) => {
             const active = pathname === href
@@ -93,11 +109,11 @@ const Navbar = () => {
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
 // Desktop wrapper — hidden on mobile
-const DesktopNavWrapper = styled.nav<{ $scrolled: boolean }>`
+const DesktopNavWrapper = styled.nav<{ $scrolled: boolean; $hidden: boolean }>`
   position: fixed;
   top: ${({ theme }) => theme.spacing[4]};
   left: 50%;
-  transform: translateX(-50%);
+  transform: translateX(-50%) translateY(${({ $hidden }) => ($hidden ? 'calc(-100% - 32px)' : '0')});
   z-index: 1000;
   padding: 6px;
   border-radius: ${({ theme }) => theme.radii.xl};
@@ -105,7 +121,7 @@ const DesktopNavWrapper = styled.nav<{ $scrolled: boolean }>`
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  transition: box-shadow 0.2s ease, background-color 0.2s ease;
+  transition: box-shadow 0.2s ease, background-color 0.2s ease, transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   ${mq.mobile} {
     display: none;
