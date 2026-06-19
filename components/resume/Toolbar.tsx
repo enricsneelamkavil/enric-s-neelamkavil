@@ -6,47 +6,23 @@ import DiamondBullet from '@/components/shared/DiamondBullet'
 
 // ─── PDF metadata constants ───────────────────────────────────────────────────
 
-const FILE_NAME   = 'enric-neelamkavil-resume.pdf'
-const PAGE_COUNT  = 1
-const FILE_SIZE   = '~200 KB'
-const PAPER_SIZE  = 'A4'
+const FILE_NAME = 'enric-s-neelamkavil-resume.pdf'
+const PAGE_COUNT = 1
+const FILE_SIZE = '1.25 MB'
+const PAPER_SIZE = 'A4'
 
 // ─── Zoom bounds (controlled externally — see page.tsx) ──────────────────────
 
-export const ZOOM_MIN  = 50
-export const ZOOM_MAX  = 150
+export const ZOOM_MIN = 50
+export const ZOOM_MAX = 150
 export const ZOOM_STEP = 10
 
-// ─── Inline SVG icons ─────────────────────────────────────────────────────────
+// ─── Icon paths ───────────────────────────────────────────────────────────────
 
-const PdfIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
-    <path d="M3 2.5A1.5 1.5 0 014.5 1H9l4 4v8.5A1.5 1.5 0 0111.5 15h-7A1.5 1.5 0 013 13.5V2.5z"
-      stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round"/>
-    <path d="M9 1v3.5A.5.5 0 009.5 5H13" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/>
-  </svg>
-)
-
-const MinusIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
-    <path d="M4 8h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-  </svg>
-)
-
-const PlusIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
-    <path d="M8 4v8M4 8h8" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
-  </svg>
-)
-
-const PrintIcon = () => (
-  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden>
-    <path d="M5 6V3.5A.5.5 0 015.5 3h5a.5.5 0 01.5.5V6" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/>
-    <rect x="2.5" y="6" width="11" height="7" rx="1" stroke="currentColor" strokeWidth="1.25"/>
-    <path d="M5 10h6M5 12h4" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round"/>
-    <circle cx="12" cy="8.5" r="0.75" fill="currentColor"/>
-  </svg>
-)
+const ICON_PDF   = '/icons/pdf.svg'
+const ICON_MINUS = '/icons/minus.svg'
+const ICON_PLUS  = '/icons/add.svg'
+const ICON_PRINT = '/icons/print.svg'
 
 // ─── Props ────────────────────────────────────────────────────────────────────
 
@@ -62,7 +38,7 @@ const Toolbar = ({ zoom, onZoomIn, onZoomOut }: Props) => (
   <Container>
     <FileInfo>
       <PdfIconBox>
-        <PdfIcon />
+        <img src={ICON_PDF} width={16} height={16} alt="" aria-hidden />
       </PdfIconBox>
       <FileMeta>
         <FileName>{FILE_NAME}</FileName>
@@ -85,7 +61,7 @@ const Toolbar = ({ zoom, onZoomIn, onZoomOut }: Props) => (
             disabled={zoom <= ZOOM_MIN}
             aria-label="Zoom out"
           >
-            <MinusIcon />
+            <img src={ICON_MINUS} width={16} height={16} alt="" aria-hidden />
           </ZoomBtn>
           <ZoomLabel aria-live="polite">{zoom}%</ZoomLabel>
           <ZoomBtn
@@ -94,16 +70,22 @@ const Toolbar = ({ zoom, onZoomIn, onZoomOut }: Props) => (
             disabled={zoom >= ZOOM_MAX}
             aria-label="Zoom in"
           >
-            <PlusIcon />
+            <img src={ICON_PLUS} width={16} height={16} alt="" aria-hidden />
           </ZoomBtn>
         </ZoomControl>
 
         <PrintBtn
           type="button"
-          onClick={() => window.print()}
+          onClick={() => {
+            const iframe = document.createElement('iframe')
+            iframe.style.cssText = 'position:fixed;width:0;height:0;border:0;top:-100px'
+            iframe.src = '/resume.pdf'
+            document.body.appendChild(iframe)
+            iframe.onload = () => iframe.contentWindow?.print()
+          }}
           aria-label="Print resume"
         >
-          <PrintIcon />
+          <img src={ICON_PRINT} width={16} height={16} alt="" aria-hidden />
         </PrintBtn>
       </ControlsBox>
     </Controls>

@@ -18,7 +18,7 @@ portfolio/                        # project root
 │   ├── page.tsx                  # Home ✅ Done
 │   ├── about/page.tsx            # About ✅ Done — 'use client'
 │   ├── works/page.tsx            # Works — not started
-│   ├── resume/page.tsx           # Resume — not started
+│   ├── resume/page.tsx           # Resume ✅ Done — 'use client' (zoom state)
 │   ├── contact/page.tsx          # Contact — not started
 │   └── layout.tsx                # Global layout (Navbar + Footer + PersonalAgent)
 ├── components/
