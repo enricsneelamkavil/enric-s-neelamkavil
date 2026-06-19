@@ -1,4 +1,4 @@
-import styled from 'styled-components'
+import styled, { keyframes } from 'styled-components'
 import { mq } from '@/styles/theme'
 
 // ─── Assets ───────────────────────────────────────────────────────────────────
@@ -26,32 +26,32 @@ const ProfileImage = () => (
 
       {/* Icon 1 — far left, bottom, +12.94° */}
       <IconBox $l={29.76} $t={331.64} $w={79.475} $h={84.73} $r={12.94}>
-        <IconImg src={ICON_1} alt="" aria-hidden="true" $iw={65} $ih={72} />
+        <IconImg src={ICON_1} alt="" aria-hidden="true" $iw={65} $ih={72} $delay={0} />
       </IconBox>
 
       {/* Icon 2 — upper-left, -12.29° */}
       <IconBox $l={95.57} $t={41.12} $w={84.862} $h={81.939} $r={-12.29}>
-        <IconImg src={ICON_2} alt="" aria-hidden="true" $iw={72} $ih={68.174} />
+        <IconImg src={ICON_2} alt="" aria-hidden="true" $iw={72} $ih={68.174} $delay={0.5} />
       </IconBox>
 
       {/* Icon 3 — left-center, +3.42° */}
       <IconBox $l={235.11} $t={219.91} $w={75.781} $h={69.747} $r={3.42}>
-        <IconImg src={ICON_3} alt="" aria-hidden="true" $iw={72} $ih={65.571} />
+        <IconImg src={ICON_3} alt="" aria-hidden="true" $iw={72} $ih={65.571} $delay={1} />
       </IconBox>
 
       {/* Icon 4 — right-center top, no rotation */}
       <IconBox $l={873} $t={75} $w={60.832} $h={72} $r={0}>
-        <IconImg src={ICON_4} alt="" aria-hidden="true" $iw={60.832} $ih={72} />
+        <IconImg src={ICON_4} alt="" aria-hidden="true" $iw={60.832} $ih={72} $delay={1.5} />
       </IconBox>
 
       {/* Icon 5 — right-center bottom, -8.74° */}
       <IconBox $l={929.25} $t={315.93} $w={81.496} $h={78.15} $r={-8.74}>
-        <IconImg src={ICON_5} alt="" aria-hidden="true" $iw={72} $ih={68} />
+        <IconImg src={ICON_5} alt="" aria-hidden="true" $iw={72} $ih={68} $delay={2} />
       </IconBox>
 
       {/* Icon 6 — far right, unified, +14.87° */}
       <IconBox $l={1052} $t={150} $w={88.067} $h={88.067} $r={14.87}>
-        <IconImg src={ICON_6} alt="" aria-hidden="true" $iw={72} $ih={72} />
+        <IconImg src={ICON_6} alt="" aria-hidden="true" $iw={72} $ih={72} $delay={2.5} />
       </IconBox>
 
     </Banner>
@@ -79,7 +79,6 @@ const Banner = styled.div`
     overflow: visible;
     display: flex;
     justify-content: center;
-    padding: 0 24px;
   }
 
   ${mq.mobile} {
@@ -88,7 +87,6 @@ const Banner = styled.div`
     overflow: visible;
     display: flex;
     justify-content: center;
-    padding: 0 24px;
   }
 `
 
@@ -119,7 +117,7 @@ const PhotoGroup = styled.div`
   }
 
   ${mq.mobile} {
-    width: min(300px, 100%);
+    width: min(257px, 100%);
   }
 `
 
@@ -132,6 +130,12 @@ const CirclePhoto = styled.img`
 `
 
 // ── Floating icons (desktop only) ─────────────────────────────────────────────
+
+const float = keyframes`
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+  100% { transform: translateY(0px); }
+`
 
 interface BoxProps {
   $l: number
@@ -162,6 +166,7 @@ const IconBox = styled.div<BoxProps>`
 interface ImgProps {
   $iw: number
   $ih: number
+  $delay?: number
 }
 
 const IconImg = styled.img<ImgProps>`
@@ -169,6 +174,8 @@ const IconImg = styled.img<ImgProps>`
   width: ${({ $iw }) => $iw}px;
   height: ${({ $ih }) => $ih}px;
   flex-shrink: 0;
+  animation: ${float} 4s ease-in-out infinite;
+  animation-delay: ${({ $delay }) => $delay || 0}s;
 `
 
 export default ProfileImage

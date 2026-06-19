@@ -85,9 +85,14 @@ const Section = styled.section`
   width: 100%;
   max-width: ${({ theme }) => theme.layout.maxWidth};
 
-  ${mq.tabletDown} {
+  ${mq.tablet} {
     max-width: none;
     padding: 0 24px;
+  }
+
+  ${mq.mobile} {
+    max-width: none;
+    gap: 12px;
   }
 `
 
@@ -104,7 +109,7 @@ const ContentRow = styled.div`
 
   ${mq.mobile} {
     flex-direction: column;
-    gap: ${({ theme }) => theme.spacing[8]};
+    gap: ${({ theme }) => theme.spacing[10]};
   }
 `
 
@@ -188,6 +193,11 @@ const ValueLight = styled.span`
   font-size: ${({ theme }) => theme.fontSizes.sm};
   line-height: ${({ theme }) => theme.lineHeights.normal};
   color: ${({ theme }) => theme.colors.text.primary};
+
+  ${mq.mobile} {
+    font-size: ${({ theme }) => theme.fontSizes.xs};
+    line-height: 16px;
+  }
 `
 
 const ValueRegular = styled.span`
@@ -196,6 +206,11 @@ const ValueRegular = styled.span`
   font-size: ${({ theme }) => theme.fontSizes.sm};
   line-height: ${({ theme }) => theme.lineHeights.normal};
   color: ${({ theme }) => theme.colors.text.primary};
+
+  ${mq.mobile} {
+    font-size: ${({ theme }) => theme.fontSizes.xs};
+    line-height: 16px;
+  }
 `
 
 export default AboutDescription

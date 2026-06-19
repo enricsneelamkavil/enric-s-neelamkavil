@@ -138,7 +138,6 @@ const MainLander = styled.div`
   gap: ${({ theme }) => theme.spacing[6]};
 
   ${mq.mobile} {
-    padding: 0 24px;
     max-width: none;
     gap: ${({ theme }) => theme.spacing[6]};
   }
@@ -276,10 +275,6 @@ const LogoSection = styled.div`
   align-items: center;
   width: 100%;
   gap: ${({ theme }) => theme.spacing[6]};
-
-  ${mq.mobile} {
-    padding: 0 24px;
-  }
 `
 
 const TrustLabel = styled.p`
@@ -319,7 +314,7 @@ const MarqueeWrapper = styled.div`
   );
 
   ${mq.mobile} {
-    /* Escape the 24px padding on LogoSection so the marquee is full-viewport-width */
+    /* Escape Main's 24px global padding so the marquee is full-viewport-width */
     width: calc(100% + 48px);
     margin-left: -24px;
   }

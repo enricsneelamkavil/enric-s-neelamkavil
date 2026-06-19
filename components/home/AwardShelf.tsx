@@ -79,12 +79,7 @@ const Section = styled.div`
   width: 100%;
   max-width: ${({ theme }) => theme.layout.maxWidth};
 
-  ${mq.tablet} {
-    padding: 0 24px;
-  }
-
   ${mq.mobile} {
-    padding: 0 24px;
     max-width: none;
     gap: 40px;
   }

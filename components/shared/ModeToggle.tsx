@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import styled from 'styled-components'
+import { mq } from '@/styles/theme'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -48,6 +49,11 @@ const RingSvg = styled.svg.attrs({
   opacity: ${({ $visible }) => ($visible ? 1 : 0)};
   transform: ${({ $visible }) => ($visible ? 'scale(1)' : 'scale(0.8)')};
   transition: all 0.3s ease-in-out;
+
+  ${mq.mobile} {
+    width: 24px;
+    height: 24px;
+  }
 `
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
@@ -59,6 +65,11 @@ const IconBox = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+
+  ${mq.mobile} {
+    width: 16px;
+    height: 16px;
+  }
 `
 
 const ArrowIcon = ({ side }: { side: ToggleSelection }) => (
@@ -136,6 +147,11 @@ const Pill = styled.div`
   flex-shrink: 0;
   cursor: pointer;
   user-select: none;
+
+  ${mq.mobile} {
+    gap: 2px;
+    padding: 4px;
+  }
 `
 
 interface KnobProps { $side: ToggleSelection }
@@ -156,6 +172,14 @@ const Knob = styled.div<KnobProps>`
   transition: transform 0.3s ease-in-out;
   pointer-events: none;
   z-index: 1;
+
+  ${mq.mobile} {
+    top: 4px;
+    left: 4px;
+    width: 24px;
+    height: 24px;
+    transform: ${({ $side }) => $side === 'left' ? 'translateX(0)' : 'translateX(26px)'};
+  }
 `
 
 const Slot = styled.div`
@@ -168,6 +192,11 @@ const Slot = styled.div`
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
+
+  ${mq.mobile} {
+    width: 24px;
+    height: 24px;
+  }
 `
 
 export default ModeToggle

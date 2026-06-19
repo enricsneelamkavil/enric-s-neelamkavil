@@ -8,6 +8,7 @@ import AboutDescription from '@/components/about/AboutDescription'
 import MyTools from '@/components/about/MyTools'
 import Journey from '@/components/about/Journey'
 import ProfessionalTimeline from '@/components/about/ProfessionalTimeline'
+import ProfessionalTimelineMobile from '@/components/about/ProfessionalTimelineMobile'
 import AwardShelf from '@/components/about/AwardShelf'
 
 export default function About() {
@@ -20,7 +21,12 @@ export default function About() {
       </LandingGroup>
       <MyTools />
       <Journey />
-      <ProfessionalTimeline />
+      <DesktopTimeline>
+        <ProfessionalTimeline />
+      </DesktopTimeline>
+      <MobileTimeline>
+        <ProfessionalTimelineMobile />
+      </MobileTimeline>
       <AwardShelf />
     </PageSections>
   )
@@ -41,6 +47,26 @@ const PageSections = styled.div`
 
   ${mq.mobile} {
     gap: 48px;
+  }
+`
+
+const DesktopTimeline = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+
+  ${mq.mobile} {
+    display: none;
+  }
+`
+
+const MobileTimeline = styled.div`
+  display: none;
+
+  ${mq.mobile} {
+    display: block;
+    width: 100%;
   }
 `
 

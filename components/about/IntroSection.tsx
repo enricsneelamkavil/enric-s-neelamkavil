@@ -61,13 +61,12 @@ const Section = styled.section`
   gap: ${({ theme }) => theme.spacing[8]};
 
   ${mq.tablet} {
-    padding-top: 6rem;
-    padding: 6rem 24px 0;
+    padding: 6rem 0 0;
     gap: ${({ theme }) => theme.spacing[6]};
   }
 
   ${mq.mobile} {
-    padding: 40px 24px 0;
+    padding: 40px 0 0;
     gap: ${({ theme }) => theme.spacing[6]};
   }
 `
@@ -112,8 +111,8 @@ const PageTitle = styled.h1`
   }
 
   ${mq.mobile} {
-    font-size: ${({ theme }) => theme.fontSizes['2xl']};
-    line-height: ${({ theme }) => theme.lineHeights['2xl']};
+    font-size: ${({ theme }) => theme.fontSizes.lg};
+    line-height: 40px;
   }
 `
 
@@ -129,6 +128,11 @@ const PageSubtitle = styled.p`
   line-height: ${({ theme }) => theme.lineHeights.normal};
   color: ${({ theme }) => theme.colors.text.secondary};
   text-align: center;
+
+  ${mq.mobile} {
+    font-size: ${({ theme }) => theme.fontSizes.xs};
+    line-height: 16px;
+  }
 `
 
 // ── Mode Switch ───────────────────────────────────────────────────────────────
@@ -139,7 +143,7 @@ const ModeSwitch = styled.div`
   gap: ${({ theme }) => theme.spacing[6]};
 
   ${mq.mobile} {
-    gap: ${({ theme }) => theme.spacing[3]};
+    gap: ${({ theme }) => theme.spacing[4]};
   }
 `
 

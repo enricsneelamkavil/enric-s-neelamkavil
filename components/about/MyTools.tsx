@@ -20,21 +20,21 @@ interface Tool {
 // "flat"             = SVG, no radius, no shadow
 
 const TOOLS: Tool[] = [
-  { name: 'Figma', src: 'about/tools/figma.png', variant: 'rounded-overflow', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
-  { name: 'Photoshop', src: 'about/tools/photoshop.svg', variant: 'flat', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
-  { name: 'Sketch', src: 'about/tools/sketch.png', variant: 'rounded-overflow', shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
-  { name: 'Illustrator', src: 'about/tools/illustrator.svg', variant: 'flat', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
-  { name: 'Lovable', src: 'about/tools/lovable.png', variant: 'rounded-fit', shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
-  { name: 'XD', src: 'about/tools/xd.svg', variant: 'flat', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
-  { name: 'Gemini', src: 'about/tools/gemini.png', variant: 'rounded-fit', shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
-  { name: 'ChatGPT', src: 'about/tools/chatgpt.png', variant: 'rounded-fit', shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
-  { name: 'Claude', src: 'about/tools/claude.png', variant: 'rounded-fit', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
-  { name: 'CorelDraw', src: 'about/tools/coreldraw.png', variant: 'rounded-overflow', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
-  { name: 'After Effects', src: 'about/tools/after-effects.svg', variant: 'flat', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
-  { name: 'Premiere Pro', src: 'about/tools/premiere-pro.svg', variant: 'flat', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
+  { name: 'Figma',         src: 'about/tools/figma.png',         variant: 'rounded-overflow', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
+  { name: 'Photoshop',     src: 'about/tools/photoshop.svg',     variant: 'flat',             shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
+  { name: 'Sketch',        src: 'about/tools/sketch.png',        variant: 'rounded-overflow', shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
+  { name: 'Illustrator',   src: 'about/tools/illustrator.svg',   variant: 'flat',             shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
+  { name: 'Lovable',       src: 'about/tools/lovable.png',       variant: 'rounded-fit',      shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
+  { name: 'XD',            src: 'about/tools/xd.svg',            variant: 'flat',             shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
+  { name: 'Gemini',        src: 'about/tools/gemini.png',        variant: 'rounded-fit',      shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
+  { name: 'ChatGPT',       src: 'about/tools/chatgpt.png',       variant: 'rounded-fit',      shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
+  { name: 'Claude',        src: 'about/tools/claude.png',        variant: 'rounded-fit',      shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
+  { name: 'CorelDraw',     src: 'about/tools/coreldraw.png',     variant: 'rounded-overflow', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
+  { name: 'After Effects', src: 'about/tools/after-effects.svg', variant: 'flat',             shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
+  { name: 'Premiere Pro',  src: 'about/tools/premiere-pro.svg',  variant: 'flat',             shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
 ]
 
-const RISE = 16 // px — hovered icon rise
+const RISE = 16
 const RISE_NEIGHBOR = RISE / 2
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -52,6 +52,8 @@ const MyTools = () => {
 
   return (
     <Section>
+
+      {/* Desktop: animated dock — hidden on mobile */}
       <DockContainer>
         {TOOLS.map((tool, i) => (
           <IconSlot
@@ -64,13 +66,11 @@ const MyTools = () => {
             {tool.variant === 'flat' && (
               <FlatImg src={tool.src} alt={tool.name} />
             )}
-
             {tool.variant === 'rounded-fit' && (
               <RoundedBox $shadow={tool.shadow!}>
                 <FitImg src={tool.src} alt={tool.name} />
               </RoundedBox>
             )}
-
             {tool.variant === 'rounded-overflow' && (
               <RoundedBox $shadow={tool.shadow!}>
                 <OverflowClip>
@@ -81,6 +81,30 @@ const MyTools = () => {
           </IconSlot>
         ))}
       </DockContainer>
+
+      {/* Mobile: static grid — no $y, no hover, no magnification */}
+      <MobileGrid>
+        {TOOLS.map((tool) => (
+          <MobileCell key={tool.name} title={tool.name}>
+            {tool.variant === 'flat' && (
+              <FlatImg src={tool.src} alt={tool.name} />
+            )}
+            {tool.variant === 'rounded-fit' && (
+              <RoundedBox $shadow={tool.shadow!}>
+                <FitImg src={tool.src} alt={tool.name} />
+              </RoundedBox>
+            )}
+            {tool.variant === 'rounded-overflow' && (
+              <RoundedBox $shadow={tool.shadow!}>
+                <OverflowClip>
+                  <OverflowImg src={tool.src} alt={tool.name} />
+                </OverflowClip>
+              </RoundedBox>
+            )}
+          </MobileCell>
+        ))}
+      </MobileGrid>
+
     </Section>
   )
 }
@@ -93,6 +117,8 @@ const Section = styled.section`
   width: 100%;
 `
 
+// ── Desktop dock ──────────────────────────────────────────────────────────────
+
 const DockContainer = styled.div`
   display: flex;
   align-items: center;
@@ -103,18 +129,17 @@ const DockContainer = styled.div`
   border-radius: 24px;
 
   ${mq.tablet} {
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    align-content: flex-start;
     gap: 12px;
     padding: 16px 20px;
+    margin: 0 auto;
   }
 
   ${mq.mobile} {
-    gap: 10px;
-    padding: 14px 16px;
-    max-width: calc(100vw - 48px);
-    overflow-x: auto;
-    overflow-y: visible;
-    scrollbar-width: none;
-    &::-webkit-scrollbar { display: none; }
+    display: none;
   }
 `
 
@@ -129,16 +154,7 @@ const IconSlot = styled.div<SlotProps>`
   will-change: transform;
   cursor: default;
   position: relative;
-
-  ${mq.mobile} {
-    width: 48px;
-    height: 48px;
-    transform: none;
-    will-change: auto;
-  }
 `
-
-// ── Flat (SVG, no radius) ─────────────────────────────────────────────────────
 
 const FlatImg = styled.img`
   display: block;
@@ -146,18 +162,14 @@ const FlatImg = styled.img`
   height: 100%;
 `
 
-// ── Rounded container ─────────────────────────────────────────────────────────
-
 const RoundedBox = styled.div<{ $shadow: string }>`
   width: 100%;
   height: 100%;
-  border-radius: 16px;
+  border-radius: 25%;
   box-shadow: ${({ $shadow }) => $shadow};
   overflow: hidden;
   position: relative;
 `
-
-// ── Rounded-fit (fills box exactly) ──────────────────────────────────────────
 
 const FitImg = styled.img`
   position: absolute;
@@ -165,17 +177,15 @@ const FitImg = styled.img`
   width: 100%;
   height: 100%;
   object-fit: cover;
-  border-radius: 16px;
+  border-radius: 25%;
   pointer-events: none;
 `
-
-// ── Rounded-overflow (image ~124% of box, clipped) ───────────────────────────
 
 const OverflowClip = styled.div`
   position: absolute;
   inset: 0;
   overflow: hidden;
-  border-radius: 16px;
+  border-radius: 25%;
   pointer-events: none;
 `
 
@@ -186,6 +196,34 @@ const OverflowImg = styled.img`
   width: 124%;
   height: 124%;
   pointer-events: none;
+`
+
+// ── Mobile grid ───────────────────────────────────────────────────────────────
+
+const MobileGrid = styled.div`
+  display: none;
+
+  @media (max-width: 768px) {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: clamp(8px, 2vw, 16px);
+    width: 100%;
+    padding: clamp(12px, 3vw, 24px);
+    box-sizing: border-box;
+    background: ${({ theme }) => theme.colors.surface.tertiary};
+    border: 1px solid ${({ theme }) => theme.colors.border.tertiary};
+    border-radius: 16px;
+  }
+`
+
+const MobileCell = styled.div`
+  @media (max-width: 768px) {
+    width: clamp(36px, 11vw, 64px);
+    height: clamp(36px, 11vw, 64px);
+    flex-shrink: 0;
+    position: relative;
+  }
 `
 
 export default MyTools

@@ -126,9 +126,13 @@ const Section = styled.section`
   width: 100%;
   max-width: ${({ theme }) => theme.layout.maxWidth};
 
-  ${mq.tabletDown} {
+  ${mq.tablet} {
     max-width: none;
     padding: 0 24px;
+  }
+
+  ${mq.mobile} {
+    max-width: none;
   }
 `
 
@@ -143,6 +147,10 @@ const JourneySection = styled.div`
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing[10]};
   width: 100%;
+
+  ${mq.mobile} {
+    gap: 32px;
+  }
 `
 
 // ── Entry row ─────────────────────────────────────────────────────────────────
@@ -155,8 +163,9 @@ const EntryRow = styled.div`
   width: 100%;
 
   ${mq.mobile} {
-    flex-wrap: wrap;
-    gap: ${({ theme }) => theme.spacing[3]};
+    flex-wrap: nowrap;
+    gap: 16px;
+    align-items: center;
   }
 `
 
@@ -166,6 +175,10 @@ const BulletImg = styled.img`
   height: 24px;
   flex-shrink: 0;
   pointer-events: none;
+
+  ${mq.mobile} {
+    display: none;
+  }
 `
 
 const BulletInnerDot = styled.img`
@@ -177,6 +190,10 @@ const BulletInnerDot = styled.img`
   height: 12px;
   display: block;
   pointer-events: none;
+
+  ${mq.mobile} {
+    display: none;
+  }
 `
 
 const LogoLink = styled.a`
@@ -203,9 +220,9 @@ const RoleTitle = styled.p`
   white-space: nowrap;
 
   ${mq.mobile} {
-    font-size: ${({ theme }) => theme.fontSizes.sm};
-    line-height: ${({ theme }) => theme.lineHeights.normal};
-    white-space: normal;
+    font-size: ${({ theme }) => theme.fontSizes.md};
+    line-height: 32px;
+    white-space: nowrap;
   }
 `
 
@@ -219,6 +236,10 @@ const DateTag = styled.div`
   border-radius: ${({ theme }) => theme.radii.lg};
   white-space: nowrap;
   flex-shrink: 0;
+
+  ${mq.mobile} {
+    display: none;
+  }
 `
 
 const DateText = styled.span`
@@ -244,6 +265,10 @@ const ConnectorCol = styled.div`
   display: flex;
   justify-content: center;
   align-self: stretch;
+
+  ${mq.mobile} {
+    display: none;
+  }
 `
 
 const ConnectorLine = styled.div`
@@ -266,6 +291,13 @@ const DescriptionContainer = styled.div`
     &::-webkit-scrollbar { display: none; }
     padding-bottom: 8px;
   }
+
+  ${mq.mobile} {
+    flex-direction: column;
+    overflow-x: visible;
+    gap: 32px;
+    padding: 0;
+  }
 `
 
 const Column = styled.div`
@@ -278,7 +310,26 @@ const Column = styled.div`
   color: ${({ theme }) => theme.colors.text.tertiary};
 
   ${mq.mobile} {
-    width: 200px;
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    width: auto;
+
+    &::before {
+      content: '';
+      display: block;
+      width: 8px;
+      height: 8px;
+      flex-shrink: 0;
+      margin-top: 8px;
+      background: ${({ theme }) => theme.colors.text.highlight};
+      border-radius: 2px;
+      transform: rotate(45deg);
+    }
+
+    &:nth-child(n+3) {
+      display: none;
+    }
   }
 `
 

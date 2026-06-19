@@ -196,9 +196,13 @@ const Section = styled.section`
   width: 100%;
   max-width: ${({ theme }) => theme.layout.maxWidth};
 
-  ${mq.tabletDown} {
+  ${mq.tablet} {
     max-width: none;
     padding: 0 24px;
+  }
+
+  ${mq.mobile} {
+    max-width: none;
   }
 `
 
@@ -271,6 +275,15 @@ const ScrollTrack = styled.div`
   display: inline-flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing[6]};
+  padding-right: max(0px, calc((100vw - ${({ theme }) => theme.layout.maxWidth}) / 2));
+
+  ${mq.tablet} {
+    padding-right: 24px;
+  }
+
+  ${mq.mobile} {
+    padding-right: 24px;
+  }
 `
 
 // ── Event rows ────────────────────────────────────────────────────────────────

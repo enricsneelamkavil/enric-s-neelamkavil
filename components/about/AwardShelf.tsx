@@ -46,7 +46,8 @@ const AwardCard = ({ name, subtitle, seal }: AwardCardProps) => (
 const AwardShelf = () => (
   <Section>
     <TitleContainer>
-      <SectionLabel>Recognition</SectionLabel>
+      <DesktopLabel><SectionLabel>Recognition</SectionLabel></DesktopLabel>
+      <MobileLabel><SectionLabel>ACHIEVEMENTS</SectionLabel></MobileLabel>
       <SectionHeader before="A " muted="shelf " after="of awards." />
     </TitleContainer>
 
@@ -72,7 +73,6 @@ const Section = styled.section`
   }
 
   ${mq.mobile} {
-    padding: 0 24px;
     max-width: none;
     gap: 40px;
   }
@@ -105,7 +105,7 @@ const AwardsRow = styled.div`
 
   ${mq.mobile} {
     justify-content: flex-start;
-    gap: 32px;
+    gap: 24px;
     overflow-x: auto;
     scroll-snap-type: x mandatory;
     -webkit-overflow-scrolling: touch;
@@ -128,7 +128,7 @@ const CardWrapper = styled.div`
 
   ${mq.mobile} {
     scroll-snap-align: start;
-    width: 160px;
+    width: 212px;
   }
 `
 
@@ -137,11 +137,6 @@ const SealBox = styled.div`
   width: 120px;
   height: 120px;
   flex-shrink: 0;
-
-  ${mq.mobile} {
-    width: 96px;
-    height: 96px;
-  }
 `
 
 const SealImg = styled.img`
@@ -179,6 +174,15 @@ const AwardSubtitle = styled.p`
   font-size: ${({ theme }) => theme.fontSizes.xs};
   line-height: ${({ theme }) => theme.lineHeights.tight};
   color: ${({ theme }) => theme.colors.text.secondary};
+`
+
+const DesktopLabel = styled.div`
+  ${mq.mobile} { display: none; }
+`
+
+const MobileLabel = styled.div`
+  display: none;
+  ${mq.mobile} { display: block; }
 `
 
 export default AwardShelf
