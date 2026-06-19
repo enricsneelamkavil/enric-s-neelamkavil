@@ -222,7 +222,10 @@ const RoleTitle = styled.p`
   ${mq.mobile} {
     font-size: ${({ theme }) => theme.fontSizes.md};
     line-height: 32px;
-    white-space: nowrap;
+    white-space: normal;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    width: 100%;
   }
 `
 
