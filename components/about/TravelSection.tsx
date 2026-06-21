@@ -96,7 +96,7 @@ const TravelSection = () => {
 
       {/* Mobile flags row — hidden on desktop */}
       <MobileFlagsRow>
-        {FLAGS.map(({ name, src }) => {
+        {FLAGS.map(({ name, src }, index) => {
           const visible = hoveredFlag === name || activeFlag === name
           return (
             <MobileFlagItem
@@ -106,7 +106,14 @@ const TravelSection = () => {
               onMouseLeave={() => setHoveredFlag(null)}
               onClick={() => toggleFlag(name)}
             >
-              {visible && <FlagTooltip>{name}</FlagTooltip>}
+              {visible && (
+                <FlagTooltip 
+                  $isFirst={index === 0} 
+                  $isLast={index === FLAGS.length - 1}
+                >
+                  {name}
+                </FlagTooltip>
+              )}
               <img src={src} alt={name} />
             </MobileFlagItem>
           )
@@ -222,11 +229,27 @@ const MobileFlagItem = styled.div<{ $raised: boolean }>`
   }
 `
 
-const FlagTooltip = styled.div`
+const FlagTooltip = styled.div<{ $isFirst?: boolean; $isLast?: boolean }>`
   position: absolute;
   bottom: calc(100% + 8px);
-  left: 50%;
-  transform: translateX(-50%);
+  
+  /* Prevent cutoff at screen edges */
+  ${({ $isFirst, $isLast }) => {
+    if ($isFirst) return `
+      left: 0;
+      transform: none;
+    `
+    if ($isLast) return `
+      left: auto;
+      right: 0;
+      transform: none;
+    `
+    return `
+      left: 50%;
+      transform: translateX(-50%);
+    `
+  }}
+
   background: ${({ theme }) => theme.colors.surface.inverse};
   color: ${({ theme }) => theme.colors.text.inverse};
   font-family: ${({ theme }) => theme.fonts.sans};

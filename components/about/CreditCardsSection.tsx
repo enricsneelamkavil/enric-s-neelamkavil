@@ -117,22 +117,13 @@ const CreditCardsSection = () => {
         <SectionHeader before="My " muted="Card" after=" collection." />
       </TitleBlock>
 
-      {/* ── Desktop 2×4 grid — hidden on mobile ─────────────────────────── */}
+      {/* ── Desktop grid — hidden on mobile ─────────────────────────── */}
       <DesktopGrid>
-        <CardRow>
-          {CARDS.slice(0, 4).map(({ key, src, alt }) => (
-            <DesktopCard key={key}>
-              <img src={src} alt={alt} draggable={false} />
-            </DesktopCard>
-          ))}
-        </CardRow>
-        <CardRow>
-          {CARDS.slice(4, 8).map(({ key, src, alt }) => (
-            <DesktopCard key={key}>
-              <img src={src} alt={alt} draggable={false} />
-            </DesktopCard>
-          ))}
-        </CardRow>
+        {CARDS.map(({ key, src, alt }) => (
+          <DesktopCard key={key}>
+            <img src={src} alt={alt} draggable={false} />
+          </DesktopCard>
+        ))}
       </DesktopGrid>
 
       {/* ── Mobile swipeable card stack — hidden on desktop ──────────────── */}
@@ -207,26 +198,24 @@ const TitleBlock = styled.div`
 // ── Desktop grid ──────────────────────────────────────────────────────────────
 
 const DesktopGrid = styled.div`
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
   gap: ${({ theme }) => theme.spacing[6]};
+
+  /* When the screen is narrower than ~1100px, start wrapping to maintain a good card width */
+  @media (max-width: 1100px) {
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  }
 
   ${mq.mobile} {
     display: none;
   }
 `
 
-const CardRow = styled.div`
-  display: flex;
-  gap: ${({ theme }) => theme.spacing[6]};
-  height: 172px;
-  align-items: stretch;
-`
-
 const DesktopCard = styled.div`
   position: relative;
-  flex: 1 0 0;
-  min-width: 1px;
+  width: 100%;
+  aspect-ratio: 160 / 100;
   border: 1px solid ${({ theme }) => theme.colors.border.tertiary};
   border-radius: 14px;
   overflow: hidden;

@@ -121,11 +121,9 @@ const ProfessionalTimelineMobile = () => (
       </LeftColumn>
 
       <StripWrapper>
-        <StripHorizontal>
-          <StripContent>
-            {MOBILE_PHOTOS.map((p, i) => <MobilePhotoCell key={i} p={p} />)}
-          </StripContent>
-        </StripHorizontal>
+        <StripContent>
+          {MOBILE_PHOTOS.map((p, i) => <MobilePhotoCell key={i} p={p} />)}
+        </StripContent>
         {YEAR_LABELS.map((y) => (
           <YearLabelWrap key={y.text} $top={y.top}>
             <YearLabelText>{y.text}</YearLabelText>
@@ -228,38 +226,26 @@ const StripWrapper = styled.div`
   width: ${STRIP_W}px;
   height: ${STRIP_H}px;
   flex-shrink: 0;
-  overflow: clip;
+  /* Clean pixel-perfect notch using clip-path, replacing distorted SVG rotation */
+  clip-path: polygon(0 0, 50% 40px, 100% 0, 100% 100%, 50% calc(100% - 40px), 0 100%);
+
+  @media (max-width: 402px) {
+    width: 90px;
+    /* Slightly shallower notch for the narrower width */
+    clip-path: polygon(0 0, 50% 32px, 100% 0, 100% 100%, 50% calc(100% - 32px), 0 100%);
+  }
 `
 
-// Horizontal strip (STRIP_H × STRIP_W = 1304×137px) rotated -90deg to fill the
-// column vertically. Mask is applied HERE so the SVG sees 1304×137 dimensions —
-// close to the SVG's native 2723×169 proportions — giving visible notched ends.
-// At 137×1304 (original approach) the notch depth collapsed to ~2px (rectangle).
-const StripHorizontal = styled.div`
-  position: absolute;
-  width: ${STRIP_H}px;
-  height: ${STRIP_W}px;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%) rotate(-90deg);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  mask-image: url('${IMG_SHAPE_MASK}');
-  mask-size: ${STRIP_H}px ${STRIP_W}px;
-  mask-repeat: no-repeat;
-  -webkit-mask-image: url('${IMG_SHAPE_MASK}');
-  -webkit-mask-size: ${STRIP_H}px ${STRIP_W}px;
-  -webkit-mask-repeat: no-repeat;
-`
-
-// Counter-rotate photos +90deg so they appear upright after StripHorizontal's -90deg
 const StripContent = styled.div`
-  transform: rotate(90deg);
-  flex: none;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   flex-direction: column;
+  justify-content: center;
   width: ${STRIP_W}px;
+  height: 100%;
 `
 
 const PhotoCell = styled.div`

@@ -36,6 +36,16 @@ const Main = styled.main`
   display: flex;
   flex-direction: column;
 
+  ${mq.smallDesktop} {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+
+  ${mq.tablet} {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+
   ${mq.mobile} {
     padding-left: 24px;
     padding-right: 24px;
