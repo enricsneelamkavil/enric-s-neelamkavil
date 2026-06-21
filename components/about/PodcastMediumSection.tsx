@@ -14,9 +14,21 @@ const PLATFORMS = [
 ]
 
 const ARTICLES = [
-  { title: 'I Failed the Challenge and Still Got an Apple Watch for Free', readTime: '5 min read' },
-  { title: 'The Portfolio I Never Submitted Got Me to awwwards.', readTime: '3 min read' },
-  { title: 'From Nothing to a DESIGNER today!', readTime: '4 min read' },
+  { 
+    title: 'I Failed the Challenge and Still Got an Apple Watch for Free', 
+    readTime: '5 min read',
+    href: 'https://medium.com/@enricsneelamkavil/i-failed-the-challenge-and-still-got-an-apple-watch-for-free-be7a0bb8d10f'
+  },
+  { 
+    title: 'The Portfolio I Never Submitted Got Me to awwwards.', 
+    readTime: '3 min read',
+    href: 'https://medium.com/@enricsneelamkavil/the-portfolio-i-never-submitted-got-me-to-awwwards-2ce43a5886b3'
+  },
+  { 
+    title: 'From Nothing to a DESIGNER today!', 
+    readTime: '4 min read',
+    href: 'https://medium.com/@enricsneelamkavil/from-nothing-to-a-designer-today-d05c02edf1e1'
+  },
 ]
 
 const MEDIUM_URL = 'https://medium.com/@enricsneelamkavil'
@@ -89,10 +101,10 @@ const PodcastMediumSection = () => (
 
       <WritingContent>
         <ArticleList>
-          {ARTICLES.map(({ title, readTime }, i) => (
+          {ARTICLES.map(({ title, readTime, href }, i) => (
             <ArticleRow
               key={title}
-              href={MEDIUM_URL}
+              href={href}
               target="_blank"
               rel="noopener noreferrer"
               $first={i === 0}

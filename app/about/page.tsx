@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import styled from 'styled-components'
 import { mq } from '@/styles/theme'
 
@@ -34,9 +34,18 @@ export default function About() {
   const [mode, setMode] = useState<Mode>('professional')
   const [snapping, setSnapping] = useState(false)
 
+  // Restore saved mode from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('portfolio_about_mode') as Mode | null
+    if (saved === 'professional' || saved === 'personal') {
+      setMode(saved)
+    }
+  }, [])
+
   const handleModeChange = useCallback((newMode: Mode) => {
     setSnapping(true)
     setMode(newMode)
+    localStorage.setItem('portfolio_about_mode', newMode)
     
     // Scroll smoothly to top when mode changes
     window.scrollTo({ top: 0, behavior: 'smooth' })
