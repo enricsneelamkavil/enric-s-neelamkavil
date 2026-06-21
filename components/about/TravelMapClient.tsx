@@ -5,8 +5,8 @@ import styled from 'styled-components'
 
 // ─── Map geometry ─────────────────────────────────────────────────────────────
 
-const MAP_W    = 2536
-const MAP_H    = 2474
+const MAP_W = 2536
+const MAP_H = 2474
 const CANVAS_W = 1168
 const CANVAS_H = 522
 
@@ -21,7 +21,7 @@ const MAP_Y0 = -1237   // Figma annotation
 //   bottom: MAP_Y0 + oy + MAP_H = CH      → min = -715
 //   top:    MAP_Y0 + oy = 0               → max = 1237
 const DRAG_X_MIN = -684
-const DRAG_X_MAX =  684
+const DRAG_X_MAX = 684
 const DRAG_Y_MIN = -715
 const DRAG_Y_MAX = 1237
 
@@ -31,21 +31,21 @@ interface PinDef { name: string; l: number; t: number; dotFirst: boolean }
 
 // Canvas-absolute positions from Figma spec (outside MapLayer — fixed on screen)
 const PINS: PinDef[] = [
-  { name: 'INDIA',     l: 491, t: 341, dotFirst: false },
-  { name: 'OMAN',      l: 344, t: 228, dotFirst: true  },
+  { name: 'INDIA', l: 491, t: 341, dotFirst: false },
+  { name: 'OMAN', l: 344, t: 228, dotFirst: true },
   { name: 'SINGAPORE', l: 775, t: 464, dotFirst: false },
-  { name: 'MALAYSIA',  l: 848, t: 422, dotFirst: true  },
-  { name: 'VIETNAM',   l: 877, t: 241, dotFirst: true  },
-  { name: 'QATAR',     l: 255, t: 176, dotFirst: true  },
+  { name: 'MALAYSIA', l: 848, t: 422, dotFirst: true },
+  { name: 'VIETNAM', l: 877, t: 241, dotFirst: true },
+  { name: 'QATAR', l: 255, t: 176, dotFirst: true },
 ]
 
 interface FlagDef { name: string; src: string }
 const FLAGS: FlagDef[] = [
-  { name: 'Qatar',     src: '/about/personal/travel/qatar-flag.svg'     },
+  { name: 'Qatar', src: '/about/personal/travel/qatar-flag.svg' },
   { name: 'Singapore', src: '/about/personal/travel/singapore-flag.svg' },
-  { name: 'Malaysia',  src: '/about/personal/travel/malaysia-flag.svg'  },
-  { name: 'Vietnam',   src: '/about/personal/travel/vietnam-flag.svg'   },
-  { name: 'Oman',      src: '/about/personal/travel/oman-flag.svg'      },
+  { name: 'Malaysia', src: '/about/personal/travel/malaysia-flag.svg' },
+  { name: 'Vietnam', src: '/about/personal/travel/vietnam-flag.svg' },
+  { name: 'Oman', src: '/about/personal/travel/oman-flag.svg' },
 ]
 
 const STAT_TARGETS = [6, 55, 2]
@@ -64,15 +64,15 @@ const formatStat = (i: number, v: number) => {
 // ─── Component ───────────────────────────────────────────────────────────────
 
 const TravelMapClient = () => {
-  const [offset, setOffset]           = useState({ x: 0, y: 0 })
-  const [dragging, setDragging]       = useState(false)
+  const [offset, setOffset] = useState({ x: 0, y: 0 })
+  const [dragging, setDragging] = useState(false)
   const [hoveredFlag, setHoveredFlag] = useState<string | null>(null)
-  const [counts, setCounts]           = useState([0, 0, 0])
+  const [counts, setCounts] = useState([0, 0, 0])
 
   const dragOrigin = useRef({ x: 0, y: 0 })
-  const dragStart  = useRef({ x: 0, y: 0 })
-  const statsRef   = useRef<HTMLDivElement>(null)
-  const animated   = useRef(false)
+  const dragStart = useRef({ x: 0, y: 0 })
+  const statsRef = useRef<HTMLDivElement>(null)
+  const animated = useRef(false)
 
   // Count-up on scroll into view
   useEffect(() => {
@@ -84,7 +84,7 @@ const TravelMapClient = () => {
         const t0 = performance.now()
         const DURATION = 1500
         const tick = (now: number) => {
-          const p     = Math.min((now - t0) / DURATION, 1)
+          const p = Math.min((now - t0) / DURATION, 1)
           const eased = 1 - Math.pow(1 - p, 3)
           setCounts(STAT_TARGETS.map(v => Math.round(v * eased)))
           if (p < 1) requestAnimationFrame(tick)
@@ -104,7 +104,7 @@ const TravelMapClient = () => {
     e.currentTarget.setPointerCapture(e.pointerId)
     setDragging(true)
     dragOrigin.current = { x: e.clientX, y: e.clientY }
-    dragStart.current  = { ...offset }
+    dragStart.current = { ...offset }
   }, [offset])
 
   const handlePointerMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
@@ -252,7 +252,9 @@ const PinTag = styled.div`
   background: ${({ theme }) => theme.colors.surface.tertiary};
   border: 1px solid ${({ theme }) => theme.colors.border.tertiary};
   border-radius: ${({ theme }) => theme.radii.lg};
-  padding: 6px;
+  padding: 2px;
+  padding-left: 8px;
+  padding-right:8px;
   font-family: ${({ theme }) => theme.fonts.sans};
   font-weight: ${({ theme }) => theme.fontWeights.regular};
   font-size: ${({ theme }) => theme.fontSizes.xs};

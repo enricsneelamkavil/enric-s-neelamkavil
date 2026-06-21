@@ -88,11 +88,6 @@ const PodcastMediumSection = () => (
       </TitleBlock>
 
       <WritingContent>
-        <WritingDesc>
-          I write on Medium about my career experiences and personal reflections — thinking out
-          loud to slow myself down.
-        </WritingDesc>
-
         <ArticleList>
           {ARTICLES.map(({ title, readTime }, i) => (
             <ArticleRow

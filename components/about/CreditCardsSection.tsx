@@ -11,18 +11,18 @@ import SectionHeader from '@/components/shared/SectionHeader'
 interface CardDef { key: string; src: string; alt: string }
 
 const CARDS: CardDef[] = [
-  { key: 'amex',     src: '/about/personal/cards/american-express-membership-rewards.webp', alt: 'American Express Membership Rewards' },
-  { key: 'marriott', src: '/about/personal/cards/hdfc-marriott-bonvoy.webp',                alt: 'HDFC Marriott Bonvoy'               },
-  { key: 'phonepe',  src: '/about/personal/cards/phonepe-sbi-select-black.webp',            alt: 'PhonePe SBI Select Black'           },
-  { key: 'idfc',     src: '/about/personal/cards/idfc-first-select.webp',                   alt: 'IDFC First Select'                  },
-  { key: 'millenia', src: '/about/personal/cards/hdfc-millenia.webp',                       alt: 'HDFC Millennia'                     },
-  { key: 'swiggy',   src: '/about/personal/cards/hdfc-swiggy.webp',                         alt: 'HDFC Swiggy'                        },
-  { key: 'flipkart', src: '/about/personal/cards/flipkart-axis.webp',                       alt: 'Flipkart Axis'                      },
-  { key: 'icici',    src: '/about/personal/cards/icici-amazon-pay.webp',                    alt: 'ICICI Amazon Pay'                   },
+  { key: 'amex', src: '/about/personal/cards/american-express-membership-rewards.webp', alt: 'American Express Membership Rewards' },
+  { key: 'marriott', src: '/about/personal/cards/hdfc-marriott-bonvoy.webp', alt: 'HDFC Marriott Bonvoy' },
+  { key: 'phonepe', src: '/about/personal/cards/phonepe-sbi-select-black.webp', alt: 'PhonePe SBI Select Black' },
+  { key: 'idfc', src: '/about/personal/cards/idfc-first-select.webp', alt: 'IDFC First Select' },
+  { key: 'millenia', src: '/about/personal/cards/hdfc-millenia.webp', alt: 'HDFC Millennia' },
+  { key: 'swiggy', src: '/about/personal/cards/hdfc-swiggy.webp', alt: 'HDFC Swiggy' },
+  { key: 'flipkart', src: '/about/personal/cards/flipkart-axis.webp', alt: 'Flipkart Axis' },
+  { key: 'icici', src: '/about/personal/cards/icici-amazon-pay.webp', alt: 'ICICI Amazon Pay' },
 ]
 
-// Mobile stack: reversed so ICICI is frontmost (top), AmEx is backmost (bottom)
-const MOBILE_STACK = [...CARDS].reverse()
+// Mobile stack: AmEx is frontmost (top), ICICI is backmost (bottom)
+const MOBILE_STACK = [...CARDS]
 
 const TOTAL = CARDS.length
 const PLUSH_URL = 'https://plush.money/in/find-your-card'
@@ -137,15 +137,15 @@ const CreditCardsSection = () => {
 
       {/* ── Mobile swipeable card stack — hidden on desktop ──────────────── */}
       <MobileStack>
-        {stackOrder.map((cardIdx, position) => {
+        {[...stackOrder].reverse().map((cardIdx, revIndex) => {
+          const position = TOTAL - 1 - revIndex
           const card = MOBILE_STACK[cardIdx]
           const isTop = position === 0
-          const isLast = position === TOTAL - 1
           return (
             <MobileCard
               key={card.key}
               $zIndex={TOTAL - position}
-              $hasNegMargin={!isLast}
+              $hasNegMargin={!isTop}
               style={isTop ? topCardStyle() : undefined}
               onPointerDown={isTop ? handlePointerDown : undefined}
               onPointerMove={isTop ? handlePointerMove : undefined}
@@ -228,7 +228,7 @@ const DesktopCard = styled.div`
   flex: 1 0 0;
   min-width: 1px;
   border: 1px solid ${({ theme }) => theme.colors.border.tertiary};
-  border-radius: ${({ theme }) => theme.radii.lg};
+  border-radius: 14px;
   overflow: hidden;
   transition: transform 0.2s ease;
 
@@ -270,10 +270,10 @@ const MobileCard = styled.div<MobileCardProps>`
   width: 100%;
   aspect-ratio: 160 / 100;
   border: 1px solid ${({ theme }) => theme.colors.border.tertiary};
-  border-radius: ${({ theme }) => theme.radii.lg};
+  border-radius: 16px;
   overflow: hidden;
   flex-shrink: 0;
-  margin-bottom: ${({ $hasNegMargin }) => ($hasNegMargin ? '-190px' : '0')};
+  margin-bottom: ${({ $hasNegMargin }) => ($hasNegMargin ? '-185px' : '0')};
   user-select: none;
   touch-action: none;
 

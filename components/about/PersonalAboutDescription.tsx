@@ -70,25 +70,25 @@ const PersonalAboutDescription = () => {
         <CardBody>
           <CardTitle>To do List</CardTitle>
           <TaskGroup>
-            {TASKS.map(({ label, completedOnHover }) => {
-              const done = completedOnHover && widgetHovered
-              return (
-                <Task key={label}>
-                  <CheckBox $done={done}>
-                    {done && (
-                      <img
-                        src={CHECKMARK}
-                        alt=""
-                        aria-hidden="true"
-                        width={8.5}
-                        height={6.2}
-                      />
-                    )}
-                  </CheckBox>
-                  <TaskLabel $done={done}>{label}</TaskLabel>
-                </Task>
-              )
-            })}
+            {TASKS.map(({ label, completedOnHover }) => (
+              <Task key={label}>
+                <CheckBox $completedOnHover={completedOnHover} $hovered={widgetHovered}>
+                  {completedOnHover && (
+                    <CheckIcon
+                      src={CHECKMARK}
+                      alt=""
+                      aria-hidden="true"
+                      width={8.5}
+                      height={6.2}
+                      $hovered={widgetHovered}
+                    />
+                  )}
+                </CheckBox>
+                <TaskLabel $completedOnHover={completedOnHover} $hovered={widgetHovered}>
+                  {label}
+                </TaskLabel>
+              </Task>
+            ))}
           </TaskGroup>
         </CardBody>
       </ToDoCard>
@@ -164,6 +164,7 @@ const Highlight = styled.span`
 
 const ToDoCard = styled.div<{ $hovered: boolean }>`
   flex-shrink: 0;
+  width: 320px;
   border: 1px solid ${({ theme }) => theme.colors.border.tertiary};
   border-radius: ${({ theme }) => theme.radii.lg};
   overflow: hidden;
@@ -174,6 +175,7 @@ const ToDoCard = styled.div<{ $hovered: boolean }>`
   ${mq.mobile} {
     width: 100%;
     align-self: stretch;
+    transform: rotate(0deg);
   }
 `
 
@@ -228,7 +230,7 @@ const Task = styled.div`
   gap: ${({ theme }) => theme.spacing[2]};
 `
 
-const CheckBox = styled.div<{ $done: boolean }>`
+const CheckBox = styled.div<{ $completedOnHover: boolean; $hovered: boolean }>`
   width: 16px;
   height: 16px;
   flex-shrink: 0;
@@ -238,20 +240,48 @@ const CheckBox = styled.div<{ $done: boolean }>`
   justify-content: center;
   transition: background 0.15s ease, border 0.15s ease;
 
-  ${({ $done, theme }) =>
-    $done
-      ? `background: ${theme.colors.surface.inverse};`
-      : `border: 1px solid ${theme.colors.border.tertiary};`}
+  ${({ $completedOnHover, $hovered, theme }) => {
+    if (!$completedOnHover) {
+      return `border: 1px solid ${theme.colors.border.tertiary};`;
+    }
+    return `
+      border: ${$hovered ? 'none' : `1px solid ${theme.colors.border.tertiary}`};
+      background: ${$hovered ? theme.colors.surface.inverse : 'transparent'};
+
+      ${mq.mobile} {
+        border: none;
+        background: ${theme.colors.surface.inverse};
+      }
+    `;
+  }}
 `
 
-const TaskLabel = styled.span<{ $done: boolean }>`
+const CheckIcon = styled.img<{ $hovered: boolean }>`
+  opacity: ${({ $hovered }) => ($hovered ? 1 : 0)};
+  transition: opacity 0.15s ease;
+
+  ${mq.mobile} {
+    opacity: 1;
+  }
+`
+
+const TaskLabel = styled.span<{ $completedOnHover: boolean; $hovered: boolean }>`
   font-family: ${({ theme }) => theme.fonts.sans};
   font-weight: ${({ theme }) => theme.fontWeights.light};
   font-size: ${({ theme }) => theme.fontSizes.sm};
   line-height: ${({ theme }) => theme.lineHeights.normal};
   color: ${({ theme }) => theme.colors.text.tertiary};
   white-space: nowrap;
-  text-decoration: ${({ $done }) => ($done ? 'line-through' : 'none')};
+  
+  ${({ $completedOnHover, $hovered }) => {
+    if (!$completedOnHover) return 'text-decoration: none;';
+    return `
+      text-decoration: ${$hovered ? 'line-through' : 'none'};
+      ${mq.mobile} {
+        text-decoration: line-through;
+      }
+    `;
+  }}
 `
 
 export default PersonalAboutDescription

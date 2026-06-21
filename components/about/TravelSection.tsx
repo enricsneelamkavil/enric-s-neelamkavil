@@ -456,7 +456,9 @@ const AlbumYear = styled.div`
   background: ${({ theme }) => theme.colors.surface.tertiary};
   border: 1px solid ${({ theme }) => theme.colors.border.tertiary};
   border-radius: ${({ theme }) => theme.radii.lg};
-  padding: 6px;
+  padding: 2px;
+  padding-left: 8px;
+  padding-right:8px;
   font-family: ${({ theme }) => theme.fonts.sans};
   font-weight: ${({ theme }) => theme.fontWeights.regular};
   font-size: ${({ theme }) => theme.fontSizes.xs};
