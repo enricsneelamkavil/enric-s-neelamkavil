@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import styled from 'styled-components'
 import { mq } from '@/styles/theme'
 import ModeToggle from '@/components/shared/ModeToggle'
@@ -9,11 +8,14 @@ import ModeToggle from '@/components/shared/ModeToggle'
 
 type Mode = 'professional' | 'personal'
 
+interface Props {
+  mode: Mode
+  onModeChange: (mode: Mode) => void
+}
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
-const IntroSection = () => {
-  const [mode, setMode] = useState<Mode>('professional')
-
+const IntroSection = ({ mode, onModeChange }: Props) => {
   return (
     <Section>
 
@@ -27,23 +29,19 @@ const IntroSection = () => {
         </CommonHeader>
 
         <ModeSwitch>
-          <ModeLabel type="button" $active={mode === 'professional'} onClick={() => setMode('professional')}>
+          <ModeLabel type="button" $active={mode === 'professional'} onClick={() => onModeChange('professional')}>
             PROFESSIONAL
           </ModeLabel>
 
           <ModeToggle
             selection={mode === 'professional' ? 'left' : 'right'}
-            onToggle={(side) => setMode(side === 'left' ? 'professional' : 'personal')}
+            onToggle={(side) => onModeChange(side === 'left' ? 'professional' : 'personal')}
           />
 
-          <ModeLabel type="button" $active={mode === 'personal'} onClick={() => setMode('personal')}>
+          <ModeLabel type="button" $active={mode === 'personal'} onClick={() => onModeChange('personal')}>
             PERSONAL
           </ModeLabel>
         </ModeSwitch>
-
-        {mode === 'personal' && (
-          <PersonalNote>Personal mode coming soon.</PersonalNote>
-        )}
       </Header>
 
     </Section>
@@ -138,7 +136,7 @@ const PageSubtitle = styled.p`
 // ── Mode Switch ───────────────────────────────────────────────────────────────
 
 const ModeSwitch = styled.div`
-  display: none; /* Hidden as requested, do not delete */
+  display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing[6]};
 
@@ -169,18 +167,6 @@ const ModeLabel = styled.button<ModeLabelProps>`
     font-size: ${({ theme }) => theme.fontSizes.sm};
     line-height: ${({ theme }) => theme.lineHeights.normal};
   }
-`
-
-// ── Personal placeholder ──────────────────────────────────────────────────────
-
-const PersonalNote = styled.p`
-  margin: 0;
-  font-family: ${({ theme }) => theme.fonts.sans};
-  font-weight: ${({ theme }) => theme.fontWeights.light};
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-  line-height: ${({ theme }) => theme.lineHeights.normal};
-  color: ${({ theme }) => theme.colors.text.tertiary};
-  font-style: italic;
 `
 
 export default IntroSection

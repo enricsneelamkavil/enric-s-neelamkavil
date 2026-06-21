@@ -1,62 +1,81 @@
 import styled, { keyframes } from 'styled-components'
 import { mq } from '@/styles/theme'
 
-// ─── Assets ───────────────────────────────────────────────────────────────────
+// ─── Types ────────────────────────────────────────────────────────────────────
 
-const IMG_PHOTO = '/about/professional-image.webp'
-const ICON_1 = '/about/icons/icon-1.svg'
-const ICON_2 = '/about/icons/icon-2.svg'
-const ICON_3 = '/about/icons/icon-3.svg'
-const ICON_4 = '/about/icons/icon-4.svg'
-const ICON_5 = '/about/icons/icon-5.svg'
-const ICON_6 = '/about/icons/icon-6.svg'
+type Mode = 'professional' | 'personal'
+
+interface Props {
+  mode?: Mode
+}
+
+interface IconDef {
+  src: string
+  l: number; t: number
+  w: number; h: number
+  r: number
+  iw: number; ih: number
+  delay: number
+}
+
+// ─── Professional Assets ──────────────────────────────────────────────────────
+
+const PRO_PHOTO = '/about/professional-image.webp'
+
+const PRO_ICONS: IconDef[] = [
+  { src: '/about/icons/icon-1.svg', l: 29.76,   t: 331.64, w: 79.475, h: 84.73,  r: 12.94,  iw: 65,     ih: 72,     delay: 0   },
+  { src: '/about/icons/icon-2.svg', l: 95.57,   t: 41.12,  w: 84.862, h: 81.939, r: -12.29, iw: 72,     ih: 68.174, delay: 0.5 },
+  { src: '/about/icons/icon-3.svg', l: 235.11,  t: 219.91, w: 75.781, h: 69.747, r: 3.42,   iw: 72,     ih: 65.571, delay: 1   },
+  { src: '/about/icons/icon-4.svg', l: 873,     t: 75,     w: 60.832, h: 72,     r: 0,      iw: 60.832, ih: 72,     delay: 1.5 },
+  { src: '/about/icons/icon-5.svg', l: 929.25,  t: 315.93, w: 81.496, h: 78.15,  r: -8.74,  iw: 72,     ih: 68,     delay: 2   },
+  { src: '/about/icons/icon-6.svg', l: 1052,    t: 150,    w: 88.067, h: 88.067, r: 14.87,  iw: 72,     ih: 72,     delay: 2.5 },
+]
+
+// ─── Personal Assets ─────────────────────────────────────────────────────────
+// Composite photo (523×613 CSS px) includes circle crop, hair above, and
+// food/phone bottom extrude — all layers composited from Figma node 328:922.
+
+const PER_PHOTO = '/about/personal/personal-photo.png'
+
+// Positions are within the 1167.51×621px personal banner (Figma node 328:920).
+// Icons 1 & 2 use percentage-based inset in Figma — converted to px here.
+const PER_ICONS: IconDef[] = [
+  { src: '/about/personal/icons/icon-1.png', l: 25.8,   t: 55,     w: 84,  h: 76,  r: 9.46,   iw: 84, ih: 76,  delay: 0   },
+  { src: '/about/personal/icons/icon-2.png', l: 93.7,   t: 435,    w: 93,  h: 101, r: -17.23, iw: 93, ih: 101, delay: 0.5 },
+  { src: '/about/personal/icons/icon-3.png', l: 263.8,  t: 235.04, w: 76,  h: 76,  r: 3.21,   iw: 76, ih: 76,  delay: 1   },
+  { src: '/about/personal/icons/icon-4.png', l: 869.75, t: 403,    w: 76,  h: 76,  r: 0,      iw: 76, ih: 76,  delay: 1.5 },
+  { src: '/about/personal/icons/icon-5.png', l: 971.75, t: 142,    w: 75,  h: 76,  r: 0,      iw: 75, ih: 76,  delay: 2   },
+  { src: '/about/personal/icons/icon-6.png', l: 1074.75, t: 285,   w: 81,  h: 86,  r: 14.1,   iw: 81, ih: 86,  delay: 2.5 },
+]
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-const ProfileImage = () => (
-  <Section>
-    <Banner>
+const ProfileImage = ({ mode = 'professional' }: Props) => {
+  const isPro = mode === 'professional'
+  const photo  = isPro ? PRO_PHOTO  : PER_PHOTO
+  const icons  = isPro ? PRO_ICONS  : PER_ICONS
 
-      {/* Photo group — centered within the 1168px banner via PhotoCenter */}
-      <PhotoCenter>
-        <PhotoGroup>
-          <CirclePhoto src={IMG_PHOTO} alt="Enric S Neelamkavil" />
-        </PhotoGroup>
-      </PhotoCenter>
+  return (
+    <Section>
+      <Banner $personal={!isPro}>
 
-      {/* Icon 1 — far left, bottom, +12.94° */}
-      <IconBox $l={29.76} $t={331.64} $w={79.475} $h={84.73} $r={12.94}>
-        <IconImg src={ICON_1} alt="" aria-hidden="true" $iw={65} $ih={72} $delay={0} />
-      </IconBox>
+        {/* Photo group — centered within the 1168px banner via PhotoCenter */}
+        <PhotoCenter>
+          <PhotoGroup $personal={!isPro}>
+            <CirclePhoto src={photo} alt="Enric S Neelamkavil" />
+          </PhotoGroup>
+        </PhotoCenter>
 
-      {/* Icon 2 — upper-left, -12.29° */}
-      <IconBox $l={95.57} $t={41.12} $w={84.862} $h={81.939} $r={-12.29}>
-        <IconImg src={ICON_2} alt="" aria-hidden="true" $iw={72} $ih={68.174} $delay={0.5} />
-      </IconBox>
+        {icons.map(({ src, l, t, w, h, r, iw, ih, delay }, i) => (
+          <IconBox key={i} $l={l} $t={t} $w={w} $h={h} $r={r}>
+            <IconImg src={src} alt="" aria-hidden="true" $iw={iw} $ih={ih} $delay={delay} />
+          </IconBox>
+        ))}
 
-      {/* Icon 3 — left-center, +3.42° */}
-      <IconBox $l={235.11} $t={219.91} $w={75.781} $h={69.747} $r={3.42}>
-        <IconImg src={ICON_3} alt="" aria-hidden="true" $iw={72} $ih={65.571} $delay={1} />
-      </IconBox>
-
-      {/* Icon 4 — right-center top, no rotation */}
-      <IconBox $l={873} $t={75} $w={60.832} $h={72} $r={0}>
-        <IconImg src={ICON_4} alt="" aria-hidden="true" $iw={60.832} $ih={72} $delay={1.5} />
-      </IconBox>
-
-      {/* Icon 5 — right-center bottom, -8.74° */}
-      <IconBox $l={929.25} $t={315.93} $w={81.496} $h={78.15} $r={-8.74}>
-        <IconImg src={ICON_5} alt="" aria-hidden="true" $iw={72} $ih={68} $delay={2} />
-      </IconBox>
-
-      {/* Icon 6 — far right, unified, +14.87° */}
-      <IconBox $l={1052} $t={150} $w={88.067} $h={88.067} $r={14.87}>
-        <IconImg src={ICON_6} alt="" aria-hidden="true" $iw={72} $ih={72} $delay={2.5} />
-      </IconBox>
-
-    </Banner>
-  </Section>
-)
+      </Banner>
+    </Section>
+  )
+}
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
@@ -66,10 +85,10 @@ const Section = styled.section`
   width: 100%;
 `
 
-const Banner = styled.div`
+const Banner = styled.div<{ $personal?: boolean }>`
   position: relative;
   width: ${({ theme }) => theme.layout.maxWidth};
-  height: 470px;
+  height: ${({ $personal }) => ($personal ? '621px' : '470px')};
   overflow: clip;
   flex-shrink: 0;
 
@@ -107,17 +126,19 @@ const PhotoCenter = styled.div`
   }
 `
 
-const PhotoGroup = styled.div`
+// Personal photo composite is 523px wide (vs 431px professional) because the
+// food bottom-extrude extends further right than the circle crop.
+const PhotoGroup = styled.div<{ $personal?: boolean }>`
   position: relative;
-  width: 430.983px;
+  width: ${({ $personal }) => ($personal ? '523px' : '430.983px')};
   flex-shrink: 0;
 
   ${mq.tablet} {
-    width: 360px;
+    width: ${({ $personal }) => ($personal ? '420px' : '360px')};
   }
 
   ${mq.mobile} {
-    width: min(257px, 100%);
+    width: ${({ $personal }) => ($personal ? 'min(300px, 100%)' : 'min(257px, 100%)')};
   }
 `
 

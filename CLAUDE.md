@@ -16,7 +16,7 @@
 portfolio/                        # project root
 ├── app/
 │   ├── page.tsx                  # Home ✅ Done
-│   ├── about/page.tsx            # About ✅ Done — 'use client'
+│   ├── about/page.tsx            # About ✅ Done — 'use client', professional/personal mode toggle
 │   ├── works/page.tsx            # Works — not started
 │   ├── resume/page.tsx           # Resume ✅ Done — 'use client' (zoom state)
 │   ├── contact/page.tsx          # Contact — not started
@@ -36,15 +36,21 @@ portfolio/                        # project root
 │   │   ├── AwardShelf.tsx        ✅ Done
 │   │   └── MyWorks.tsx           ✅ Done
 │   ├── about/
-│   │   ├── IntroSection.tsx      ✅ Done — title, subtitle, professional/personal mode toggle
-│   │   ├── ProfileImage.tsx      ✅ Done — 1168px banner, 6 floating SVG icons, profile photo
-│   │   ├── AboutDescription.tsx  ✅ Done — bio paragraph, IST clock, highlights table
-│   │   ├── MyTools.tsx           ✅ Done — desktop dock + separate MobileGrid (6×2 static grid)
-│   │   ├── Journey.tsx           ✅ Done — CAREER LADDER label, UST + FunDesigns only, shimmer bullets
-│   │   ├── ProfessionalTimeline.tsx         ✅ Done — desktop horizontal scrollable timeline
-│   │   ├── ProfessionalTimelineMobile.tsx   ✅ Done — mobile vertical timeline
-│   │   ├── Companies.tsx         ⚠️  Removed from page — no longer in Figma spec
-│   │   └── AwardShelf.tsx        ✅ Done — 5 award cards with seal images
+│   │   ├── IntroSection.tsx              ✅ Done — title, subtitle, professional/personal mode toggle
+│   │   ├── ProfileImage.tsx              ✅ Done — accepts mode prop; different photo + icons per mode
+│   │   ├── AboutDescription.tsx          ✅ Done — bio paragraph, IST clock, highlights table
+│   │   ├── MyTools.tsx                   ✅ Done — desktop dock + separate MobileGrid (6×2 static grid)
+│   │   ├── Journey.tsx                   ✅ Done — CAREER LADDER label, UST + FunDesigns only
+│   │   ├── ProfessionalTimeline.tsx      ✅ Done — desktop horizontal scrollable timeline
+│   │   ├── ProfessionalTimelineMobile.tsx ✅ Done — mobile vertical timeline
+│   │   ├── AwardShelf.tsx                ✅ Done — 5 award cards with seal images
+│   │   ├── PersonalAboutDescription.tsx  ✅ Done — personal bio + To Do List widget
+│   │   ├── TravelSection.tsx             ✅ Done — travel title, desktop map, mobile flags/stats, albums
+│   │   ├── TravelMap.tsx                 ✅ Done — next/dynamic SSR wrapper for TravelMapClient
+│   │   ├── TravelMapClient.tsx           ✅ Done — draggable map canvas with pins, flags, stats
+│   │   ├── WorkDeskSection.tsx           ✅ Done — desk photo + gear inventory list
+│   │   ├── PodcastMediumSection.tsx      ✅ Done — podcast card + medium articles list
+│   │   └── CreditCardsSection.tsx        ✅ Done — 2×4 desktop grid + mobile swipe stack
 │   ├── works/
 │   ├── resume/
 │   │   ├── PageHeader.tsx        ✅ Done — centered "Resume." title + subtitle
@@ -91,6 +97,13 @@ portfolio/                        # project root
 - `components/about/ProfessionalTimeline.tsx` ✅
 - `components/about/ProfessionalTimelineMobile.tsx` ✅
 - `components/about/AwardShelf.tsx` ✅
+- `components/about/PersonalAboutDescription.tsx` ✅
+- `components/about/TravelSection.tsx` ✅
+- `components/about/TravelMap.tsx` ✅
+- `components/about/TravelMapClient.tsx` ✅
+- `components/about/WorkDeskSection.tsx` ✅
+- `components/about/PodcastMediumSection.tsx` ✅
+- `components/about/CreditCardsSection.tsx` ✅
 - `components/resume/PageHeader.tsx` ✅
 - `components/resume/Toolbar.tsx` ✅
 - `components/resume/ResumeCanvas.tsx` ✅
@@ -110,13 +123,14 @@ export const mq = {
 ```
 
 ## Responsive Rules (established patterns)
-- **Mobile** (`mq.mobile`, ≤768px): single-column, 24px horizontal padding, `max-width: none`
-- **Tablet** (`mq.tablet`, 769–1024px): side-by-side layouts preserved where possible, `padding: 0 24px`
+- **Mobile** (`mq.mobile`, ≤768px): single-column, 24px horizontal padding handled by `Layout.tsx` globally — do NOT add `padding: 0 24px` to individual section wrappers
+- **Tablet** (`mq.tablet`, 769–1024px): side-by-side layouts preserved where possible
 - **Desktop** (>1024px): base styles, `max-width: 1168px` content width
 - `FeatureProduct`: horizontal at tablet AND desktop — stacks only on mobile
 - `MyWorks WorkCard`: side-by-side at tablet AND desktop — stacks only on mobile
 - `Footer InfoRow`: `flex-wrap: wrap` at tablet
-- Full-bleed escape in centered flex parent: use `align-self: stretch; width: auto; margin-left: -24px; margin-right: -24px` (not `calc(100% + 48px)`)
+- Full-bleed horizontal scroll (albums, awards): use `overflow-x: auto; scroll-snap-type: x mandatory` on container, `scroll-snap-align: start; flex-shrink: 0` on cards — no negative-margin bleed escapes
+- Travel map desktop canvas hides at `mq.tabletDown` (≤1024px), not just mobile
 
 ## Navbar — Mobile Bottom Pill
 - **Desktop**: 5 nav links (Home, About, Work, Resume, Contact) — glass pill, fixed top-center
@@ -196,20 +210,32 @@ export default ComponentName
 ### About ✅ Done
 **Figma frames:** Desktop `248:1175` · Mobile `284:834`
 
-**Page file:** `app/about/page.tsx` — marked `'use client'`
+**Page file:** `app/about/page.tsx` — `'use client'`, manages `mode: 'professional' | 'personal'` state
 
-**Composition:**
+**Composition — both mode groups always in DOM; inactive one is `position: absolute; max-height: 0; overflow: hidden; opacity: 0; pointer-events: none`:**
 ```
-PageSections (62px gap)
-  └── LandingGroup (80px gap)
-        ├── IntroSection
-        ├── ProfileImage
-        └── AboutDescription
-  MyTools
-  Journey
-  ProfessionalTimeline        ← desktop (hidden on mobile)
-  ProfessionalTimelineMobile  ← mobile (hidden on desktop)
-  AwardShelf
+PageSections (gap: 80px desktop / 64px tablet / 56px mobile)
+  IntroSection                          ← always visible (mode toggle lives here)
+
+  ModeContent (position: relative)
+    ModeGroup $active=professional
+      LandingGroup
+        ProfileImage mode="professional"
+        AboutDescription
+      MyTools
+      Journey
+      ProfessionalTimeline              ← hidden on mobile
+      ProfessionalTimelineMobile        ← hidden on desktop
+      AwardShelf
+
+    ModeGroup $active=personal
+      LandingGroup
+        ProfileImage mode="personal"
+        PersonalAboutDescription
+      TravelSection
+      WorkDeskSection
+      PodcastMediumSection
+      CreditCardsSection
 ```
 
 #### IntroSection.tsx ✅
@@ -222,22 +248,13 @@ PageSections (62px gap)
 - Mobile: padding-top 40px, reduced gaps
 
 #### ProfileImage.tsx ✅
-- Figma node: `248:1186` (Image Banner)
+- Accepts `mode: 'professional' | 'personal'` prop — different photo + floating icons per mode
+- Figma node: `248:1186` (professional banner)
 - **Banner**: `position: relative; width: 1168px; height: 470px; overflow: clip`
   - On `tabletDown`: `display: flex; justify-content: center; height: auto; overflow: visible`
-- **PhotoCenter**: `position: absolute; inset: 0; display: flex; align-items: center; justify-content: center`
-  - On `tabletDown`: `position: static; display: contents` (passes children to Banner flex)
-- **PhotoGroup**: `431px` wide on desktop, `360px` tablet, `min(257px, 100%)` mobile
-- **CirclePhoto**: `profile-group.png` — 431×470 RGBA, renders `width: 100%; height: auto`
-- **6 floating icons**: `IconBox` (position + rotation) + `IconImg` (size) — hidden on `tabletDown`
-  - Icon sources: `/about/icons/icon-1.svg` … `icon-6.svg`
-  - Positions/rotations from Figma (all absolute within Banner):
-    - Icon 1: left 29.76, top 331.64, rotate +12.94°, img 65×72
-    - Icon 2: left 95.57, top 41.12, rotate −12.29°, img 72×68.174
-    - Icon 3: left 235.11, top 219.91, rotate +3.42°, img 72×65.571
-    - Icon 4: left 873, top 75, no rotation, img 60.832×72
-    - Icon 5: left 929.25, top 315.93, rotate −8.74°, img 72×68
-    - Icon 6: left 1052, top 150, rotate +14.87°, img 72×72
+- **6 floating icons**: hidden on `tabletDown`, different sets per mode
+  - Professional icons: `/about/icons/icon-1.svg` … `icon-6.svg`
+  - Personal icons: `/about/personal/icons/icon-1.png` … `icon-5.png`
 
 #### ModeToggle.tsx ✅ (shared)
 - `'use client'`, props: `selection: 'left'|'right'`, `onToggle: (side) => void`
@@ -261,7 +278,6 @@ PageSections (62px gap)
   - Hidden on mobile via `display: none` in `mq.mobile`
 - **Mobile** (`MobileGrid`): completely separate DOM element, `display: none` on desktop, `display: grid` on mobile
   - `grid-template-columns: repeat(6, min(40px, calc((100% - 24px - 40px) / 6)))` — icons capped at 40px, fluid below
-  - `width: 100%; justify-content: start; padding: 12px; box-sizing: border-box`
   - `MobileCell`: `aspect-ratio: 1/1; border-radius: 12px; overflow: hidden`
   - No `$y` prop, no hover, no magnification — immune to styled-components dynamic class cascade
 - ⚠️ Do NOT add mobile styles to `IconSlot` or `DockContainer` — the cascade issue (styled-components dynamic classes overriding media queries) is avoided by the separate MobileGrid approach
@@ -278,7 +294,7 @@ PageSections (62px gap)
 #### AwardShelf.tsx ✅ (about)
 - 5 awards: Awwwards Young Jury, USTAR, Awwwards Honors, Config APAC, Huddle Designers
 - Label swaps on mobile: "Recognition" (desktop) → "ACHIEVEMENTS" (mobile) via `DesktopLabel`/`MobileLabel` wrappers
-- Seals from `public/about/seals/`: `awwwards.png`, `ust.png`, `figma.png`, `ksum.png`
+- Seals from `public/about/seals/`: `awwwards.webp`, `ust.webp`, `figma.webp`, `ksum.webp`
 - AwardsRow: horizontal scroll on mobile with `scroll-snap-type: x mandatory`
 
 #### ProfessionalTimeline.tsx ✅ (desktop)
@@ -290,6 +306,81 @@ PageSections (62px gap)
 - Hidden on desktop (`display: none` above `mq.mobile`)
 - Vertical timeline layout
 - TitleBlock: no gap (Figma spec)
+
+---
+
+### About — Personal Mode ✅ Done
+
+#### PersonalAboutDescription.tsx ✅
+- Side-by-side desktop layout: bio text (left) + To Do List widget (right)
+- Mobile: stacks vertically; `ToDoCard` is `width: 100%; align-self: stretch`
+- Bio highlights `travel`, `Chumma Oru Podcast`, `credit-card points` in `text.highlight`
+- **To Do List widget**: 5 tasks, one (`Redesign Portfolio`) checks itself on hover
+  - `DayHeading`: red bar (`surface.highlight`) with current IST day name
+  - `CardBody`: white card overlaps red bar by 10px (natural DOM stacking, no z-index)
+  - `CheckBox`: 16×16px, border when unchecked, `surface.inverse` fill + SVG tick when done
+  - `TaskLabel`: `text-decoration: line-through` when done
+  - Widget rotates `5deg` on hover
+
+#### TravelSection.tsx ✅
+- Desktop: shows `TravelMap` (draggable canvas) — hidden at `mq.tabletDown` (≤1024px)
+- Mobile/tablet: shows `MobileFlagsRow` (5 flags, raise on hover/tap, tooltip on tap) + `MobileStatsCard`
+  - Flag tooltips: shown on mobile ONLY (inside `MobileFlagsRow` which is `display:none` on desktop)
+  - No tooltips on desktop flags (those are inside TravelMapClient)
+- Travel albums: horizontal scroll row — `AlbumsScroller` uses AwardShelf pattern (`overflow-x: auto; scroll-snap-type: x mandatory`), no negative-margin bleed
+- 5 album photos from `/about/personal/travel/{country}-1.webp`
+- Flag assets: `/about/personal/travel/{country}-flag.svg` (exact naming: `qatar-flag.svg`, etc.)
+
+#### TravelMap.tsx ✅
+- Thin `next/dynamic` wrapper, `ssr: false` — SSR firewall for TravelMapClient
+- Shows `surface.tertiary` placeholder (`width: 100%; max-width: 1168px; height: 522px`) while loading
+
+#### TravelMapClient.tsx ✅
+- **Canvas**: 1168×522px, `surface.tertiary` background, `overflow: hidden`, `border-radius: radii['3xl']`
+- **Map geometry**:
+  - `MAP_W=2536, MAP_H=2474, CANVAS_W=1168, CANVAS_H=522`
+  - `MAP_X0=-684` (centers map horizontally), `MAP_Y0=-1237` (shows Asia/Middle East)
+  - `MapImg` has CSS `left: MAP_X0; top: MAP_Y0` — initial position set via CSS, NOT via offset state
+  - Drag `offset` starts at `{x:0, y:0}`; bounds: X ∈ [-684, 684], Y ∈ [-715, 1237]
+- **MapLayer**: `position: absolute; inset: 0; will-change: transform` — translates by drag offset
+  - Children: `MapImg` (map SVG at CSS position) — moves with layer
+  - Pins are **inside MapLayer** — translate with map on drag, anchored to map coordinates
+- **Pins**: 6 countries (INDIA, OMAN, SINGAPORE, MALAYSIA, VIETNAM, QATAR) at Figma canvas coords
+  - `PinTag` chip: `padding: 6px` all sides, `border-radius: radii.lg`, `gap: 4px` from dot
+  - `dotFirst` prop controls dot-before-label vs label-before-dot order
+  - No tooltip on desktop — raise only not applicable (pins don't hover)
+- **FlagsStrip**: `position: absolute; right: 15px; top: 15px` — outside MapLayer, fixed in canvas
+  - 5 flags: Qatar, Singapore, Malaysia, Vietnam, Oman — raise `translateY(-6px)` on hover
+  - No tooltip on desktop
+- **StatsCard**: `position: absolute; left: 15px; bottom: 15px` — outside MapLayer, fixed in canvas
+  - 3 stats: 06 countries / 55 flights / 2% world; count-up via IntersectionObserver
+- **Drag**: `setPointerCapture` + `onPointerDown/Move/Up`; only upward drag clamped
+- Hidden at `mq.tabletDown` via `DesktopMap` wrapper in TravelSection
+
+#### WorkDeskSection.tsx ✅
+- Left: desk photo (`desk-bg.png`) with Apple Watch screen overlay + iPhone screen overlay
+- Right: `Inventory` list — 9 gear items from `GEAR` array
+- `GearItem` interface has optional `mobileDetail?: string` — when set, shows different text on mobile
+  - iPhone 16 Pro Max: desktop "256 · Natural Titanium · Smartphone", mobile "256 · Natural Titanium · Phone"
+  - `DesktopText` (`display:none` on mobile) + `MobileText` (`display:none` on desktop)
+- Apple icon (`apple-icon.svg`, 8.293×10.2px) shown inline for Apple items
+
+#### PodcastMediumSection.tsx ✅
+- Two-column desktop layout (podcast column + articles column), stacks on mobile
+- Podcast card: logo, platform links (Apple Podcasts, Spotify, YouTube)
+- Medium articles: list of articles with arrow links
+
+#### CreditCardsSection.tsx ✅
+- **Single source of truth**: one `CARDS` array (8 cards, `.webp` paths from `/about/personal/cards/`)
+  - Desktop rows derived: `CARDS.slice(0,4)` (row 1) + `CARDS.slice(4,8)` (row 2)
+  - Mobile stack derived: `MOBILE_STACK = [...CARDS].reverse()` (ICICI at top, AmEx at bottom)
+- **Desktop**: 2×4 grid (`DesktopGrid`), `height: 172px` rows, hidden on mobile
+- **Mobile**: swipeable stack (`MobileStack`), hidden on desktop
+  - Drag/swipe upward to cycle cards; `stackOrder` state tracks current order
+  - Exit animation: `translateY(-200%)` + fade, then reorder after 350ms
+  - `MobileCard`: `aspect-ratio: 160/100`, `margin-bottom: -190px` for stack peek effect
+- Both desktop + mobile: `border-radius: theme.radii.lg`, `border: 1px solid border.tertiary`, `object-fit: cover`
+- CTA row links to `https://plush.money/in/find-your-card`
 
 ---
 
@@ -378,6 +469,7 @@ react-pdf uses `DOMMatrix` internally which does not exist in Node.js. The two-f
 | Full page | `136:3016` | — |
 | About (professional) | `248:1175` | `284:834` |
 | About — Image Banner | `248:1186` | — |
+| About — Travel map canvas | `328:996` | — |
 | Resume (full frame) | `282:772` | `306:1320` |
 | Resume — Page Header | `282:775` | `306:1323` |
 | Resume — Toolbar | `282:779` | `306:1599` |
@@ -399,28 +491,63 @@ react-pdf uses `DOMMatrix` internally which does not exist in Node.js. The two-f
 
 ---
 
-## About Page — Asset Paths
+## Asset Paths
+
+### Professional About
 ```
 public/about/
-├── profile-group.png          # 431×470 RGBA — composited circle photo (hair + circle baked in)
+├── profile-group.png          # 431×470 RGBA — composited circle photo (professional)
+├── professional-image.webp    # Professional banner photo
 ├── icons/
-│   ├── icon-1.svg             # floating icon — bottom-left
-│   ├── icon-2.svg             # floating icon — upper-left
-│   ├── icon-3.svg             # floating icon — left-center
-│   ├── icon-4.svg             # floating icon — right-top
-│   ├── icon-5.svg             # floating icon — right-bottom
-│   └── icon-6.svg             # floating icon — far-right (unified)
+│   ├── icon-1.svg … icon-6.svg   # 6 floating icons (professional mode)
 ├── seals/
-│   ├── awwwards.png
-│   ├── ust.png
-│   ├── figma.png
-│   └── ksum.png
+│   ├── awwwards.webp
+│   ├── ust.webp
+│   ├── figma.webp
+│   └── ksum.webp
 └── journey/
     ├── ust-icon.svg
     ├── fundesigns-icon.svg
     ├── bullet-shimmer.svg
     ├── bullet-dot.svg
     └── bullet-container.svg
+```
+
+### Personal About
+```
+public/about/personal/
+├── personal-photo.png         # Personal mode banner photo
+├── checkmark.svg              # To Do List widget checkmark
+├── icons/
+│   ├── icon-1.png … icon-5.png   # 5 floating icons (personal mode)
+├── travel/
+│   ├── Map.svg                # World map SVG (2536×2474)
+│   ├── pin.svg                # Map pin dot
+│   ├── arrow.svg              # Travel with me button arrow
+│   ├── separator.svg          # Stats card separator
+│   ├── {country}-flag.svg     # Flag icons: qatar, singapore, malaysia, vietnam, oman
+│   └── {country}-1.webp       # Album photos: qatar, singapore, malaysia, vietnam, oman
+├── cards/
+│   ├── american-express-membership-rewards.webp
+│   ├── hdfc-marriott-bonvoy.webp
+│   ├── phonepe-sbi-select-black.webp
+│   ├── idfc-first-select.webp
+│   ├── hdfc-millenia.webp
+│   ├── hdfc-swiggy.webp
+│   ├── flipkart-axis.webp
+│   └── icici-amazon-pay.webp
+├── desk/
+│   ├── desk-bg.png            # Desk background photo
+│   ├── apple-icon.svg         # Apple logo for gear list
+│   ├── watch-screen.png       # Apple Watch screen overlay
+│   └── iphone-screen.png      # iPhone screen overlay
+└── podcast/
+    ├── podcast-logo.webp      # Chumma Oru Podcast logo
+    ├── apple-podcasts.webp    # Platform icon
+    ├── spotify.webp           # Platform icon
+    ├── youtube.webp           # Platform icon
+    ├── arrow-watch.svg        # CTA arrow
+    └── arrow-article.svg      # Article link arrow
 ```
 
 ---
