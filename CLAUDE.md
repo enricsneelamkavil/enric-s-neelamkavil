@@ -22,7 +22,7 @@ portfolio/                        # project root
 │   ├── contact/page.tsx          # Contact ✅ Done — 'use client', two-column sticky layout
 │   ├── api/
 │   │   ├── visitor/route.ts      # POST — increments visitor counter
-│   │   └── contact/route.ts      # POST — Resend email to ngpersonal18@gmail.com
+│   │   └── contact/route.ts      # POST — Resend email to enricsneelamkavil@gmail.com
 │   └── layout.tsx                # Global layout (Navbar + Footer + PersonalAgent)
 ├── components/
 │   ├── common/
@@ -552,25 +552,33 @@ PageSections (pt: 140px desktop / 6rem tablet / 40px mobile, gap: 40px)
 - `FormData` interface: `{ services: string[], name, email, company, role, budget, when, brief }`
 - `Status` type: `'idle' | 'sending' | 'sent' | 'error'`
 - `isValid`: name non-empty + email passes `/\S+@\S+\.\S+/` + (budget OR when non-empty)
-- **Submission**: `fetch('/api/contact', { method: 'POST', body: JSON.stringify(form) })` — clears form + shows "Sent!" for 4s on success, shows red error notice on failure (retry allowed)
+- **Submission**: `fetch('/api/contact', { method: 'POST', body: JSON.stringify(form) })` — on success clears form, shows Done state for 5s then reverts to idle; shows red error notice on failure (retry allowed)
+- **Done state** (`status === 'sent'`): early return renders `DoneIconWrap` (80×80px red rounded square `radii['3xl']`, white SVG tick) + `DoneHeading` ("Thanks - message sent.", notch 32px/40px desktop · 24px/36px mobile) + `DoneSub` (sans 16px/24px, text.tertiary). Same `Card` wrapper — flat on mobile. Node `367:1227`.
 - `wordCount`: `form.brief.trim().split(/\s+/).length`
-- Chips: `radii.lg`, `padding: 10px 12px`, unselected = `surface.tertiary` + `border.tertiary`, selected = `surface.inverse`
+- Chips: `radii.lg`, `padding: 10px 12px`, always `border: 1px solid` — `transparent` when selected, `border.tertiary` when not (prevents size shift). Selected = `surface.inverse` bg; unselected = `surface.tertiary` bg.
+- `ChipQuestion` + `FieldLabel`: `fontSizes.xs` (12px) / `lineHeights.tight` (16px), `text.primary`
+- Placeholders (`TextInput`, `BriefTextarea`, `StyledSelect` empty): `text.secondary`, opacity 0.5
+- Company/Role `FieldRow` has `$hideOnMobile` prop → `display: none` on mobile
 - `StyledSelect`: `appearance: none`, `$empty` prop for opacity/color, `ChevronSvg` absolutely positioned
 - `BriefContainer`: `height: 100px`, `flex-col`, `gap: 8px` — `BriefTextarea` (flex:1, no border) + `WordIndicator`
-- Submit button: disabled during `sending` and `sent` only; error state re-enables for retry
-- `WORD_COUNTER_SIZE = '0.5rem'` (8px), `WORD_COUNTER_LINE = '0.625rem'` (10px) — below theme scale, Figma-derived
+- Submit button: disabled during `sending` only; error state re-enables for retry
+- `WORD_COUNTER_SIZE = '0.625rem'` (10px), `WORD_COUNTER_LINE = '0.75rem'` (12px) — below theme scale, Figma-derived; color `text.secondary`
+- `Card` (outer): flat on mobile — `border: none; border-radius: 0; padding: 0`
 
 #### DirectContact.tsx ✅
 - `'use client'` — IST clock
 - Card with 3 rows: Based (Trivandrum, IN + live IST time), Email (`mailto:`), Phone (WhatsApp `wa.me` link)
 - Row separator: `border-top: 1px solid border.tertiary` via `$bordered` prop
 - Label: `flex: 1 0 0; max-width: 120px` (Figma justify-between layout)
+- `Card`: flat on mobile — `border: none; border-radius: 0; padding: 0`
 
 #### Services.tsx ✅
 - Dark `surface.inverse` card — cannot use `SectionHeader` (wrong text color on dark bg)
 - `CardLabel` + `CardHeading` + `<Muted>` span written manually
 - 4 service rows; row separators use `surface.highlight` (red `#e8342a`), NOT `border.tertiary`
 - Both `ServiceTitle` and `ServiceDesc` are `fontSizes.sm` (16px) — confirmed from Figma
+- `RowInner`: `align-items: flex-start` — `Num` has `align-self: flex-start` to pin numbers to top of multi-line rows
+- Card styling kept on mobile (Services is the one contact card that keeps its border/padding on mobile)
 
 #### Elsewhere.tsx ✅
 - Light card, uses `SectionLabel` + `SectionHeader`
@@ -579,6 +587,7 @@ PageSections (pt: 140px desktop / 6rem tablet / 40px mobile, gap: 40px)
 - `IconWrap`: 40×40px, `box-shadow: 0 0 12px rgba(0,0,0,0.15)`, `radii.md`, `overflow: hidden`
 - Icon images: `/contact/social/{platform}.webp` — **place files in `public/contact/social/`**
 - Desktop: 2 per row; Mobile (`mq.mobile`): `GridRow` stacks to `flex-direction: column`
+- `Card`: flat on mobile — `border: none; border-radius: 0; padding: 0`
 
 #### EmailFallback.tsx ✅
 - Dark `surface.inverse` card, `radii.xl`, **no border**
@@ -590,6 +599,7 @@ PageSections (pt: 140px desktop / 6rem tablet / 40px mobile, gap: 40px)
 #### app/api/contact/route.ts ✅
 - POST handler — validates `name` + `email`, sends via Resend
 - `from`: `onboarding@resend.dev` (update to verified domain once set up)
+- `to`: `enricsneelamkavil@gmail.com` — Resend free tier allows sending to the account's own email without domain verification
 - `replyTo`: sender's email — allows direct reply from inbox
 - `subject`: `Enquiry from {name}`
 - HTML email: dark header with sender name, field table (email, company, role, budget, when, services), brief section
@@ -624,6 +634,7 @@ PageSections (pt: 140px desktop / 6rem tablet / 40px mobile, gap: 40px)
 | Contact — DirectContact | `359:1540` | — |
 | Contact — Services | `359:1560` | — |
 | Contact — Elsewhere | `359:1589` | — |
+| Contact — EnquiryForm Done state | `367:1227` | — |
 
 ### Title Container — Figma Spec (applies everywhere SectionLabel + SectionHeader are stacked)
 | | Desktop (LG) | Mobile (SM) |
