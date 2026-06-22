@@ -19,7 +19,10 @@ portfolio/                        # project root
 │   ├── about/page.tsx            # About ✅ Done — 'use client', professional/personal mode toggle
 │   ├── works/page.tsx            # Works — not started
 │   ├── resume/page.tsx           # Resume ✅ Done — 'use client' (zoom state)
-│   ├── contact/page.tsx          # Contact — not started
+│   ├── contact/page.tsx          # Contact ✅ Done — 'use client', two-column sticky layout
+│   ├── api/
+│   │   ├── visitor/route.ts      # POST — increments visitor counter
+│   │   └── contact/route.ts      # POST — Resend email to ngpersonal18@gmail.com
 │   └── layout.tsx                # Global layout (Navbar + Footer + PersonalAgent)
 ├── components/
 │   ├── common/
@@ -59,6 +62,12 @@ portfolio/                        # project root
 │   │   ├── ResumeCanvasClient.tsx ✅ Done — all react-pdf code, client-only
 │   │   └── DownloadSection.tsx   ✅ Done — dark card, Download + Email Enric CTAs
 │   ├── contact/
+│   │   ├── PageHeader.tsx        ✅ Done — centered "Contact Me." title + "Let's talk" subtitle
+│   │   ├── EnquiryForm.tsx       ✅ Done — 'use client', chips + fields + Resend API submission
+│   │   ├── DirectContact.tsx     ✅ Done — 'use client', IST clock, Based/Email/Phone rows
+│   │   ├── Services.tsx          ✅ Done — dark card, 4 service rows, red separators
+│   │   ├── Elsewhere.tsx         ✅ Done — 8 social platforms, 4×2 desktop grid
+│   │   └── EmailFallback.tsx     ✅ Done — dark card, email link, agent note
 │   └── shared/
 │       ├── SectionLabel.tsx      ✅ Done — 16px desktop / 12px mobile, no pill/chip styling
 │       ├── SectionHeader.tsx     ✅ Done — 32px/40px desktop / 24px/32px mobile
@@ -109,6 +118,12 @@ portfolio/                        # project root
 - `components/resume/ResumeCanvas.tsx` ✅
 - `components/resume/ResumeCanvasClient.tsx` ✅
 - `components/resume/DownloadSection.tsx` ✅
+- `components/contact/PageHeader.tsx` ✅
+- `components/contact/EnquiryForm.tsx` ✅
+- `components/contact/DirectContact.tsx` ✅
+- `components/contact/Services.tsx` ✅
+- `components/contact/Elsewhere.tsx` ✅
+- `components/contact/EmailFallback.tsx` ✅
 
 ## Breakpoint System
 Defined in `styles/theme.ts` — import `mq` directly, never write raw media queries:
@@ -131,6 +146,10 @@ export const mq = {
 - `Footer InfoRow`: `flex-wrap: wrap` at tablet
 - Full-bleed horizontal scroll (albums, awards): use `overflow-x: auto; scroll-snap-type: x mandatory` on container, `scroll-snap-align: start; flex-shrink: 0` on cards — no negative-margin bleed escapes
 - Travel map desktop canvas hides at `mq.tabletDown` (≤1024px), not just mobile
+- Contact two-column layout collapses at `mq.tabletDown` (≤1024px) — right col (500px) + gap leaves left col too narrow at tablet
+
+## globals.css — Known Global Rule
+`app/globals.css` uses `overflow-x: clip` on `html, body` (NOT `overflow-x: hidden`). This is intentional — `hidden` promotes body/html as the scroll container which silently breaks `position: sticky` everywhere. `clip` prevents horizontal overflow without creating a new scroll context.
 
 ## Navbar — Mobile Bottom Pill
 - **Desktop**: 5 nav links (Home, About, Work, Resume, Contact) — glass pill, fixed top-center
@@ -212,49 +231,86 @@ export default ComponentName
 
 **Page file:** `app/about/page.tsx` — `'use client'`, manages `mode: 'professional' | 'personal'` state
 
-**Composition — both mode groups always in DOM; inactive one is `position: absolute; max-height: 0; overflow: hidden; opacity: 0; pointer-events: none`:**
-```
-PageSections (gap: 80px desktop / 64px tablet / 56px mobile)
-  IntroSection                          ← always visible (mode toggle lives here)
+**Behaviour:**
+- Mode persisted to `localStorage` key `portfolio_about_mode` — restored on mount via `useEffect`
+- On mode change: `snapping` state fires `scale(0.98)` on ModeContent for 150ms, then snaps back; page scrolls to top smoothly
+- `handleModeChange` wired to both the top `IntroSection` toggle and the bottom `BottomToggleWrapper`
 
-  ModeContent (position: relative)
-    ModeGroup $active=professional
-      LandingGroup
-        ProfileImage mode="professional"
+**Composition — both mode groups always in DOM; inactive is `position: absolute` so it takes no layout height:**
+```
+PageSections (gap: 32px desktop / 24px tablet / 24px mobile)
+  IntroSection                          ← always visible (top mode toggle lives here)
+
+  ModeContent (position: relative; overflow: clip)
+    ModeGroup $active=professional      ← active = position: relative; inactive = position: absolute top:0 left:0
+      LandingGroup (gap: 80px desktop / 64px tablet / 72px mobile)
+        ProfileImageWrapper $isPro=true ← negative margins pull photo up, collapse bottom gap
+          ProfileImage mode="professional"
         AboutDescription
       MyTools
       Journey
-      ProfessionalTimeline              ← hidden on mobile
-      ProfessionalTimelineMobile        ← hidden on desktop
+      DesktopTimeline (display: none on mobile)
+        ProfessionalTimeline
+      MobileTimeline (display: none on desktop)
+        ProfessionalTimelineMobile
       AwardShelf
 
     ModeGroup $active=personal
       LandingGroup
-        ProfileImage mode="personal"
+        ProfileImage mode="personal"    ← no ProfileImageWrapper on personal side
         PersonalAboutDescription
       TravelSection
       WorkDeskSection
       PodcastMediumSection
       CreditCardsSection
+
+  BottomToggleWrapper                   ← second mode toggle fixed at bottom of page content
 ```
 
+**ModeContent / ModeGroup pattern:**
+- `ModeContent`: `position: relative; overflow: clip` — clips the inactive absolute group so it never expands page height/footer
+- Active `ModeGroup`: `position: relative` — occupies normal layout flow; sets the page height
+- Inactive `ModeGroup`: `position: absolute; top: 0; left: 0; opacity: 0; visibility: hidden; pointer-events: none` — zero layout footprint
+- `ModeGroup` gap: 80px desktop / 64px tablet / 72px mobile; `padding-bottom`: 62px desktop / 48px tablet+mobile
+
+**ProfileImageWrapper (professional only):**
+- Wraps `<ProfileImage mode="professional" />` in the professional `LandingGroup`
+- Applies negative margins so the face position aligns with where the original photo sat:
+  - Desktop: `margin-top: -44px; margin-bottom: -120px`
+  - Tablet: `margin-top: -35px; margin-bottom: -90px`
+  - Mobile: `margin-top: -25px; margin-bottom: -60px`
+- Personal mode does NOT use this wrapper — `<ProfileImage mode="personal" />` is placed directly
+
+**BottomToggleWrapper:**
+- Renders a second `ModeSwitch` (ModeLabel + ModeToggle + ModeLabel) below all page content
+- Calls the same `handleModeChange` — keeps both toggles in sync
+- `ModeLabel` and `ModeSwitch` styled components defined in `page.tsx` (same shape as IntroSection's but living in page.tsx)
+
 #### IntroSection.tsx ✅
-- `'use client'`, `useState<Mode>('professional' | 'personal')`
+- `'use client'`, receives `mode` and `onModeChange` as props from `page.tsx`
 - PageTitle "About Me." (Period in `colors.text.secondary`)
 - PageSubtitle "Two sides of one designer"
 - ModeToggle (from `components/shared/ModeToggle.tsx`) between two ModeLabel buttons
 - ModeLabel: `fontSizes.sm` (16px) on mobile, `fontSizes.lg` (32px) desktop, notch bold, color changes on `$active`
-- PersonalNote renders when `mode === 'personal'`
 - Mobile: padding-top 40px, reduced gaps
 
 #### ProfileImage.tsx ✅
 - Accepts `mode: 'professional' | 'personal'` prop — different photo + floating icons per mode
 - Figma node: `248:1186` (professional banner)
-- **Banner**: `position: relative; width: 1168px; height: 470px; overflow: clip`
-  - On `tabletDown`: `display: flex; justify-content: center; height: auto; overflow: visible`
-- **6 floating icons**: hidden on `tabletDown`, different sets per mode
+- **Banner**: `position: relative; width: 1168px; height: 621px; overflow: clip`
+  - Tablet: `width: 100%; height: 499.7px`
+  - Mobile: `width: 100%; height: 357px`
+- **PhotoCenter**: `position: absolute; inset: 0; display: flex; align-items: center; justify-content: center` — centers both absolutely-positioned PhotoGroups
+- **PhotoGroup**: always `position: absolute; width: 523px` — both photos overlay each other in the same space; active = `opacity: 1; z-index: 2`, inactive = `opacity: 0; z-index: 1`
+  - Tablet: `width: 420px`
+  - Mobile: `width: min(300px, 100%)`
+  - Crossfade transition: active fades in over 0.4s; inactive snaps out instantly (`opacity 0s 0.4s`)
+- **IconsGroup**: `position: absolute; left: 50%; transform: translateX(-50%); width: 1167.51px; height: 100%`
+  - Tablet: additionally `transform: translateX(-50%) scale(0.805)` to scale icons down proportionally
+  - Mobile: `display: none` — icons entirely hidden
+  - Contains 6 `IconBox` elements (position absolute, Figma pixel coords) — different sets per mode
   - Professional icons: `/about/icons/icon-1.svg` … `icon-6.svg`
-  - Personal icons: `/about/personal/icons/icon-1.png` … `icon-5.png`
+  - Personal icons: `/about/personal/icons/icon-1.png` … `icon-6.png`
 
 #### ModeToggle.tsx ✅ (shared)
 - `'use client'`, props: `selection: 'left'|'right'`, `onToggle: (side) => void`
@@ -304,7 +360,8 @@ PageSections (gap: 80px desktop / 64px tablet / 56px mobile)
 
 #### ProfessionalTimelineMobile.tsx ✅ (mobile)
 - Hidden on desktop (`display: none` above `mq.mobile`)
-- Vertical timeline layout
+- Vertical timeline layout uses `clip-path` for pixel-perfect ribbon notches on `StripWrapper`
+- `StripWrapper` width is responsive (`137px` down to `90px` at `<=402px`), while inner `StripContent` maintains absolute `137px` width to perfectly crop photos without distorting height
 - TitleBlock: no gap (Figma spec)
 
 ---
@@ -325,7 +382,7 @@ PageSections (gap: 80px desktop / 64px tablet / 56px mobile)
 #### TravelSection.tsx ✅
 - Desktop: shows `TravelMap` (draggable canvas) — hidden at `mq.tabletDown` (≤1024px)
 - Mobile/tablet: shows `MobileFlagsRow` (5 flags, raise on hover/tap, tooltip on tap) + `MobileStatsCard`
-  - Flag tooltips: shown on mobile ONLY (inside `MobileFlagsRow` which is `display:none` on desktop)
+  - Flag tooltips use `$isFirst` and `$isLast` to dynamically adjust `left`/`transform` boundaries to prevent cutting off at the screen edges
   - No tooltips on desktop flags (those are inside TravelMapClient)
 - Travel albums: horizontal scroll row — `AlbumsScroller` uses AwardShelf pattern (`overflow-x: auto; scroll-snap-type: x mandatory`), no negative-margin bleed
 - 5 album photos from `/about/personal/travel/{country}-1.webp`
@@ -340,7 +397,7 @@ PageSections (gap: 80px desktop / 64px tablet / 56px mobile)
 - **Map geometry**:
   - `MAP_W=2536, MAP_H=2474, CANVAS_W=1168, CANVAS_H=522`
   - `MAP_X0=-684` (centers map horizontally), `MAP_Y0=-1237` (shows Asia/Middle East)
-  - `MapImg` has CSS `left: MAP_X0; top: MAP_Y0` — initial position set via CSS, NOT via offset state
+  - `MapImg` uses `map.webp` (switched from SVG for payload/GPU optimization)
   - Drag `offset` starts at `{x:0, y:0}`; bounds: X ∈ [-684, 684], Y ∈ [-715, 1237]
 - **MapLayer**: `position: absolute; inset: 0; will-change: transform` — translates by drag offset
   - Children: `MapImg` (map SVG at CSS position) — moves with layer
@@ -368,13 +425,13 @@ PageSections (gap: 80px desktop / 64px tablet / 56px mobile)
 #### PodcastMediumSection.tsx ✅
 - Two-column desktop layout (podcast column + articles column), stacks on mobile
 - Podcast card: logo, platform links (Apple Podcasts, Spotify, YouTube)
-- Medium articles: list of articles with arrow links
+- Medium articles: list of articles with individual direct Medium `href`s via the `ARTICLES` array
 
 #### CreditCardsSection.tsx ✅
 - **Single source of truth**: one `CARDS` array (8 cards, `.webp` paths from `/about/personal/cards/`)
-  - Desktop rows derived: `CARDS.slice(0,4)` (row 1) + `CARDS.slice(4,8)` (row 2)
-  - Mobile stack derived: `MOBILE_STACK = [...CARDS].reverse()` (ICICI at top, AmEx at bottom)
-- **Desktop**: 2×4 grid (`DesktopGrid`), `height: 172px` rows, hidden on mobile
+- **Desktop**: Grid layout using CSS Grid auto-fit (`repeat(auto-fit, minmax(260px, 1fr))`)
+  - Ensures a fluid 4-column desktop wrapping naturally down to 3 and 2 columns on tablet without squishing the images horizontally
+  - Hidden on mobile
 - **Mobile**: swipeable stack (`MobileStack`), hidden on desktop
   - Drag/swipe upward to cycle cards; `stackOrder` state tracks current order
   - Exit animation: `translateY(-200%)` + fade, then reorder after 350ms
@@ -455,6 +512,91 @@ react-pdf uses `DOMMatrix` internally which does not exist in Node.js. The two-f
 
 ---
 
+### Contact ✅ Done
+**Figma frames:** Desktop `359:1468` · Mobile `359:1033`
+
+**Page file:** `app/contact/page.tsx` — `'use client'` (styled-components in page)
+
+**Dependencies:** `resend` — installed via `npm install resend`
+
+**API route:** `app/api/contact/route.ts` — POST, sends via Resend to `ngpersonal18@gmail.com`
+
+**Composition:**
+```
+PageSections (pt: 140px desktop / 6rem tablet / 40px mobile, gap: 40px)
+  PageHeader
+  TwoCol (max-width: 1168px, flex gap: 40px, align-items: flex-start → flex-col gap: 24px at tabletDown)
+    LeftCol (flex: 1, sticky top: 80px, max-height: calc(100vh - 80px), overflow-y: auto → static at tabletDown)
+      EnquiryForm
+    RightCol (width: 500px → 100% at tabletDown, flex-col gap: 24px)
+      DirectContact
+      Services
+      Elsewhere
+  FullWidth (max-width: 1168px)
+    EmailFallback
+```
+
+**Sticky left column:**
+- `LeftCol`: `position: sticky; top: 80px; align-self: flex-start; max-height: calc(100vh - 80px); overflow-y: auto`
+- Requires `TwoCol` to have `align-items: flex-start` (not stretch)
+- Requires `html, body` to NOT have `overflow: hidden` — see globals.css note above
+
+#### PageHeader.tsx ✅
+- Centered "Contact Me." title — period in `colors.text.secondary`
+- Subtitle "Let's talk" — `fonts.sans` regular, `fontSizes.sm` desktop / `fontSizes.xs` mobile
+
+#### EnquiryForm.tsx ✅
+- `'use client'`
+- `CHIPS`: 7 service chips (WEBSITE, DASHBOARD, APPLICATION, UX AUDIT, DESIGN SYSTEM, TALK SESSION, SOMETHING ELSE)
+- `BUDGET_OPTIONS`: 6 options; `WHEN_OPTIONS`: 5 options
+- `FormData` interface: `{ services: string[], name, email, company, role, budget, when, brief }`
+- `Status` type: `'idle' | 'sending' | 'sent' | 'error'`
+- `isValid`: name non-empty + email passes `/\S+@\S+\.\S+/` + (budget OR when non-empty)
+- **Submission**: `fetch('/api/contact', { method: 'POST', body: JSON.stringify(form) })` — clears form + shows "Sent!" for 4s on success, shows red error notice on failure (retry allowed)
+- `wordCount`: `form.brief.trim().split(/\s+/).length`
+- Chips: `radii.lg`, `padding: 10px 12px`, unselected = `surface.tertiary` + `border.tertiary`, selected = `surface.inverse`
+- `StyledSelect`: `appearance: none`, `$empty` prop for opacity/color, `ChevronSvg` absolutely positioned
+- `BriefContainer`: `height: 100px`, `flex-col`, `gap: 8px` — `BriefTextarea` (flex:1, no border) + `WordIndicator`
+- Submit button: disabled during `sending` and `sent` only; error state re-enables for retry
+- `WORD_COUNTER_SIZE = '0.5rem'` (8px), `WORD_COUNTER_LINE = '0.625rem'` (10px) — below theme scale, Figma-derived
+
+#### DirectContact.tsx ✅
+- `'use client'` — IST clock
+- Card with 3 rows: Based (Trivandrum, IN + live IST time), Email (`mailto:`), Phone (WhatsApp `wa.me` link)
+- Row separator: `border-top: 1px solid border.tertiary` via `$bordered` prop
+- Label: `flex: 1 0 0; max-width: 120px` (Figma justify-between layout)
+
+#### Services.tsx ✅
+- Dark `surface.inverse` card — cannot use `SectionHeader` (wrong text color on dark bg)
+- `CardLabel` + `CardHeading` + `<Muted>` span written manually
+- 4 service rows; row separators use `surface.highlight` (red `#e8342a`), NOT `border.tertiary`
+- Both `ServiceTitle` and `ServiceDesc` are `fontSizes.sm` (16px) — confirmed from Figma
+
+#### Elsewhere.tsx ✅
+- Light card, uses `SectionLabel` + `SectionHeader`
+- `PLATFORMS: Platform[][]` — 4 rows × 2 platforms each
+- `PlatformCard` (`<a>`): `flex: 1 0 0`, `border: border.tertiary`, `radii.lg`, `padding: 13px 15px`
+- `IconWrap`: 40×40px, `box-shadow: 0 0 12px rgba(0,0,0,0.15)`, `radii.md`, `overflow: hidden`
+- Icon images: `/contact/social/{platform}.webp` — **place files in `public/contact/social/`**
+- Desktop: 2 per row; Mobile (`mq.mobile`): `GridRow` stacks to `flex-direction: column`
+
+#### EmailFallback.tsx ✅
+- Dark `surface.inverse` card, `radii.xl`, **no border**
+- Desktop: `padding: 48px`, no gap (children stack with line heights only)
+- Mobile: `padding: spacing[6]`, `gap: 4px`
+- `EmailLink`: `fontSizes.lg` (32px) desktop / `1.25rem` (20px — hardcoded, between theme tokens) mobile
+- Copy: "Or use the agent at the bottom of the page — it knows my work better than I do, and is awake at 3am."
+
+#### app/api/contact/route.ts ✅
+- POST handler — validates `name` + `email`, sends via Resend
+- `from`: `onboarding@resend.dev` (update to verified domain once set up)
+- `replyTo`: sender's email — allows direct reply from inbox
+- `subject`: `Enquiry from {name}`
+- HTML email: dark header with sender name, field table (email, company, role, budget, when, services), brief section
+- Returns `{ ok: true }` on success, `{ error: '...' }` on failure
+
+---
+
 ## Figma
 - File: https://www.figma.com/design/cGxPfzhfg2zi9MivaiE7dX/Enric-S-Neelamkavil-|-Portfolio?node-id=136-3016
 - Annotations in Figma are implementation instructions — always read and follow them
@@ -476,6 +618,12 @@ react-pdf uses `DOMMatrix` internally which does not exist in Node.js. The two-f
 | Resume — Canvas | `282:801` | `306:1617` |
 | Resume — PDF Card | `282:802` | `306:1618` |
 | Resume — Download Section | `282:803` | `306:1649` |
+| Contact (full frame) | `359:1468` | `359:1033` |
+| Contact — Tags Container (two-col) | `359:1474` | — |
+| Contact — EnquiryForm | `359:1475` | — |
+| Contact — DirectContact | `359:1540` | — |
+| Contact — Services | `359:1560` | — |
+| Contact — Elsewhere | `359:1589` | — |
 
 ### Title Container — Figma Spec (applies everywhere SectionLabel + SectionHeader are stacked)
 | | Desktop (LG) | Mobile (SM) |
@@ -516,10 +664,10 @@ public/about/
 ### Personal About
 ```
 public/about/personal/
-├── personal-photo.png         # Personal mode banner photo
+├── personal-image.webp        # Personal mode banner photo
 ├── checkmark.svg              # To Do List widget checkmark
 ├── icons/
-│   ├── icon-1.png … icon-5.png   # 5 floating icons (personal mode)
+│   ├── icon-1.png … icon-6.png   # 6 floating icons (personal mode)
 ├── travel/
 │   ├── Map.svg                # World map SVG (2536×2474)
 │   ├── pin.svg                # Map pin dot
@@ -550,6 +698,20 @@ public/about/personal/
     └── arrow-article.svg      # Article link arrow
 ```
 
+### Contact
+```
+public/contact/social/
+├── linkedin.webp
+├── instagram.webp
+├── behance.webp
+├── dribbble.webp
+├── x.webp
+├── facebook.webp
+├── medium.webp
+└── youtube.webp
+```
+> ⚠️ These 8 files need to be placed manually before deploying — `Elsewhere.tsx` references them at `/contact/social/{platform}.webp`
+
 ---
 
 ## Supabase Client
@@ -567,6 +729,7 @@ export const supabase = createClient(
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://rdkhdnbzhuwvthxagzdz.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_630z8GqkaL53xi1EXO_1HQ_VZ-t3EoZ
+RESEND_API_KEY=re_...          # Resend API key — add to Vercel env vars before deploying
 ```
 
 ## Landing — Company Logo Marquee
@@ -580,8 +743,12 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_630z8GqkaL53xi1EXO_1HQ_VZ-t3EoZ
 
 ### Other Pages
 - [ ] Build Works page (`app/works/page.tsx`)
-- [ ] Build Contact page (`app/contact/page.tsx`)
+- [x] ~~Build Contact page (`app/contact/page.tsx`)~~ ✅ Done
 - [x] ~~Build Resume page (`app/resume/page.tsx`)~~ ✅ Done
+
+### Contact — Remaining
+- [ ] Place 8 social icon images in `public/contact/social/*.webp`
+- [ ] Update `FROM` in `app/api/contact/route.ts` from `onboarding@resend.dev` to verified domain email
 
 ### Global
 - [ ] Wire MyWorks to Supabase (`projects` table) when Works page is ready

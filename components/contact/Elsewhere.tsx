@@ -1,0 +1,216 @@
+import styled from 'styled-components'
+import { mq } from '@/styles/theme'
+import SectionLabel from '@/components/shared/SectionLabel'
+import SectionHeader from '@/components/shared/SectionHeader'
+
+// ─── Data ─────────────────────────────────────────────────────────────────────
+
+interface Platform {
+  name: string
+  handle: string
+  icon: string
+  href: string
+}
+
+// Icons stored at public/contact/social/{platform}.webp
+// Place platform icon images there before deploying.
+const PLATFORMS: Platform[][] = [
+  [
+    {
+      name: 'LinkedIn',
+      handle: 'enricsneelamkavil',
+      icon: '/contact/social/linkedin.webp',
+      href: 'https://www.linkedin.com/in/enricsneelamkavil/',
+    },
+    {
+      name: 'Instagram',
+      handle: 'enricsneelamkavil',
+      icon: '/contact/social/instagram.webp',
+      href: 'https://www.instagram.com/enricsneelamkavil/',
+    },
+  ],
+  [
+    {
+      name: 'Behance',
+      handle: 'enricsneelamkavil',
+      icon: '/contact/social/behance.webp',
+      href: 'https://www.behance.net/enricsneelamkavil',
+    },
+    {
+      name: 'Dribbble',
+      handle: 'enricsneelamkavil',
+      icon: '/contact/social/dribbble.webp',
+      href: 'https://dribbble.com/enricsneelamkavil',
+    },
+  ],
+  [
+    {
+      name: 'X',
+      handle: 'enricneels',
+      icon: '/contact/social/x.webp',
+      href: 'https://x.com/enricneels',
+    },
+    {
+      name: 'Facebook',
+      handle: 'enricsneelamkavil',
+      icon: '/contact/social/facebook.webp',
+      href: 'https://facebook.com/enricsneelamkavil',
+    },
+  ],
+  [
+    {
+      name: 'Medium',
+      handle: '@enricsneelamkavil',
+      icon: '/contact/social/medium.webp',
+      href: 'https://medium.com/@enricsneelamkavil',
+    },
+    {
+      name: 'YouTube',
+      handle: '@enricsneelamkavil',
+      icon: '/contact/social/youtube.webp',
+      href: 'https://www.youtube.com/@enricsneelamkavil',
+    },
+  ],
+]
+
+// ─── Component ────────────────────────────────────────────────────────────────
+
+const Elsewhere = () => (
+  <Card>
+    <TitleBlock>
+      <SectionLabel>ELSEWHERE</SectionLabel>
+      <SectionHeader before="Find me on the " muted="internet" after="." />
+    </TitleBlock>
+
+    <Grid>
+      {PLATFORMS.map((row, ri) => (
+        <GridRow key={ri}>
+          {row.map(({ name, handle, icon, href }) => (
+            <PlatformCard
+              key={name}
+              href={href}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={`${name} — ${handle}`}
+            >
+              <IconWrap>
+                <img src={icon} alt={name} draggable={false} />
+              </IconWrap>
+              <Details>
+                <PlatformName>{name}</PlatformName>
+                <PlatformHandle>{handle}</PlatformHandle>
+              </Details>
+            </PlatformCard>
+          ))}
+        </GridRow>
+      ))}
+    </Grid>
+  </Card>
+)
+
+// ─── Styles ──────────────────────────────────────────────────────────────────
+
+const Card = styled.div`
+  border: 1px solid ${({ theme }) => theme.colors.border.tertiary};
+  border-radius: ${({ theme }) => theme.radii.xl};
+  padding: ${({ theme }) => theme.spacing[6]};
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[10]};
+  width: 100%;
+`
+
+const TitleBlock = styled.div`
+  display: flex;
+  flex-direction: column;
+`
+
+// ── Grid ──────────────────────────────────────────────────────────────────────
+
+const Grid = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[4]};
+  width: 100%;
+`
+
+const GridRow = styled.div`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing[4]};
+  align-items: center;
+  width: 100%;
+
+  ${mq.mobile} {
+    flex-direction: column;
+  }
+`
+
+// ── Platform card ─────────────────────────────────────────────────────────────
+
+const PlatformCard = styled.a`
+  flex: 1 0 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 13px 15px;
+  border: 1px solid ${({ theme }) => theme.colors.border.tertiary};
+  border-radius: ${({ theme }) => theme.radii.lg};
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+
+  &:hover {
+    background: ${({ theme }) => theme.colors.surface.tertiary};
+  }
+
+  ${mq.mobile} {
+    flex: none;
+    width: 100%;
+  }
+`
+
+const IconWrap = styled.div`
+  position: relative;
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border-radius: ${({ theme }) => theme.radii.md};
+  overflow: hidden;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.15);
+
+  img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    pointer-events: none;
+    display: block;
+  }
+`
+
+const Details = styled.div`
+  flex: 1 0 0;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+`
+
+const PlatformName = styled.span`
+  font-family: ${({ theme }) => theme.fonts.notch};
+  font-weight: ${({ theme }) => theme.fontWeights.regular};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  line-height: ${({ theme }) => theme.lineHeights.normal};
+  color: ${({ theme }) => theme.colors.text.primary};
+`
+
+const PlatformHandle = styled.span`
+  font-family: ${({ theme }) => theme.fonts.notch};
+  font-weight: ${({ theme }) => theme.fontWeights.light};
+  font-size: ${({ theme }) => theme.fontSizes.xs};
+  line-height: ${({ theme }) => theme.lineHeights.tight};
+  color: ${({ theme }) => theme.colors.text.tertiary};
+`
+
+export default Elsewhere

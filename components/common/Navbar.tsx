@@ -17,14 +17,14 @@ const NAV_LINKS = [
   { label: 'About', href: '/about' },
   { label: 'Work', href: '#' },
   { label: 'Resume', href: '/resume' },
-  { label: 'Contact', href: '#' },
+  { label: 'Contact', href: '/contact' },
 ] as const
 
 const MOBILE_NAV_LINKS = [
   { label: 'Home', href: '/' },
   { label: 'About', href: '/about' },
   { label: 'Work', href: '#' },
-  { label: 'Contact', href: '#' },
+  { label: 'Contact', href: '/contact' },
 ] as const
 
 // ─── Component ────────────────────────────────────────────────────────────────
