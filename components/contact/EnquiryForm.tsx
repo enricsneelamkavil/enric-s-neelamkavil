@@ -286,10 +286,10 @@ const EnquiryForm = () => {
         <ResponseRow>
           <SendButton
             type="submit"
-            disabled={!isValid || status === 'sending' || status === 'sent'}
+            disabled={!isValid || status === 'sending'}
           >
             <span>
-              {status === 'sending' ? 'Sending…' : status === 'sent' ? 'Sent!' : 'Send it'}
+              {status === 'sending' ? 'Sending…' : 'Send it'}
             </span>
             <ArrowPill>
               <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
