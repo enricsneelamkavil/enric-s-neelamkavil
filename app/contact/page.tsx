@@ -51,7 +51,7 @@ const PageSections = styled.div`
 
   ${mq.mobile} {
     padding-top: 40px;
-    gap: ${({ theme }) => theme.spacing[10]};
+    gap: 72px;
   }
 `
 
@@ -66,6 +66,10 @@ const FormGroup = styled.div`
   ${mq.tabletDown} {
     gap: ${({ theme }) => theme.spacing[10]};
   }
+
+  ${mq.mobile} {
+    gap: 32px;
+  }
 `
 
 /* Two-column layout: form left (flex-1), info cards right (500px fixed) */
@@ -79,6 +83,10 @@ const TwoCol = styled.div`
   ${mq.tabletDown} {
     flex-direction: column;
     gap: ${({ theme }) => theme.spacing[6]};
+  }
+
+  ${mq.mobile} {
+    gap: 72px;
   }
 `
 
@@ -124,6 +132,10 @@ const RightCol = styled.div`
 
   ${mq.tabletDown} {
     width: 100%;
+  }
+
+  ${mq.mobile} {
+    gap: 72px;
   }
 `
 

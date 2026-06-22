@@ -5,47 +5,38 @@ import styled from 'styled-components'
 
 // ─── Map geometry ─────────────────────────────────────────────────────────────
 
-const MAP_W = 2536
-const MAP_H = 2474
+const MAP_W = 2459
+const MAP_H = 2400
 const CANVAS_W = 1168
 const CANVAS_H = 522
 
-// MapImg is placed at this CSS position inside MapLayer (not part of offset)
-// so the initial view shows Asia / Middle East
-const MAP_X0 = -684    // -(MAP_W - CANVAS_W) / 2
-const MAP_Y0 = -1237   // Figma annotation
+// MapImg placed at this CSS position inside MapLayer — shows Asia / Middle East on load
+// Matches Figma node 328:996: left-[-646.5px] top-[-1201px] w-[2459px] h-[2400px]
+const MAP_X0 = -646.5
+const MAP_Y0 = -1201
 
-// Drag offset starts at (0,0). Bounds keep MapImg edges flush with canvas edges:
-//   right: MAP_X0 + offset.x = 0          → max =  684
-//   left:  MAP_X0 + offset.x + MAP_W = CW → min = -684
-//   bottom: MAP_Y0 + oy + MAP_H = CH      → min = -715
-//   top:    MAP_Y0 + oy = 0               → max = 1237
-const DRAG_X_MIN = -684
-const DRAG_X_MAX = 684
-const DRAG_Y_MIN = -715
-const DRAG_Y_MAX = 1237
+// Drag bounds keep MapImg edges flush with canvas edges:
+//   right: MAP_X0 + offset.x = 0               → max =  646
+//   left:  MAP_X0 + offset.x + MAP_W = CW      → min = -644
+//   bottom: MAP_Y0 + oy + MAP_H = CH           → min = -677
+//   top:    MAP_Y0 + oy = 0                    → max = 1201
+const DRAG_X_MIN = -644
+const DRAG_X_MAX = 646
+const DRAG_Y_MIN = -677
+const DRAG_Y_MAX = 1201
 
 // ─── Data ────────────────────────────────────────────────────────────────────
 
-interface PinDef { name: string; l: number; t: number; dotFirst: boolean }
+interface PinDef { name: string; l: number; t: number; dotFirst: boolean; flag?: string }
 
-// Canvas-absolute positions from Figma spec (outside MapLayer — fixed on screen)
+// Canvas-absolute positions from Figma node 328:996 — pins inside MapLayer (translate with map)
 const PINS: PinDef[] = [
-  { name: 'INDIA', l: 491, t: 341, dotFirst: false },
-  { name: 'OMAN', l: 344, t: 228, dotFirst: true },
-  { name: 'SINGAPORE', l: 775, t: 464, dotFirst: false },
-  { name: 'MALAYSIA', l: 848, t: 422, dotFirst: true },
-  { name: 'VIETNAM', l: 877, t: 241, dotFirst: true },
-  { name: 'QATAR', l: 255, t: 176, dotFirst: true },
-]
-
-interface FlagDef { name: string; src: string }
-const FLAGS: FlagDef[] = [
-  { name: 'Qatar', src: '/about/personal/travel/qatar-flag.svg' },
-  { name: 'Singapore', src: '/about/personal/travel/singapore-flag.svg' },
-  { name: 'Malaysia', src: '/about/personal/travel/malaysia-flag.svg' },
-  { name: 'Vietnam', src: '/about/personal/travel/vietnam-flag.svg' },
-  { name: 'Oman', src: '/about/personal/travel/oman-flag.svg' },
+  { name: 'INDIA',     l: 468, t: 329, dotFirst: false, flag: '/about/personal/travel/india-flag.svg' },
+  { name: 'OMAN',      l: 343, t: 221, dotFirst: true,  flag: '/about/personal/travel/oman-flag.svg' },
+  { name: 'SINGAPORE', l: 747, t: 448, dotFirst: false, flag: '/about/personal/travel/singapore-flag.svg' },
+  { name: 'MALAYSIA',  l: 835, t: 408, dotFirst: true,  flag: '/about/personal/travel/malaysia-flag.svg' },
+  { name: 'VIETNAM',   l: 871, t: 233, dotFirst: true,  flag: '/about/personal/travel/vietnam-flag.svg' },
+  { name: 'QATAR',     l: 263, t: 168, dotFirst: true,  flag: '/about/personal/travel/qatar-flag.svg' },
 ]
 
 const STAT_TARGETS = [6, 55, 2]
@@ -66,7 +57,6 @@ const formatStat = (i: number, v: number) => {
 const TravelMapClient = () => {
   const [offset, setOffset] = useState({ x: 0, y: 0 })
   const [dragging, setDragging] = useState(false)
-  const [hoveredFlag, setHoveredFlag] = useState<string | null>(null)
   const [counts, setCounts] = useState([0, 0, 0])
 
   const dragOrigin = useRef({ x: 0, y: 0 })
@@ -141,38 +131,28 @@ const TravelMapClient = () => {
         />
 
         {/* Pins inside MapLayer — translate with the map on drag */}
-        {PINS.map(({ name, l, t, dotFirst }) => (
+        {PINS.map(({ name, l, t, dotFirst, flag }) => (
           <PinGroup key={name} $l={l} $t={t}>
             {dotFirst ? (
               <>
                 <PinDot src="/about/personal/travel/pin.svg" alt="" aria-hidden="true" draggable={false} />
-                <PinTag>{name}</PinTag>
+                <PinTag>
+                  {flag && <FlagImg src={flag} alt="" aria-hidden="true" draggable={false} />}
+                  {name}
+                </PinTag>
               </>
             ) : (
               <>
-                <PinTag>{name}</PinTag>
+                <PinTag>
+                  {flag && <FlagImg src={flag} alt="" aria-hidden="true" draggable={false} />}
+                  {name}
+                </PinTag>
                 <PinDot src="/about/personal/travel/pin.svg" alt="" aria-hidden="true" draggable={false} />
               </>
             )}
           </PinGroup>
         ))}
       </MapLayer>
-
-      {/* Flags strip — fixed in canvas, top-right */}
-      <FlagsStrip>
-        {FLAGS.map(({ name, src }) => (
-          <FlagItem
-            key={name}
-            $raised={hoveredFlag === name}
-            onMouseEnter={() => setHoveredFlag(name)}
-            onMouseLeave={() => setHoveredFlag(null)}
-          >
-            <FlagInner>
-              <img src={src} alt={name} draggable={false} />
-            </FlagInner>
-          </FlagItem>
-        ))}
-      </FlagsStrip>
 
       {/* Stats card — fixed in canvas, bottom-left */}
       <StatsCard ref={statsRef}>
@@ -249,12 +229,13 @@ const PinDot = styled.img`
 `
 
 const PinTag = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 4px;
   background: ${({ theme }) => theme.colors.surface.tertiary};
   border: 1px solid ${({ theme }) => theme.colors.border.tertiary};
   border-radius: ${({ theme }) => theme.radii.lg};
-  padding: 2px;
-  padding-left: 8px;
-  padding-right:8px;
+  padding: 6px;
   font-family: ${({ theme }) => theme.fonts.sans};
   font-weight: ${({ theme }) => theme.fontWeights.regular};
   font-size: ${({ theme }) => theme.fontSizes.xs};
@@ -263,40 +244,12 @@ const PinTag = styled.div`
   white-space: nowrap;
 `
 
-// ── Flags strip ───────────────────────────────────────────────────────────────
-
-const FlagsStrip = styled.div`
-  position: absolute;
-  right: 15px;
-  top: 15px;
-  display: flex;
-  align-items: center;
-  gap: ${({ theme }) => theme.spacing[3]};
-  z-index: 10;
-`
-
-const FlagItem = styled.div<{ $raised: boolean }>`
-  position: relative;
-  width: 36px;
-  height: 24px;
+const FlagImg = styled.img`
+  display: block;
+  width: 15px;
+  height: 10px;
   flex-shrink: 0;
-  cursor: default;
-  transform: ${({ $raised }) => ($raised ? 'translateY(-6px)' : 'translateY(0)')};
-  transition: transform 0.15s ease;
-`
-
-// Slight bleed matching Figma's inset-[-2.5%_-1.67%] on flag images
-const FlagInner = styled.div`
-  position: absolute;
-  inset: -2.5% -1.67%;
-
-  img {
-    display: block;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-    user-select: none;
-  }
+  pointer-events: none;
 `
 
 

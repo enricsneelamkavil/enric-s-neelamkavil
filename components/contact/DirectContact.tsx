@@ -80,6 +80,10 @@ const Wrapper = styled.div`
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing[6]};
   width: 100%;
+
+  ${mq.mobile} {
+    gap: ${({ theme }) => theme.spacing[10]};
+  }
 `
 
 const Heading = styled.h2`
