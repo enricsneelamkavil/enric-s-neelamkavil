@@ -78,8 +78,8 @@ const EnquiryForm = () => {
 
   const setField =
     (field: keyof Omit<FormData, 'services'>) =>
-    (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
-      setForm(f => ({ ...f, [field]: e.target.value }))
+      (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
+        setForm(f => ({ ...f, [field]: e.target.value }))
 
   const wordCount =
     form.brief.trim() === '' ? 0 : form.brief.trim().split(/\s+/).length
@@ -419,8 +419,8 @@ const Chip = styled.button<{ $selected: boolean }>`
     $selected ? 'transparent' : theme.colors.border.tertiary};
   background: ${({ $selected, theme }) =>
     $selected ? theme.colors.surface.inverse : theme.colors.surface.tertiary};
-  border-radius: ${({ theme }) => theme.radii.lg};
-  padding: 10px 12px;
+  border-radius: ${({ theme }) => theme.radii.md};
+  padding: 8px 12px;
   font-family: ${({ theme }) => theme.fonts.sans};
   font-weight: ${({ theme }) => theme.fontWeights.light};
   font-size: ${({ theme }) => theme.fontSizes.xs};
