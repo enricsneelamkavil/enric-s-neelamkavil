@@ -20,18 +20,18 @@ interface Tool {
 // "flat"             = SVG, no radius, no shadow
 
 const TOOLS: Tool[] = [
-  { name: 'Figma', src: 'about/tools/figma.webp', variant: 'rounded-overflow', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
-  { name: 'Photoshop', src: 'about/tools/photoshop.svg', variant: 'flat', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
-  { name: 'Sketch', src: 'about/tools/sketch.webp', variant: 'rounded-overflow', shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
-  { name: 'Illustrator', src: 'about/tools/illustrator.svg', variant: 'flat', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
-  { name: 'Lovable', src: 'about/tools/lovable.webp', variant: 'rounded-fit', shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
-  { name: 'XD', src: 'about/tools/xd.svg', variant: 'flat', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
-  { name: 'Gemini', src: 'about/tools/gemini.webp', variant: 'rounded-fit', shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
-  { name: 'ChatGPT', src: 'about/tools/chatgpt.webp', variant: 'rounded-fit', shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
-  { name: 'Claude', src: 'about/tools/claude.webp', variant: 'rounded-fit', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
-  { name: 'CorelDraw', src: 'about/tools/coreldraw.webp', variant: 'flat' },
-  { name: 'After Effects', src: 'about/tools/after-effects.svg', variant: 'flat', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
-  { name: 'Premiere Pro', src: 'about/tools/premiere-pro.svg', variant: 'flat', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
+  { name: 'Figma', src: 'app-icons/figma.webp', variant: 'rounded-overflow', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
+  { name: 'Photoshop', src: 'app-icons/photoshop.svg', variant: 'flat', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
+  { name: 'Sketch', src: 'app-icons/sketch.webp', variant: 'rounded-overflow', shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
+  { name: 'Illustrator', src: 'app-icons/illustrator.svg', variant: 'flat', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
+  { name: 'Lovable', src: 'app-icons/lovable.webp', variant: 'rounded-fit', shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
+  { name: 'XD', src: 'app-icons/xd.svg', variant: 'flat', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
+  { name: 'Gemini', src: 'app-icons/gemini.webp', variant: 'rounded-fit', shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
+  { name: 'ChatGPT', src: 'app-icons/chatgpt.webp', variant: 'rounded-fit', shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
+  { name: 'Claude', src: 'app-icons/claude.webp', variant: 'rounded-fit', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
+  { name: 'CorelDraw', src: 'app-icons/coreldraw.webp', variant: 'flat' },
+  { name: 'After Effects', src: 'app-icons/after-effects.svg', variant: 'flat', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
+  { name: 'Premiere Pro', src: 'app-icons/premiere-pro.svg', variant: 'flat', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
 ]
 
 const RISE = 16

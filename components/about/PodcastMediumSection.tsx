@@ -8,24 +8,24 @@ import SectionHeader from '@/components/shared/SectionHeader'
 const YOUTUBE_URL = 'https://www.youtube.com/playlist?list=PLhx_ytf61w01eqEuGXrV88F3EaY-8YvKc'
 
 const PLATFORMS = [
-  { name: 'YouTube', src: '/about/personal/podcast/youtube.webp', href: YOUTUBE_URL },
-  { name: 'Spotify', src: '/about/personal/podcast/spotify.webp', href: 'https://open.spotify.com/show/5AZaUyunCb3vo7EGzb67gf' },
-  { name: 'Apple Podcasts', src: '/about/personal/podcast/apple-podcasts.webp', href: 'https://podcasts.apple.com/in/podcast/chumma-oru-podcast/id1879025130' },
+  { name: 'YouTube', src: 'app-icons/youtube.webp', href: YOUTUBE_URL },
+  { name: 'Spotify', src: 'app-icons/spotify.webp', href: 'https://open.spotify.com/show/5AZaUyunCb3vo7EGzb67gf' },
+  { name: 'Apple Podcasts', src: 'app-icons/apple-podcasts.webp', href: 'https://podcasts.apple.com/in/podcast/chumma-oru-podcast/id1879025130' },
 ]
 
 const ARTICLES = [
-  { 
-    title: 'I Failed the Challenge and Still Got an Apple Watch for Free', 
+  {
+    title: 'I Failed the Challenge and Still Got an Apple Watch for Free',
     readTime: '5 min read',
     href: 'https://medium.com/@enricsneelamkavil/i-failed-the-challenge-and-still-got-an-apple-watch-for-free-be7a0bb8d10f'
   },
-  { 
-    title: 'The Portfolio I Never Submitted Got Me to awwwards.', 
+  {
+    title: 'The Portfolio I Never Submitted Got Me to awwwards.',
     readTime: '3 min read',
     href: 'https://medium.com/@enricsneelamkavil/the-portfolio-i-never-submitted-got-me-to-awwwards-2ce43a5886b3'
   },
-  { 
-    title: 'From Nothing to a DESIGNER today!', 
+  {
+    title: 'From Nothing to a DESIGNER today!',
     readTime: '4 min read',
     href: 'https://medium.com/@enricsneelamkavil/from-nothing-to-a-designer-today-d05c02edf1e1'
   },

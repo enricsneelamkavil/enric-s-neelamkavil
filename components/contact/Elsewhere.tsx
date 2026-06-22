@@ -19,13 +19,13 @@ const PLATFORMS: Platform[][] = [
     {
       name: 'LinkedIn',
       handle: 'enricsneelamkavil',
-      icon: '/contact/social/linkedin.webp',
+      icon: 'app-icons/linkedin.webp',
       href: 'https://www.linkedin.com/in/enricsneelamkavil/',
     },
     {
       name: 'Instagram',
       handle: 'enricsneelamkavil',
-      icon: '/contact/social/instagram.webp',
+      icon: 'app-icons/instagram.webp',
       href: 'https://www.instagram.com/enricsneelamkavil/',
     },
   ],
@@ -33,13 +33,13 @@ const PLATFORMS: Platform[][] = [
     {
       name: 'Behance',
       handle: 'enricsneelamkavil',
-      icon: '/contact/social/behance.webp',
+      icon: '/app-icons/behance.webp',
       href: 'https://www.behance.net/enricsneelamkavil',
     },
     {
       name: 'Dribbble',
       handle: 'enricsneelamkavil',
-      icon: '/contact/social/dribbble.webp',
+      icon: '/app-icons/dribbble.webp',
       href: 'https://dribbble.com/enricsneelamkavil',
     },
   ],
@@ -47,13 +47,13 @@ const PLATFORMS: Platform[][] = [
     {
       name: 'X',
       handle: 'enricneels',
-      icon: '/contact/social/x.webp',
+      icon: '/app-icons/x.webp',
       href: 'https://x.com/enricneels',
     },
     {
       name: 'Facebook',
       handle: 'enricsneelamkavil',
-      icon: '/contact/social/facebook.webp',
+      icon: '/app-icons/facebook.webp',
       href: 'https://facebook.com/enricsneelamkavil',
     },
   ],
@@ -61,13 +61,13 @@ const PLATFORMS: Platform[][] = [
     {
       name: 'Medium',
       handle: '@enricsneelamkavil',
-      icon: '/contact/social/medium.webp',
+      icon: '/app-icons/medium.webp',
       href: 'https://medium.com/@enricsneelamkavil',
     },
     {
       name: 'YouTube',
       handle: '@enricsneelamkavil',
-      icon: '/contact/social/youtube.webp',
+      icon: '/app-icons/youtube.webp',
       href: 'https://www.youtube.com/@enricsneelamkavil',
     },
   ],
@@ -118,6 +118,12 @@ const Card = styled.div`
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing[10]};
   width: 100%;
+
+  ${mq.mobile} {
+    border: none;
+    border-radius: 0;
+    padding: 0;
+  }
 `
 
 const TitleBlock = styled.div`

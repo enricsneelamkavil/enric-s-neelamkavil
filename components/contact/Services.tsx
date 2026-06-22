@@ -119,7 +119,7 @@ const Row = styled.div<{ $bordered: boolean }>`
 
 const RowInner = styled.div`
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   width: 100%;
 `
@@ -128,6 +128,7 @@ const Num = styled.p`
   margin: 0;
   width: 40px;
   flex-shrink: 0;
+  align-self: flex-start;
   font-family: ${({ theme }) => theme.fonts.sans};
   font-weight: ${({ theme }) => theme.fontWeights.regular};
   font-size: ${({ theme }) => theme.fontSizes.xs};

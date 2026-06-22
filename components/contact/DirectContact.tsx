@@ -86,6 +86,12 @@ const Card = styled.div`
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing[10]};
   width: 100%;
+
+  ${mq.mobile} {
+    border: none;
+    border-radius: 0;
+    padding: 0;
+  }
 `
 
 const TitleBlock = styled.div`

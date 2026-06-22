@@ -9,8 +9,8 @@ import SectionHeader from '@/components/shared/SectionHeader'
 // ─── Constants ────────────────────────────────────────────────────────────────
 
 // Figma-derived values below the theme token scale
-const WORD_COUNTER_SIZE = '0.5rem'        // 8px
-const WORD_COUNTER_LINE = '0.625rem'      // 10px
+const WORD_COUNTER_SIZE = '0.625rem'      // 10px
+const WORD_COUNTER_LINE = '0.75rem'       // 12px
 
 const CHIPS = [
   'WEBSITE', 'DASHBOARD', 'APPLICATION', 'UX AUDIT',
@@ -113,10 +113,32 @@ const EnquiryForm = () => {
 
       setForm(EMPTY_FORM)
       setStatus('sent')
-      setTimeout(() => setStatus('idle'), 4000)
+      setTimeout(() => setStatus('idle'), 5000)
     } catch {
       setStatus('error')
     }
+  }
+
+  if (status === 'sent') {
+    return (
+      <Card>
+        <DoneIconWrap>
+          <svg width="25" height="18" viewBox="0 0 25 18" fill="none">
+            <path
+              d="M2 9L9.5 16L23 2"
+              stroke="white"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </DoneIconWrap>
+        <DoneTextBlock>
+          <DoneHeading>Thanks - message sent.</DoneHeading>
+          <DoneSub>{`I'll get back to you in under 24h on weekdays. In the meantime, there's a podcast you might like →`}</DoneSub>
+        </DoneTextBlock>
+      </Card>
+    )
   }
 
   return (
@@ -176,7 +198,7 @@ const EnquiryForm = () => {
         </FieldRow>
 
         {/* ── Company + Role ────────────────────────────────────────────── */}
-        <FieldRow>
+        <FieldRow $hideOnMobile>
           <FieldGroup>
             <FieldLabel htmlFor="contact-company">COMPANY / TEAM</FieldLabel>
             <TextInput
@@ -305,6 +327,55 @@ const Card = styled.div`
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing[10]};
   width: 100%;
+
+  ${mq.mobile} {
+    border: none;
+    border-radius: 0;
+    padding: 0;
+  }
+`
+
+// ── Done state ────────────────────────────────────────────────────────────────
+
+const DoneIconWrap = styled.div`
+  width: 80px;
+  height: 80px;
+  flex-shrink: 0;
+  border-radius: ${({ theme }) => theme.radii['3xl']};
+  background: ${({ theme }) => theme.colors.surface.highlight};
+  display: flex;
+  align-items: center;
+  justify-content: center;
+`
+
+const DoneTextBlock = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[2]};
+  width: 100%;
+`
+
+const DoneHeading = styled.p`
+  margin: 0;
+  font-family: ${({ theme }) => theme.fonts.notch};
+  font-weight: ${({ theme }) => theme.fontWeights.regular};
+  font-size: ${({ theme }) => theme.fontSizes.lg};
+  line-height: ${({ theme }) => theme.lineHeights.loose};
+  color: ${({ theme }) => theme.colors.text.primary};
+
+  ${mq.mobile} {
+    font-size: ${({ theme }) => theme.fontSizes.md};
+    line-height: 2.25rem;
+  }
+`
+
+const DoneSub = styled.p`
+  margin: 0;
+  font-family: ${({ theme }) => theme.fonts.sans};
+  font-weight: ${({ theme }) => theme.fontWeights.regular};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  line-height: ${({ theme }) => theme.lineHeights.normal};
+  color: ${({ theme }) => theme.colors.text.tertiary};
 `
 
 const TitleBlock = styled.div`
@@ -331,9 +402,9 @@ const ChipQuestion = styled.p`
   margin: 0;
   font-family: ${({ theme }) => theme.fonts.notch};
   font-weight: ${({ theme }) => theme.fontWeights.light};
-  font-size: 0.625rem;
-  line-height: 0.75rem;
-  color: ${({ theme }) => theme.colors.text.tertiary};
+  font-size: ${({ theme }) => theme.fontSizes.xs};
+  line-height: ${({ theme }) => theme.lineHeights.tight};
+  color: ${({ theme }) => theme.colors.text.primary};
   text-transform: uppercase;
 `
 
@@ -344,8 +415,8 @@ const ChipRow = styled.div`
 `
 
 const Chip = styled.button<{ $selected: boolean }>`
-  border: ${({ $selected, theme }) =>
-    $selected ? 'none' : `1px solid ${theme.colors.border.tertiary}`};
+  border: 1px solid ${({ $selected, theme }) =>
+    $selected ? 'transparent' : theme.colors.border.tertiary};
   background: ${({ $selected, theme }) =>
     $selected ? theme.colors.surface.inverse : theme.colors.surface.tertiary};
   border-radius: ${({ theme }) => theme.radii.lg};
@@ -363,13 +434,14 @@ const Chip = styled.button<{ $selected: boolean }>`
 
 // ── Field layout ──────────────────────────────────────────────────────────────
 
-const FieldRow = styled.div`
+const FieldRow = styled.div<{ $hideOnMobile?: boolean }>`
   display: flex;
   gap: ${({ theme }) => theme.spacing[4]};
 
   ${mq.mobile} {
     flex-direction: column;
     gap: ${({ theme }) => theme.spacing[6]};
+    ${({ $hideOnMobile }) => $hideOnMobile && 'display: none;'}
   }
 `
 
@@ -389,9 +461,9 @@ const FieldGroup = styled.div`
 const FieldLabel = styled.label`
   font-family: ${({ theme }) => theme.fonts.notch};
   font-weight: ${({ theme }) => theme.fontWeights.light};
-  font-size: 0.625rem;
-  line-height: 0.75rem;
-  color: ${({ theme }) => theme.colors.text.tertiary};
+  font-size: ${({ theme }) => theme.fontSizes.xs};
+  line-height: ${({ theme }) => theme.lineHeights.tight};
+  color: ${({ theme }) => theme.colors.text.primary};
   text-transform: uppercase;
 `
 
@@ -412,7 +484,7 @@ const TextInput = styled.input`
 
   &::placeholder {
     font-weight: ${({ theme }) => theme.fontWeights.light};
-    color: ${({ theme }) => theme.colors.text.tertiary};
+    color: ${({ theme }) => theme.colors.text.secondary};
     opacity: 0.5;
   }
 
@@ -442,7 +514,7 @@ const StyledSelect = styled.select<{ $empty: boolean }>`
   font-size: ${({ theme }) => theme.fontSizes.xs};
   line-height: ${({ theme }) => theme.lineHeights.tight};
   color: ${({ $empty, theme }) =>
-    $empty ? theme.colors.text.tertiary : theme.colors.text.primary};
+    $empty ? theme.colors.text.secondary : theme.colors.text.primary};
   opacity: ${({ $empty }) => ($empty ? 0.5 : 1)};
   background: ${({ theme }) => theme.colors.surface.primary};
   cursor: pointer;
@@ -492,7 +564,7 @@ const BriefTextarea = styled.textarea`
 
   &::placeholder {
     font-weight: ${({ theme }) => theme.fontWeights.light};
-    color: ${({ theme }) => theme.colors.text.tertiary};
+    color: ${({ theme }) => theme.colors.text.secondary};
     opacity: 0.5;
   }
 `
@@ -508,7 +580,7 @@ const WordCount = styled.span`
   font-family: ${({ theme }) => theme.fonts.sans};
   font-size: ${WORD_COUNTER_SIZE};
   line-height: ${WORD_COUNTER_LINE};
-  color: ${({ theme }) => theme.colors.text.tertiary};
+  color: ${({ theme }) => theme.colors.text.secondary};
   opacity: 0.5;
 `
 
@@ -516,7 +588,7 @@ const WordSuffix = styled.span`
   font-family: ${({ theme }) => theme.fonts.sans};
   font-size: ${WORD_COUNTER_SIZE};
   line-height: ${WORD_COUNTER_LINE};
-  color: ${({ theme }) => theme.colors.text.tertiary};
+  color: ${({ theme }) => theme.colors.text.secondary};
   opacity: 0.5;
 `
 
@@ -582,7 +654,7 @@ const ResponseNotice = styled.p`
   font-weight: ${({ theme }) => theme.fontWeights.light};
   font-size: ${({ theme }) => theme.fontSizes.xs};
   line-height: ${({ theme }) => theme.lineHeights.tight};
-  color: ${({ theme }) => theme.colors.text.tertiary};
+  color: ${({ theme }) => theme.colors.text.secondary};
   opacity: 0.5;
 `
 
