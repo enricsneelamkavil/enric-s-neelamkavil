@@ -3,8 +3,6 @@
 import { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { mq } from '@/styles/theme'
-import SectionLabel from '@/components/shared/SectionLabel'
-import SectionHeader from '@/components/shared/SectionHeader'
 import DiamondBullet from '@/components/shared/DiamondBullet'
 
 // ─── IST clock ───────────────────────────────────────────────────────────────
@@ -29,10 +27,9 @@ const DirectContact = () => {
   }, [])
 
   return (
-    <Card>
+    <Wrapper>
       <TitleBlock>
-        <SectionLabel>OR, THE OLD WAY</SectionLabel>
-        <SectionHeader before="Reach out " muted="direct" after="." />
+        <Heading>Reach out <Muted>direct</Muted>.</Heading>
       </TitleBlock>
 
       <Highlights>
@@ -72,26 +69,30 @@ const DirectContact = () => {
           </RowInner>
         </Row>
       </Highlights>
-    </Card>
+    </Wrapper>
   )
 }
 
 // ─── Styles ──────────────────────────────────────────────────────────────────
 
-const Card = styled.div`
-  border: 1px solid ${({ theme }) => theme.colors.border.tertiary};
-  border-radius: ${({ theme }) => theme.radii.xl};
-  padding: ${({ theme }) => theme.spacing[6]};
+const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing[10]};
+  gap: ${({ theme }) => theme.spacing[6]};
   width: 100%;
+`
 
-  ${mq.mobile} {
-    border: none;
-    border-radius: 0;
-    padding: 0;
-  }
+const Heading = styled.h2`
+  margin: 0;
+  font-family: ${({ theme }) => theme.fonts.notch};
+  font-weight: ${({ theme }) => theme.fontWeights.regular};
+  font-size: ${({ theme }) => theme.fontSizes.md};
+  line-height: ${({ theme }) => theme.lineHeights.relaxed};
+  color: ${({ theme }) => theme.colors.text.primary};
+`
+
+const Muted = styled.span`
+  color: ${({ theme }) => theme.colors.text.secondary};
 `
 
 const TitleBlock = styled.div`

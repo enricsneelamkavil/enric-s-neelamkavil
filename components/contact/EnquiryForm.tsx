@@ -30,11 +30,8 @@ const WHEN_OPTIONS = [
 // ─── Types ────────────────────────────────────────────────────────────────────
 
 interface FormData {
-  services: string[]
   name: string
   email: string
-  company: string
-  role: string
   budget: string
   when: string
   brief: string
@@ -60,24 +57,15 @@ const ChevronSvg = () => (
 
 const EnquiryForm = () => {
   const [form, setForm] = useState<FormData>({
-    services: [],
     name: '', email: '',
-    company: '', role: '',
     budget: '', when: '',
     brief: '',
   })
+  const [selectedChip, setSelectedChip] = useState<string>('')
   const [status, setStatus] = useState<Status>('idle')
 
-  const toggleService = (chip: string) =>
-    setForm(f => ({
-      ...f,
-      services: f.services.includes(chip)
-        ? f.services.filter(s => s !== chip)
-        : [...f.services, chip],
-    }))
-
   const setField =
-    (field: keyof Omit<FormData, 'services'>) =>
+    (field: keyof FormData) =>
       (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
         setForm(f => ({ ...f, [field]: e.target.value }))
 
@@ -90,8 +78,7 @@ const EnquiryForm = () => {
     (form.budget !== '' || form.when !== '')
 
   const EMPTY_FORM: FormData = {
-    services: [], name: '', email: '',
-    company: '', role: '',
+    name: '', email: '',
     budget: '', when: '',
     brief: '',
   }
@@ -106,12 +93,13 @@ const EnquiryForm = () => {
       const res = await fetch('/api/contact', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, service: selectedChip }),
       })
 
       if (!res.ok) throw new Error('send failed')
 
       setForm(EMPTY_FORM)
+      setSelectedChip('')
       setStatus('sent')
       setTimeout(() => setStatus('idle'), 5000)
     } catch {
@@ -154,20 +142,17 @@ const EnquiryForm = () => {
         <ChipGroup>
           <ChipQuestion>WHAT ARE YOU HERE FOR?</ChipQuestion>
           <ChipRow>
-            {CHIPS.map(chip => {
-              const selected = form.services.includes(chip)
-              return (
-                <Chip
-                  key={chip}
-                  type="button"
-                  $selected={selected}
-                  onClick={() => toggleService(chip)}
-                  aria-pressed={selected}
-                >
-                  {chip}
-                </Chip>
-              )
-            })}
+            {CHIPS.map(chip => (
+              <Chip
+                key={chip}
+                type="button"
+                $selected={chip === selectedChip}
+                onClick={() => setSelectedChip(chip)}
+                aria-pressed={chip === selectedChip}
+              >
+                {chip}
+              </Chip>
+            ))}
           </ChipRow>
         </ChipGroup>
 
@@ -193,32 +178,6 @@ const EnquiryForm = () => {
               value={form.email}
               onChange={setField('email')}
               autoComplete="email"
-            />
-          </FieldGroup>
-        </FieldRow>
-
-        {/* ── Company + Role ────────────────────────────────────────────── */}
-        <FieldRow $hideOnMobile>
-          <FieldGroup>
-            <FieldLabel htmlFor="contact-company">COMPANY / TEAM</FieldLabel>
-            <TextInput
-              id="contact-company"
-              type="text"
-              placeholder="Studio · Startup · Self"
-              value={form.company}
-              onChange={setField('company')}
-              autoComplete="organization"
-            />
-          </FieldGroup>
-          <FieldGroup>
-            <FieldLabel htmlFor="contact-role">YOUR ROLE</FieldLabel>
-            <TextInput
-              id="contact-role"
-              type="text"
-              placeholder="Founder · PM · Designer"
-              value={form.role}
-              onChange={setField('role')}
-              autoComplete="organization-title"
             />
           </FieldGroup>
         </FieldRow>
@@ -320,19 +279,10 @@ const EnquiryForm = () => {
 // ─── Styles ──────────────────────────────────────────────────────────────────
 
 const Card = styled.div`
-  border: 1px solid ${({ theme }) => theme.colors.border.tertiary};
-  border-radius: ${({ theme }) => theme.radii.xl};
-  padding: ${({ theme }) => theme.spacing[6]};
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing[10]};
   width: 100%;
-
-  ${mq.mobile} {
-    border: none;
-    border-radius: 0;
-    padding: 0;
-  }
 `
 
 // ── Done state ────────────────────────────────────────────────────────────────
@@ -434,14 +384,13 @@ const Chip = styled.button<{ $selected: boolean }>`
 
 // ── Field layout ──────────────────────────────────────────────────────────────
 
-const FieldRow = styled.div<{ $hideOnMobile?: boolean }>`
+const FieldRow = styled.div`
   display: flex;
   gap: ${({ theme }) => theme.spacing[4]};
 
   ${mq.mobile} {
     flex-direction: column;
     gap: ${({ theme }) => theme.spacing[6]};
-    ${({ $hideOnMobile }) => $hideOnMobile && 'display: none;'}
   }
 `
 

@@ -6,25 +6,26 @@ import { mq } from '@/styles/theme'
 import PageHeader from '@/components/contact/PageHeader'
 import EnquiryForm from '@/components/contact/EnquiryForm'
 import DirectContact from '@/components/contact/DirectContact'
-import Services from '@/components/contact/Services'
 import Elsewhere from '@/components/contact/Elsewhere'
 import EmailFallback from '@/components/contact/EmailFallback'
 
 export default function Contact() {
   return (
     <PageSections>
-      <PageHeader />
+      <FormGroup>
+        <PageHeader />
 
-      <TwoCol>
-        <LeftCol>
-          <EnquiryForm />
-        </LeftCol>
-        <RightCol>
-          <DirectContact />
-          <Services />
-          <Elsewhere />
-        </RightCol>
-      </TwoCol>
+        <TwoCol>
+          <LeftCol>
+            <EnquiryForm />
+          </LeftCol>
+          <Divider />
+          <RightCol>
+            <DirectContact />
+            <Elsewhere />
+          </RightCol>
+        </TwoCol>
+      </FormGroup>
 
       <FullWidth>
         <EmailFallback />
@@ -40,15 +41,30 @@ const PageSections = styled.div`
   flex-direction: column;
   align-items: center;
   width: 100%;
-  gap: ${({ theme }) => theme.spacing[10]};
+  gap: 120px;
   padding-top: 8.75rem; /* 140px — below fixed navbar */
 
   ${mq.tablet} {
     padding-top: 6rem;
+    gap: ${({ theme }) => theme.spacing[10]};
   }
 
   ${mq.mobile} {
     padding-top: 40px;
+    gap: ${({ theme }) => theme.spacing[10]};
+  }
+`
+
+/* Groups PageHeader + TwoCol with the Figma-specified 80px gap between them */
+const FormGroup = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  gap: 80px;
+
+  ${mq.tabletDown} {
+    gap: ${({ theme }) => theme.spacing[10]};
   }
 `
 
@@ -85,7 +101,20 @@ const LeftCol = styled.div`
   }
 `
 
-/* Right column: DirectContact + Services + Elsewhere, gap 24px */
+/* 1px vertical line between form and right col — Figma node 374:1112 */
+const Divider = styled.div`
+  width: 1px;
+  height: 560px;
+  flex-shrink: 0;
+  align-self: flex-start;
+  background: ${({ theme }) => theme.colors.border.tertiary};
+
+  ${mq.tabletDown} {
+    display: none;
+  }
+`
+
+/* Right column: DirectContact + Elsewhere, gap 24px */
 const RightCol = styled.div`
   width: 500px;
   flex-shrink: 0;

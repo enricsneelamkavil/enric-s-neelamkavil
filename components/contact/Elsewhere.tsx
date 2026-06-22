@@ -1,7 +1,5 @@
 import styled from 'styled-components'
 import { mq } from '@/styles/theme'
-import SectionLabel from '@/components/shared/SectionLabel'
-import SectionHeader from '@/components/shared/SectionHeader'
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
@@ -76,10 +74,9 @@ const PLATFORMS: Platform[][] = [
 // ─── Component ────────────────────────────────────────────────────────────────
 
 const Elsewhere = () => (
-  <Card>
+  <Wrapper>
     <TitleBlock>
-      <SectionLabel>ELSEWHERE</SectionLabel>
-      <SectionHeader before="Find me on the " muted="internet" after="." />
+      <Heading>Find me on the <Muted>internet</Muted>.</Heading>
     </TitleBlock>
 
     <Grid>
@@ -105,25 +102,29 @@ const Elsewhere = () => (
         </GridRow>
       ))}
     </Grid>
-  </Card>
+  </Wrapper>
 )
 
 // ─── Styles ──────────────────────────────────────────────────────────────────
 
-const Card = styled.div`
-  border: 1px solid ${({ theme }) => theme.colors.border.tertiary};
-  border-radius: ${({ theme }) => theme.radii.xl};
-  padding: ${({ theme }) => theme.spacing[6]};
+const Wrapper = styled.div`
   display: flex;
   flex-direction: column;
-  gap: ${({ theme }) => theme.spacing[10]};
+  gap: ${({ theme }) => theme.spacing[6]};
   width: 100%;
+`
 
-  ${mq.mobile} {
-    border: none;
-    border-radius: 0;
-    padding: 0;
-  }
+const Heading = styled.h2`
+  margin: 0;
+  font-family: ${({ theme }) => theme.fonts.notch};
+  font-weight: ${({ theme }) => theme.fontWeights.regular};
+  font-size: ${({ theme }) => theme.fontSizes.md};
+  line-height: ${({ theme }) => theme.lineHeights.relaxed};
+  color: ${({ theme }) => theme.colors.text.primary};
+`
+
+const Muted = styled.span`
+  color: ${({ theme }) => theme.colors.text.secondary};
 `
 
 const TitleBlock = styled.div`
