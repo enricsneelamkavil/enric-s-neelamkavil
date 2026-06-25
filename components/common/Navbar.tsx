@@ -15,7 +15,7 @@ const AGENT_ICON = '/icons/agent.svg'
 const NAV_LINKS = [
   { label: 'Home', href: '/' },
   { label: 'About', href: '/about' },
-  { label: 'Work', href: '#' },
+  { label: 'Work', href: '/works' },
   { label: 'Resume', href: '/resume' },
   { label: 'Contact', href: '/contact' },
 ] as const
@@ -23,7 +23,7 @@ const NAV_LINKS = [
 const MOBILE_NAV_LINKS = [
   { label: 'Home', href: '/' },
   { label: 'About', href: '/about' },
-  { label: 'Work', href: '#' },
+  { label: 'Work', href: '/works' },
   { label: 'Contact', href: '/contact' },
 ] as const
 
