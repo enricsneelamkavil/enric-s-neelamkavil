@@ -24,8 +24,8 @@ const FeatureProduct = () => {
   return (
     <Section>
       <TitleContainer>
-        <SectionLabel>The one I built solo</SectionLabel>
-        <SectionHeader before="A product of " muted="my own" />
+        <SectionLabel>The one I build for myself</SectionLabel>
+        <SectionHeader before="Proof I can do this " muted="end to end" />
       </TitleContainer>
 
       <Article>
@@ -42,10 +42,7 @@ const FeatureProduct = () => {
           </LogoGroup>
 
           <Description>
-            Plush simplifies the credit card ecosystem through card discovery, comparison,
-            personalised portfolio tracking, and community-driven insights. Built to replace
-            confusion with clarity, Plush helps users make smarter card decisions without
-            pressure, complexity, or unnecessary financial jargon.
+            Plush simplifies the credit card ecosystem through card discovery, comparison, personalised portfolio tracking, and community-driven insights. It's the clearest example of how to solve a confusing problem simply, and don't make the user do the work of understanding it.
           </Description>
 
           <FeatureList>

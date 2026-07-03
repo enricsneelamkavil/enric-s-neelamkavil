@@ -39,7 +39,7 @@ const AboutDescription = () => {
         <BioColumn>
           <BioParagraph>
             <Highlight>I design products that get out of the way.</Highlight>
-            {' '}4+ years across fintech, SaaS and consumer apps — from the brief to
+            {' '}3+ years across fintech, SaaS and consumer apps — from the brief to
             the build. I care about clarity, calmness and the boring details no one
             notices when they&apos;re done right.{' '}
           </BioParagraph>
@@ -49,7 +49,7 @@ const AboutDescription = () => {
           <HighlightRow $py={13}>
             <RowLabel>BASED</RowLabel>
             <RowValue>
-              <ValueLight>Trivandrum, IN</ValueLight>
+              <ValueLight>Kerala, IN</ValueLight>
               <DiamondBullet size={6} />
               <ValueRegular>{istTime}</ValueRegular>
             </RowValue>
@@ -67,7 +67,7 @@ const AboutDescription = () => {
           <HighlightRow $py={14} $last>
             <RowLabel>DOMAIN</RowLabel>
             <RowValue>
-              <ValueLight>User Experience Design</ValueLight>
+              <ValueLight>Travel  ·  Fin Tech</ValueLight>
             </RowValue>
           </HighlightRow>
         </HighlightsTable>

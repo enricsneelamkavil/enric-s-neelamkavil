@@ -9,9 +9,9 @@ import { mq } from '@/styles/theme'
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
 const STATS = [
-  { target: 4,  label: 'Years in Design' },
+  { target: 3, label: 'Years in Design' },
   { target: 40, label: 'Projects Delivered' },
-  { target: 2,  label: 'Honours Received' },
+  { target: 2, label: 'Honours Received' },
 ] as const
 
 // ─── Count-up hook ─────────────────────────────────────────────────────────────
@@ -88,9 +88,7 @@ const AboutBrief = () => {
           <SectionHeader before="Little about " muted="myself" />
         </TitleContainer>
         <Bio>
-          I&apos;m <BioEmphasis>Enric</BioEmphasis> — a Product &amp; Experience Designer
-          based in Kerala. With engineering background, I map complex user flows into clean,
-          beautiful, developer-friendly products across travel, healthcare, AI and enterprise.
+          I&apos;m <BioEmphasis>Enric</BioEmphasis>. I started in engineering, moved to design, and somewhere along the way started building of my own, giving me a different instinct — less "make it pretty," more "will this actually work, and would someone use it."
         </Bio>
       </InfoSection>
 

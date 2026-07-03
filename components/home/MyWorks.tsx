@@ -76,12 +76,12 @@ const MyWorks = () => {
     <Section>
       <HeaderContainer>
         <TitleBlock>
-          <SectionLabel>MY WORKS · 2022 → 2026</SectionLabel>
-          <SectionHeader before="Other things I've " muted="shipped" />
+          <SectionLabel>MY WORKS</SectionLabel>
+          <SectionHeader before="Few things shipped " muted="for others" />
         </TitleBlock>
         {/* Hidden on mobile via HeaderCTA wrapper */}
         <HeaderCTA>
-          <Button label="See all works" variant="secondary" href="#" />
+          <Button label="See all" variant="secondary" href="/works" />
         </HeaderCTA>
       </HeaderContainer>
 

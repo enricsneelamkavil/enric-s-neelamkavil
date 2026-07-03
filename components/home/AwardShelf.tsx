@@ -20,7 +20,7 @@ const AWARDS = [
   },
   {
     name: 'Config APAC Attendee',
-    subtitle: 'Marina Bay Sands, Singapore (2024)',
+    subtitle: 'Singapore (2024)',
     logo: 'home/awards-logos/figma.svg',
   },
   {

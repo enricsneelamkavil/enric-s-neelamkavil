@@ -16,7 +16,6 @@ const LOGO_PATHS = [
   '/home/company-logos/apro-it-logo.svg',
   '/home/company-logos/urbantrash-logo.svg',
   '/home/company-logos/irisholidays-logo.svg',
-  '/home/company-logos/ust-logo.svg',
   '/home/company-logos/vurse-logo.svg',
   '/home/company-logos/fundesigns-logo.svg',
   '/home/company-logos/opengrad-logo.svg',
@@ -51,9 +50,7 @@ const Landing = () => {
             Enriching Experiences<Period>.</Period>
           </Headline>
           <Subtitle>
-            With award-winning branding expertise and a passion for cutting-edge design
-            tools like Figma, I create compelling digital experiences tailored to your
-            needs.
+            Product designer who maps messy problems into interfaces that get out of the way. From the brief changes — the obsession with clarity, calm, and the boring details doesn't.
           </Subtitle>
         </TextContainer>
       </MainLander>

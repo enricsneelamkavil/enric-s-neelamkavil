@@ -25,6 +25,7 @@ const PAGE_LINKS = [
   { label: 'Home', href: '/' },
   { label: 'About', href: '/about' },
   { label: 'Work', href: '/works' },
+  { label: 'Resume', href: '/resume' },
   { label: 'Contact', href: '/contact' },
 ]
 
@@ -33,6 +34,7 @@ const SOCIAL_LINKS = [
   { label: 'Behance', href: 'https://www.behance.net/enricsneelamkavil' },
   { label: 'Dribbble', href: 'https://dribbble.com/enricsneelamkavil' },
   { label: 'Medium', href: 'https://medium.com/@enricsneelamkavil' },
+  { label: 'WhatsApp', href: 'https://wa.me/+919400743624' },
 ]
 
 // ─── Component ────────────────────────────────────────────────────────────────
@@ -118,11 +120,10 @@ const Footer = () => {
               {/* Col 1 — bio + CTA */}
               <DesignerCol>
                 <BioText>
-                  Product &amp; Experience Designer mapping complex user flows into clean,
-                  developer-friendly products. Based in Kerala, India.
+                  I help teams turn vague ideas into products people actually want. Based in Kerala — open to opportunities.
                 </BioText>
                 <ButtonWrapper>
-                  <Button label="Start a project" href="#" />
+                  <Button label="Let's talk" href="/contact" />
                 </ButtonWrapper>
               </DesignerCol>
 
@@ -157,7 +158,7 @@ const Footer = () => {
                   <VisitorBlock>
                     <VisitorLabel>You&apos;re visitor number:</VisitorLabel>
                     <VisitorCount>
-                      {visitorCount !== null ? String(visitorCount).padStart(3, '0') : '---'}
+                      {visitorCount !== null ? String(visitorCount).padStart(3, '0') : '***'}
                     </VisitorCount>
                   </VisitorBlock>
                 </ReachOutContent>
