@@ -17,7 +17,7 @@ portfolio/                        # project root
 ├── app/
 │   ├── page.tsx                  # Home ✅ Done
 │   ├── about/page.tsx            # About ✅ Done — 'use client', professional/personal mode toggle
-│   ├── works/page.tsx            # Works — not started
+│   ├── works/page.tsx            # Works ✅ Done — 'use client' (WorksClient), filter state, Supabase connected
 │   ├── resume/page.tsx           # Resume ✅ Done — 'use client' (zoom state)
 │   ├── contact/page.tsx          # Contact ✅ Done — 'use client', two-column sticky layout
 │   ├── api/
@@ -55,6 +55,12 @@ portfolio/                        # project root
 │   │   ├── PodcastMediumSection.tsx      ✅ Done — podcast card + medium articles list
 │   │   └── CreditCardsSection.tsx        ✅ Done — 2×4 desktop grid + mobile swipe stack
 │   ├── works/
+│   │   ├── PageHeader.tsx        ✅ Done — centered "Work." title + subtitle
+│   │   ├── FilterRow.tsx         ✅ Done — filter chips: All / Case Study / Landing / Brand Identity
+│   │   ├── FeaturedCard.tsx      ✅ Done — Plush featured card, shown when filter is 'all'
+│   │   ├── WorkCard.tsx          ✅ Done — project card, used in WorksGrid
+│   │   ├── WorksGrid.tsx         ✅ Done — grid layout, receives filtered projects
+│   │   └── WorksClient.tsx       ✅ Done — 'use client', filter state, Supabase fetch
 │   ├── resume/
 │   │   ├── PageHeader.tsx        ✅ Done — centered "Resume." title + subtitle
 │   │   ├── Toolbar.tsx           ✅ Done — PDF metadata + zoom/print (desktop only)
@@ -113,6 +119,12 @@ portfolio/                        # project root
 - `components/about/WorkDeskSection.tsx` ✅
 - `components/about/PodcastMediumSection.tsx` ✅
 - `components/about/CreditCardsSection.tsx` ✅
+- `components/works/PageHeader.tsx` ✅
+- `components/works/FilterRow.tsx` ✅
+- `components/works/FeaturedCard.tsx` ✅
+- `components/works/WorkCard.tsx` ✅
+- `components/works/WorksGrid.tsx` ✅
+- `components/works/WorksClient.tsx` ✅
 - `components/resume/PageHeader.tsx` ✅
 - `components/resume/Toolbar.tsx` ✅
 - `components/resume/ResumeCanvas.tsx` ✅
@@ -216,6 +228,21 @@ export default ComponentName
 ---
 
 ## Pages
+
+### Works ✅ Done
+**Figma frames:** Desktop `390:1745` · Mobile `390:1079`
+
+**Page file:** `app/works/page.tsx` — server component; renders `WorksClient` which handles all interactivity
+
+**Components:**
+- `PageHeader.tsx` — centered "Work." title + subtitle
+- `FilterRow.tsx` — filter chips: All / Case Study / Landing / Brand Identity
+- `FeaturedCard.tsx` — Plush featured card, only shown when filter is `'all'`
+- `WorkCard.tsx` — individual project card used in `WorksGrid`
+- `WorksGrid.tsx` — grid layout, receives filtered projects array
+- `WorksClient.tsx` — `'use client'`; owns filter state, fetches from Supabase `projects` table, filters by `type` field (`case-study` / `landing` / `brand-identity`), passes filtered list to `WorksGrid`
+
+---
 
 ### Home ✅ Complete
 - [x] `Landing.tsx` — hero, photo row (bleed on mobile), marquee, company logo strip
@@ -753,7 +780,7 @@ RESEND_API_KEY=re_...          # Resend API key — add to Vercel env vars befor
 ## What's Next
 
 ### Other Pages
-- [ ] Build Works page (`app/works/page.tsx`)
+- [x] ~~Build Works page (`app/works/page.tsx`)~~ ✅ Done
 - [x] ~~Build Contact page (`app/contact/page.tsx`)~~ ✅ Done
 - [x] ~~Build Resume page (`app/resume/page.tsx`)~~ ✅ Done
 
@@ -762,6 +789,6 @@ RESEND_API_KEY=re_...          # Resend API key — add to Vercel env vars befor
 - [ ] Update `FROM` in `app/api/contact/route.ts` from `onboarding@resend.dev` to verified domain email
 
 ### Global
-- [ ] Wire MyWorks to Supabase (`projects` table) when Works page is ready
+- [x] ~~Wire MyWorks to Supabase (`projects` table) when Works page is ready~~ ✅ Done — Works page connected
 - [ ] Define and implement PersonalAgent mobile interaction
 - [ ] Wire PersonalAgent to `/api/agent` (Anthropic SDK)
