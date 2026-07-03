@@ -6,10 +6,10 @@ import SectionHeader from '@/components/shared/SectionHeader'
 // ─── Seal assets ──────────────────────────────────────────────────────────────
 // RGBA PNGs — circular seal shape baked into transparency
 
-const SEAL_AWWWARDS = '/about/seals/awwwards.webp'
-const SEAL_UST = '/about/seals/ust.webp'
-const SEAL_FIGMA = '/about/seals/figma.webp'
-const SEAL_KSUM = '/about/seals/ksum.webp'
+const SEAL_AWWWARDS = '/about/professional/seals/awwwards.webp'
+const SEAL_UST = '/about/professional/seals/ust.webp'
+const SEAL_FIGMA = '/about/professional/seals/figma.webp'
+const SEAL_KSUM = '/about/professional/seals/ksum.webp'
 
 // ─── Award data ───────────────────────────────────────────────────────────────
 

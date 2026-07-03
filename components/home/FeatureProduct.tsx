@@ -8,8 +8,8 @@ import DiamondBullet from '@/components/shared/DiamondBullet'
 import { mq } from '@/styles/theme'
 
 
-const IMG_BG = '/home/plush-feature.webp'
-const IMG_PLUSH_LOGO = 'home/plush-logo.svg'
+const IMG_BG = '/home/works/featured/plush-feature.webp'
+const IMG_PLUSH_LOGO = '/home/works/featured/plush-logo.svg'
 
 
 const FEATURES = [

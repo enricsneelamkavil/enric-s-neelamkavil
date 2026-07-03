@@ -48,7 +48,7 @@ const PodcastMediumSection = () => (
         {/* Logo + episode count + watch link */}
         <PodcastRow>
           <PodcastLogo
-            src="/about/personal/podcast/podcast-logo.webp"
+            src="/about/personal/podcast-logo.webp"
             alt="Chumma Oru Podcast"
             width={64}
             height={64}
@@ -115,7 +115,7 @@ const PodcastMediumSection = () => (
               </ArticleInfo>
               <ArrowWrap>
                 <img
-                  src="/about/personal/podcast/arrow-article.svg"
+                  src="/icons/external.svg"
                   alt=""
                   aria-hidden="true"
                   width={24}

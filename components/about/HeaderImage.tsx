@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import { mq } from '@/styles/theme'
 
 const MASK_PATH = '/about/header-mask.svg'
-const PHOTO_PATH = '/about/header-banner.jpg'
+const PHOTO_PATH = '/about/personal/header.webp'
 
 const HeaderImage = () => (
   <Wrapper>
