@@ -1,6 +1,5 @@
 import styled from 'styled-components'
 import { mq } from '@/styles/theme'
-import DiamondBullet from '@/components/shared/DiamondBullet'
 
 interface Props {
   label: string
@@ -15,7 +14,7 @@ const PageHeader = ({ label, titleBefore, titleMuted, titleAfter, subtitle, acti
   <Wrapper>
     <HeaderBlock>
       <LabelRow>
-        <DiamondBullet size={8} />
+        <img src="/icons/page-dot.svg" width={12} height={12} alt="" aria-hidden />
         <LabelText>{label}</LabelText>
       </LabelRow>
       <Title>

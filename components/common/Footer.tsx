@@ -21,6 +21,8 @@ const SHAPES = [
   { src: SHAPE_D, w: 64 },
 ] as const
 
+const CTA_WORDS = ['build', 'design', 'dream', 'develop', 'ship'] as const
+
 const PAGE_LINKS = [
   { label: 'Home', href: '/' },
   { label: 'About', href: '/about' },
@@ -61,21 +63,34 @@ const HeartIcon = () => {
 
   return (
     <IconContainer onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
-      {showHourglass ? (
+      {/* Both icons always in DOM — opacity-toggled to prevent layout shift on swap */}
+      <IconLayer $visible={!showHourglass} $jiggling={isJiggling}>
+        <HeartImg src={HEART_ICON} alt="♥" />
+      </IconLayer>
+      <IconLayer $visible={showHourglass} $jiggling={false}>
         <a href="https://archive.enric.design" target="_blank" rel="noopener noreferrer">
           <HourglassImg src={HOURGLASS_ICON} alt="visit archive" />
         </a>
-      ) : (
-        <IconWrapper $jiggling={isJiggling}>
-          <HeartImg src={HEART_ICON} alt="♥" />
-        </IconWrapper>
-      )}
+      </IconLayer>
     </IconContainer>
   )
 }
 
 const Footer = () => {
   const [visitorCount, setVisitorCount] = useState<number | null>(null)
+  const [wordIdx, setWordIdx]   = useState(0)
+  const [fading, setFading]     = useState(false)
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setFading(true)
+      setTimeout(() => {
+        setWordIdx(i => (i + 1) % CTA_WORDS.length)
+        setFading(false)
+      }, 250)
+    }, 2500)
+    return () => clearInterval(interval)
+  }, [])
 
   useEffect(() => {
     const fetchCount = async () => {
@@ -107,10 +122,9 @@ const Footer = () => {
       <ContentCard>
         <ContentInner>
           <CTAHeading>
-            <CTALine>Let&apos;s build</CTALine>
+            <CTALine>Let&apos;s <RotatingWord $fading={fading}>{CTA_WORDS[wordIdx]}</RotatingWord></CTALine>
             <CTALine>
-              <CTAMuted>something real</CTAMuted>
-              <CTADot>.</CTADot>
+              <CTAMuted>incredible work</CTAMuted> <CTAHighlight>together</CTAHighlight><CTAPrimary>.</CTAPrimary>
             </CTALine>
           </CTAHeading>
 
@@ -213,7 +227,7 @@ const FooterWrapper = styled.footer`
 
 const ContentCard = styled.div`
   width: calc(100% - 72px);
-  background-color: ${({ theme }) => theme.colors.surface.primary};
+  background: ${({ theme }) => theme.colors.background.primary};
   border-radius: 0 0 24px 24px;
   display: flex;
   flex-direction: column;
@@ -247,7 +261,7 @@ const CTAHeading = styled.div`
   font-family: ${({ theme }) => theme.fonts.notch};
   font-weight: ${({ theme }) => theme.fontWeights.regular};
   font-size: 64px;
-  line-height: 80px;
+  line-height: 72px;
   letter-spacing: -1.28px;
   color: ${({ theme }) => theme.colors.text.primary};
 
@@ -267,12 +281,22 @@ const CTALine = styled.p`
   margin: 0;
 `
 
+const RotatingWord = styled.span<{ $fading: boolean }>`
+  display: inline-block;
+  opacity: ${({ $fading }) => ($fading ? 0 : 1)};
+  transition: opacity 0.25s ease;
+`
+
 const CTAMuted = styled.span`
   color: ${({ theme }) => theme.colors.text.secondary};
 `
 
-const CTADot = styled.span`
+const CTAHighlight = styled.span`
   color: ${({ theme }) => theme.colors.text.highlight};
+`
+
+const CTAPrimary = styled.span`
+  color: ${({ theme }) => theme.colors.text.primary};
 `
 
 const InfoSection = styled.div`
@@ -541,17 +565,26 @@ const jiggle = keyframes`
   100% { transform: rotate(0deg); }
 `
 
+// Fixed 24×24 container — both icons are position:absolute inside, so neither
+// can shift layout when the other appears. Opacity does the swap, not conditional render.
 const IconContainer = styled.span`
+  position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  width: 24px;
+  height: 24px;
   cursor: pointer;
 `
 
-const IconWrapper = styled.span<{ $jiggling: boolean }>`
-  display: inline-flex;
+const IconLayer = styled.span<{ $visible: boolean; $jiggling: boolean }>`
+  position: absolute;
+  inset: 0;
+  display: flex;
   align-items: center;
   justify-content: center;
+  opacity: ${({ $visible }) => ($visible ? 1 : 0)};
+  transition: opacity 0.15s ease;
   animation: ${({ $jiggling }) =>
     $jiggling ? css`${jiggle} 0.4s ease forwards` : 'none'};
 `
