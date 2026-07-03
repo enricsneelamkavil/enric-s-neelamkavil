@@ -55,6 +55,21 @@ const ENTRIES: JourneyEntry[] = [
       'Worked across multiple domains solving problems across various industries and agencies ensuring user experience.',
     ],
   },
+  {
+    key:    'freelance',
+    bullet: 'container',
+    logo:   '/about/journey/freelance-icon.svg',
+    logoW: 28, logoH: 28,
+    href:   'https://mulearn.org',
+    role:   'Graphic Designer / Video Editor',
+    dates:  'Till May 2024',
+    columns: [
+      'UI Design Lead at GTech MuLearn redesigning the official website, creating new flows, screens & dashboards for MuLearn.',
+      'Worked as a Graphic Design intern helping Hound Electric and EV High Performance Shop in their Graphic Design needs.',
+      'Occasional Video Editor at Sanjos Voice, official media team of St. Joseph\'s Parish Shrine, Pavaratty.',
+      'UI Designer in Christ College of Engineering Website Development team, Graphic Design Lead at GDSC CCE.',
+    ],
+  },
 ]
 
 // ─── Component ────────────────────────────────────────────────────────────────

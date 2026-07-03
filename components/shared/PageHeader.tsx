@@ -6,7 +6,7 @@ interface Props {
   titleBefore: string
   titleMuted: string
   titleAfter?: string
-  subtitle: string
+  subtitle?: string
   action?: React.ReactNode
 }
 
@@ -23,7 +23,7 @@ const PageHeader = ({ label, titleBefore, titleMuted, titleAfter, subtitle, acti
         {titleAfter && <span>{titleAfter}</span>}
       </Title>
     </HeaderBlock>
-    <Subtitle>{subtitle}</Subtitle>
+    {subtitle && <Subtitle>{subtitle}</Subtitle>}
     {action && action}
   </Wrapper>
 )

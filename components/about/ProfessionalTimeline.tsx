@@ -6,111 +6,196 @@ import { mq } from '@/styles/theme'
 import SectionLabel from '@/components/shared/SectionLabel'
 import SectionHeader from '@/components/shared/SectionHeader'
 
-// ─── Figma-derived layout constants ───────────────────────────────────────────
+// ─── Figma-derived constants ──────────────────────────────────────────────────
 
-const MASK_W = 2723   // shape-mask rendered width, px
-const MASK_H = 169    // photo strip height, px
-const SCROLL_STEP = 600    // px per nav click
+const CARD_PHOTO_H_DESKTOP = 169   // px
+const CARD_PHOTO_H_MOBILE  = 128   // px
+const PORTRAIT_W_DESKTOP   = 127   // px — Young Jury narrow portrait
+const PORTRAIT_W_MOBILE    = 96    // px
+const NAV_ICON_SIZE        = 18    // px desktop
+const NAV_ICON_SIZE_MOBILE = 16    // px mobile
+const NAV_RADIUS_MOBILE    = 8     // px — below theme scale
+const SCROLL_STEP          = 600   // px per nav click
 
 // ─── Assets ───────────────────────────────────────────────────────────────────
 
-const IMG_ARROW_LEFT = '/icons/arrow-left.svg'
+const IMG_ARROW_LEFT  = '/icons/arrow-left.svg'
 const IMG_ARROW_RIGHT = '/icons/arrow-right.svg'
-const IMG_SHAPE_MASK = '/about/timeline/shape-mask.svg'
 
 // ─── Event data ───────────────────────────────────────────────────────────────
 
-interface TLEvent { title: string; sub: string; desc: string; descW: number }
+type ImagePosition = 'above' | 'below'
 
-const TOP_EVENTS: TLEvent[] = [
-  { title: 'Co-host', sub: 'BEACH HACK 5', desc: 'Co-hosted the 5th edition of the flagship event Beach hackathon.', descW: 182 },
-  { title: 'Founder Host', sub: "CODe Design Week (CDW '23)", desc: 'Hosted the first ever Design Week, in Engineering Colleges across Kerala.', descW: 204 },
-  { title: 'Designers Award', sub: 'Huddle Global', desc: 'Secured the position in Top 13 Designers in Branding Challenge.', descW: 238 },
-  { title: 'Speaker', sub: 'Christ College of Engieering', desc: 'Handled multiple sessions on interface design for digital products.', descW: 222 },
-  { title: 'Invited Attendee', sub: 'Config APAC', desc: "Figma's first Config APAC at Marina Bay Sands Conventional Center, Singapore.", descW: 222 },
-  { title: 'Attendee', sub: 'Figma India Launch', desc: "Attended Figma's India office Launch representing Strollby Design.", descW: 202 },
-]
+type CropSimple = { kind: 'simple' }
+type CropPortrait = { kind: 'portrait' }
+type CropPositioned = { kind: 'positioned'; h: string; left: string; top: string; w: string }
+type Crop = CropSimple | CropPortrait | CropPositioned
 
-const BOTTOM_EVENTS: TLEvent[] = [
-  { title: 'Chairman', sub: 'Community of Developers (CODe)', desc: 'Association of Department of Computer Science, Christ College of Engineering.', descW: 222 },
-  { title: 'UI Designer', sub: 'GTech MuLearn', desc: 'First Internship as UI Designer, led a team, mentored junior designers.', descW: 192 },
-  { title: 'Attendee', sub: 'Lollypop Designathon', desc: 'Shortlisted attendee for Designathon 2024 hosted by Lollypop Design Studio.', descW: 217 },
-  { title: 'Lead Host', sub: 'DESIGNATHON 2024', desc: "Hosted second edition of Designathon, after CODe Design Week '23.", descW: 215 },
-  { title: 'Graduation', sub: 'Christ College of Engieering', desc: 'Graduated Bachelors of Engineering in Computer Science & Engineering.', descW: 222 },
-  { title: 'Young Jury 2025', sub: 'Awwwards.', desc: 'Selected as a jury member, evaluating and rating top digital designs globally.', descW: 222 },
-]
+interface TLEvent {
+  key: string
+  title: string
+  sub: string
+  desc: string
+  descW?: number
+  photo: string
+  imagePosition: ImagePosition
+  crop: Crop
+}
 
-// ─── Photo data ───────────────────────────────────────────────────────────────
-
-type PositionedPhoto = { kind: 'positioned'; src: string; ar: string; w: string; h: string; l: string; t: string }
-type SimplePhoto = { kind: 'simple'; src: string; ar: string; pos: 'bottom' | 'center' }
-type TLPhoto = PositionedPhoto | SimplePhoto
-
-const PHOTOS: TLPhoto[] = [
-  { kind: 'simple', src: '/about/timeline/tl-image-1.webp', ar: '181/137', pos: 'center' },
-  { kind: 'simple', src: '/about/timeline/tl-image-2.webp', ar: '230/137', pos: 'center' },
-  { kind: 'simple', src: '/about/timeline/tl-image-3.webp', ar: '180/137', pos: 'center' },
-  { kind: 'simple', src: '/about/timeline/tl-image-4.webp', ar: '235/137', pos: 'center' },
-  { kind: 'simple', src: '/about/timeline/tl-image-5.webp', ar: '188/137', pos: 'center' },
-  { kind: 'simple', src: '/about/timeline/tl-image-6.webp', ar: '259/137', pos: 'center' },
-  { kind: 'simple', src: '/about/timeline/tl-image-7.webp', ar: '181/137', pos: 'center' },
-  { kind: 'simple', src: '/about/timeline/tl-image-8.webp', ar: '170/137', pos: 'center' },
-  { kind: 'simple', src: '/about/timeline/tl-image-9.webp', ar: '149/137', pos: 'center' },
-  { kind: 'simple', src: '/about/timeline/tl-image-10.webp', ar: '155/137', pos: 'center' },
-  { kind: 'simple', src: '/about/timeline/tl-image-11.webp', ar: '2363/3150', pos: 'center' },
-  { kind: 'simple', src: '/about/timeline/tl-image-12.webp', ar: '177/137', pos: 'center' },
-]
-
-// Year label absolute positions within the 2723px strip (from Figma)
-const YEAR_LABELS: { text: string; left: number; width?: number; height?: number }[] = [
-  { text: '> 2022', left: 68, width: 252, height: 96 },
-  { text: '> 2023', left: 564 },
-  { text: '> 2024', left: 1494, width: 250, height: 96 },
-  { text: '> 2025', left: 2333 },
+// User's order (newest → oldest), odd positions = image below, even = image above
+const EVENTS: TLEvent[] = [
+  {
+    key: 'young-jury',
+    title: 'Young Jury 2025',
+    sub: 'Awwwards.',
+    desc: 'Selected as a jury member, evaluating and rating top digital designs globally.',
+    descW: 210,
+    photo: '/about/timeline/card-01-young-jury.png',
+    imagePosition: 'below',
+    crop: { kind: 'portrait' },
+  },
+  {
+    key: 'graduation',
+    title: 'Graduation',
+    sub: 'Christ College of Engineering',
+    desc: 'Graduated Bachelors of Technology (BTech.) in Computer Science & Engineering.',
+    photo: '/about/timeline/card-02-graduation.png',
+    imagePosition: 'above',
+    crop: { kind: 'positioned', h: '207.51%', left: '-0.08%', top: '-50.51%', w: '100.08%' },
+  },
+  {
+    key: 'lead-host',
+    title: 'Lead Host',
+    sub: 'DESIGNATHON 2024',
+    desc: "Hosted second edition of Designathon, right a year after CODe Design Week '23.",
+    photo: '/about/timeline/card-03-lead-host.png',
+    imagePosition: 'below',
+    crop: { kind: 'simple' },
+  },
+  {
+    key: 'config-apac',
+    title: 'Invited Attendee',
+    sub: 'Figma Config APAC',
+    desc: "Figma's first Config APAC at Marina Bay Sands Conventional Center, Singapore.",
+    photo: '/about/timeline/card-04-config-apac.png',
+    imagePosition: 'above',
+    crop: { kind: 'simple' },
+  },
+  {
+    key: 'designers-award',
+    title: 'Designers Award',
+    sub: 'Kerala Startup Mission',
+    desc: 'Won the position of Top 13 Designers in Branding Challenge at Huddle Global.',
+    photo: '/about/timeline/card-05-designers-award.png',
+    imagePosition: 'below',
+    crop: { kind: 'positioned', h: '129.03%', left: '-6.1%', top: '-11.93%', w: '123.88%' },
+  },
+  {
+    key: 'speaker',
+    title: 'Speaker',
+    sub: 'Christ College of Engineering',
+    desc: 'Handled multiple hands-on workshop sessions on interface design for digital products.',
+    photo: '/about/timeline/card-06-speaker.png',
+    imagePosition: 'above',
+    crop: { kind: 'simple' },
+  },
+  {
+    key: 'lollypop',
+    title: 'Participant attendee',
+    sub: 'Lollypop Designathon',
+    desc: 'Shortlisted attendee for Designathon 2024 hosted by Lollypop Design Studio.',
+    photo: '/about/timeline/card-07-lollypop.png',
+    imagePosition: 'below',
+    crop: { kind: 'simple' },
+  },
+  {
+    key: 'code-design-week',
+    title: 'Founder Host',
+    sub: "CODe Design Week (CDW '23)",
+    desc: 'Hosted the first ever Design Week, in Engineering Colleges across Kerala.',
+    photo: '/about/timeline/card-08-code-design-week.png',
+    imagePosition: 'above',
+    crop: { kind: 'positioned', h: '336.59%', left: '-25.71%', top: '-141.55%', w: '160.58%' },
+  },
+  {
+    key: 'figma-india',
+    title: 'Invited Attendee',
+    sub: 'Figma India',
+    desc: "Attended Figma's India office Launch at Sheraton Grand Convention Center, Bangalore.",
+    photo: '/about/timeline/card-09-figma-india.png',
+    imagePosition: 'below',
+    crop: { kind: 'simple' },
+  },
+  {
+    key: 'mulearn',
+    title: 'UI Designer',
+    sub: 'GTech MuLearn',
+    desc: 'First Internship as UI Designer, led a team, mentored junior designers.',
+    photo: '/about/timeline/card-10-mulearn.png',
+    imagePosition: 'above',
+    crop: { kind: 'positioned', h: '173.76%', left: '-45.33%', top: '-17.99%', w: '167.23%' },
+  },
+  {
+    key: 'chairman',
+    title: 'Chairman',
+    sub: 'Community of Developers (CODe)',
+    desc: 'Association of Department of Computer Science, Christ College of Engineering.',
+    descW: 222,
+    photo: '/about/timeline/card-11-chairman.png',
+    imagePosition: 'below',
+    crop: { kind: 'simple' },
+  },
+  {
+    key: 'beach-hack',
+    title: 'Co-host',
+    sub: 'BEACH HACK 5',
+    desc: 'Co-hosted the 5th edition of the flagship event Beach hackathon aka Beach Hack.',
+    photo: '/about/timeline/card-12-beach-hack.png',
+    imagePosition: 'above',
+    crop: { kind: 'simple' },
+  },
 ]
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-const Event = ({ e }: { e: TLEvent }) => (
-  <EventBlock>
-    <EventHeader>
-      <EventTitle>{e.title}</EventTitle>
-      <EventSub>{e.sub}</EventSub>
-    </EventHeader>
-    <EventDesc $w={e.descW}>{e.desc}</EventDesc>
-  </EventBlock>
-)
+const CardPhoto = ({ event }: { event: TLEvent }) => {
+  const { photo, crop } = event
+  const isPortrait = crop.kind === 'portrait'
 
-const Photo = ({ p }: { p: TLPhoto }) => (
-  <PhotoCell style={{ aspectRatio: p.ar }}>
-    <PhotoInner aria-hidden>
-      {p.kind === 'positioned' ? (
-        <PhotoOverflow>
+  if (crop.kind === 'positioned') {
+    return (
+      <PhotoWrap>
+        <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: 'inherit', pointerEvents: 'none' }}>
           <img
             alt=""
-            src={p.src}
-            style={{ position: 'absolute', width: p.w, height: p.h, left: p.l, top: p.t, maxWidth: 'none' }}
+            src={photo}
+            style={{ position: 'absolute', height: crop.h, left: crop.left, top: crop.top, width: crop.w, maxWidth: 'none' }}
           />
-        </PhotoOverflow>
-      ) : (
-        <img
-          alt=""
-          src={p.src}
-          style={{
-            position: 'absolute',
-            inset: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            objectPosition: p.pos,
-            maxWidth: 'none',
-          }}
-        />
-      )}
-      <RedOverlay />
-    </PhotoInner>
-  </PhotoCell>
-)
+        </div>
+      </PhotoWrap>
+    )
+  }
+
+  return (
+    <PhotoWrap $narrow={isPortrait}>
+      <img
+        alt=""
+        src={photo}
+        style={{
+          position: 'absolute',
+          inset: 0,
+          width: '100%',
+          height: '100%',
+          objectFit: 'cover',
+          objectPosition: isPortrait ? 'center' : 'bottom',
+          maxWidth: 'none',
+          borderRadius: 'inherit',
+          pointerEvents: 'none',
+        }}
+      />
+    </PhotoWrap>
+  )
+}
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -134,55 +219,54 @@ const ProfessionalTimeline = () => {
     return () => el.removeEventListener('scroll', updateScrollState)
   }, [updateScrollState])
 
-  const handleScrollLeft = () => scrollRef.current?.scrollBy({ left: -SCROLL_STEP, behavior: 'smooth' })
-  const handleScrollRight = () => scrollRef.current?.scrollBy({ left: SCROLL_STEP, behavior: 'smooth' })
+  const handleScrollLeft  = () => scrollRef.current?.scrollBy({ left: -SCROLL_STEP, behavior: 'smooth' })
+  const handleScrollRight = () => scrollRef.current?.scrollBy({ left:  SCROLL_STEP, behavior: 'smooth' })
 
   return (
     <Section>
+
       <TitleRow>
         <TitleBlock>
           <SectionLabel>MY JOURNEY 2022 → 2026</SectionLabel>
           <SectionHeader before="Being through " muted="so far" after="." />
         </TitleBlock>
-        <NavButtons>
+        <DesktopNavButtons>
           <NavBtn onClick={handleScrollLeft} disabled={!canScrollLeft} aria-label="Scroll timeline left">
-            <NavIcon src={IMG_ARROW_LEFT} alt="" width={18} height={18} />
+            <NavIcon src={IMG_ARROW_LEFT} alt="" width={NAV_ICON_SIZE} height={NAV_ICON_SIZE} />
           </NavBtn>
           <NavBtn onClick={handleScrollRight} disabled={!canScrollRight} aria-label="Scroll timeline right">
-            <NavIcon src={IMG_ARROW_RIGHT} alt="" width={18} height={18} />
+            <NavIcon src={IMG_ARROW_RIGHT} alt="" width={NAV_ICON_SIZE} height={NAV_ICON_SIZE} />
           </NavBtn>
-        </NavButtons>
+        </DesktopNavButtons>
       </TitleRow>
 
       <ScrollWrapper ref={scrollRef}>
         <ScrollTrack>
-          <TopEventsRow>
-            {TOP_EVENTS.map((e, i) => <Event key={i} e={e} />)}
-          </TopEventsRow>
-
-          <ImageStripWrapper>
-            <ImageStrip>
-              {PHOTOS.map((p, i) => <Photo key={i} p={p} />)}
-            </ImageStrip>
-            {YEAR_LABELS.map((y) => (
-              <YearLabel
-                key={y.text}
-                style={{
-                  left: y.left,
-                  ...(y.width != null ? { width: y.width } : {}),
-                  ...(y.height != null ? { height: y.height } : {}),
-                }}
-              >
-                {y.text}
-              </YearLabel>
-            ))}
-          </ImageStripWrapper>
-
-          <BottomEventsRow>
-            {BOTTOM_EVENTS.map((e, i) => <Event key={i} e={e} />)}
-          </BottomEventsRow>
+          {EVENTS.map((event) => (
+            <EventCard key={event.key}>
+              {event.imagePosition === 'above' && <CardPhoto event={event} />}
+              <ContentBlock>
+                <HeaderBlock>
+                  <EventTitle>{event.title}</EventTitle>
+                  <EventSub>{event.sub}</EventSub>
+                </HeaderBlock>
+                <EventDesc $w={event.descW}>{event.desc}</EventDesc>
+              </ContentBlock>
+              {event.imagePosition === 'below' && <CardPhoto event={event} />}
+            </EventCard>
+          ))}
         </ScrollTrack>
       </ScrollWrapper>
+
+      <MobileNavRow>
+        <NavBtnMobile onClick={handleScrollLeft} disabled={!canScrollLeft} aria-label="Scroll timeline left">
+          <NavIcon src={IMG_ARROW_LEFT} alt="" width={NAV_ICON_SIZE_MOBILE} height={NAV_ICON_SIZE_MOBILE} />
+        </NavBtnMobile>
+        <NavBtnMobile onClick={handleScrollRight} disabled={!canScrollRight} aria-label="Scroll timeline right">
+          <NavIcon src={IMG_ARROW_RIGHT} alt="" width={NAV_ICON_SIZE_MOBILE} height={NAV_ICON_SIZE_MOBILE} />
+        </NavBtnMobile>
+      </MobileNavRow>
+
     </Section>
   )
 }
@@ -203,6 +287,7 @@ const Section = styled.section`
 
   ${mq.mobile} {
     max-width: none;
+    gap: ${({ theme }) => theme.spacing[8]};
   }
 `
 
@@ -222,7 +307,7 @@ const TitleBlock = styled.div`
   flex-direction: column;
 `
 
-const NavButtons = styled.div`
+const DesktopNavButtons = styled.div`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing[3]};
@@ -251,10 +336,26 @@ const NavBtn = styled.button`
   }
 `
 
+const NavBtnMobile = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: ${({ theme }) => theme.spacing[3]};
+  background: ${({ theme }) => theme.colors.surface.tertiary};
+  border: 1px solid ${({ theme }) => theme.colors.border.tertiary};
+  border-radius: ${NAV_RADIUS_MOBILE}px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: opacity 0.2s ease;
+
+  &:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+`
+
 const NavIcon = styled.img`
   display: block;
-  width: 18px;
-  height: 18px;
 `
 
 // ── Scroll area ───────────────────────────────────────────────────────────────
@@ -263,58 +364,76 @@ const ScrollWrapper = styled.div`
   width: calc(100% + (100vw - 100%) / 2);
   overflow-x: auto;
   scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
   -webkit-overflow-scrolling: touch;
 
-  &::-webkit-scrollbar {
-    display: none;
+  ${mq.tablet} {
+    width: calc(100% + 24px);
+  }
+
+  ${mq.mobile} {
+    width: 100vw;
   }
 `
 
 const ScrollTrack = styled.div`
   display: inline-flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing[6]};
-  padding-right: max(0px, calc((100vw - ${({ theme }) => theme.layout.maxWidth}) / 2));
+  align-items: flex-start;
+  gap: 40px;
+  padding-right: max(40px, calc((100vw - ${({ theme }) => theme.layout.maxWidth}) / 2));
 
   ${mq.tablet} {
     padding-right: 24px;
+    gap: 24px;
   }
 
   ${mq.mobile} {
+    gap: 24px;
     padding-right: 24px;
+    padding-left: 24px;
   }
 `
 
-// ── Event rows ────────────────────────────────────────────────────────────────
+// ── Event card ────────────────────────────────────────────────────────────────
 
-const TopEventsRow = styled.div`
+const EventCard = styled.div`
   display: flex;
-  align-items: center;
-  gap: 240px;
-  padding-left: 240px;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[6]};
   flex-shrink: 0;
+  width: 264px;
+
+  ${mq.mobile} {
+    width: 200px;
+    gap: ${({ theme }) => theme.spacing[4]};
+  }
 `
 
-const BottomEventsRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 240px;
-  padding-right: 240px;
+const PhotoWrap = styled.div<{ $narrow?: boolean }>`
+  position: relative;
   flex-shrink: 0;
+  overflow: hidden;
+  border-radius: ${({ theme }) => theme.radii.xl};
+  height: ${CARD_PHOTO_H_DESKTOP}px;
+  width: ${({ $narrow }) => ($narrow ? `${PORTRAIT_W_DESKTOP}px` : '100%')};
+
+  ${mq.mobile} {
+    height: ${CARD_PHOTO_H_MOBILE}px;
+    width: ${({ $narrow }) => ($narrow ? `${PORTRAIT_W_MOBILE}px` : '100%')};
+  }
 `
 
-// ── Event block ───────────────────────────────────────────────────────────────
-
-const EventBlock = styled.div`
+const ContentBlock = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing[1]};
-  flex-shrink: 0;
+  word-break: break-word;
 `
 
-const EventHeader = styled.div`
+const HeaderBlock = styled.div`
   display: flex;
   flex-direction: column;
+  white-space: nowrap;
 `
 
 const EventTitle = styled.p`
@@ -324,7 +443,11 @@ const EventTitle = styled.p`
   font-size: ${({ theme }) => theme.fontSizes.md};
   line-height: ${({ theme }) => theme.lineHeights.relaxed};
   color: ${({ theme }) => theme.colors.text.primary};
-  white-space: nowrap;
+
+  ${mq.mobile} {
+    font-size: ${({ theme }) => theme.fontSizes.sm};
+    line-height: ${({ theme }) => theme.lineHeights.normal};
+  }
 `
 
 const EventSub = styled.p`
@@ -334,80 +457,34 @@ const EventSub = styled.p`
   font-size: ${({ theme }) => theme.fontSizes.sm};
   line-height: ${({ theme }) => theme.lineHeights.normal};
   color: ${({ theme }) => theme.colors.text.highlight};
-  white-space: nowrap;
+
+  ${mq.mobile} {
+    font-size: ${({ theme }) => theme.fontSizes.xs};
+    line-height: ${({ theme }) => theme.lineHeights.tight};
+  }
 `
 
-interface DescProps { $w: number }
-const EventDesc = styled.p<DescProps>`
+const EventDesc = styled.p<{ $w?: number }>`
   margin: 0;
   font-family: ${({ theme }) => theme.fonts.sans};
   font-weight: ${({ theme }) => theme.fontWeights.light};
   font-size: ${({ theme }) => theme.fontSizes.xs};
   line-height: ${({ theme }) => theme.lineHeights.tight};
   color: ${({ theme }) => theme.colors.text.secondary};
-  width: ${({ $w }) => $w}px;
+  ${({ $w }) => $w != null ? `max-width: ${$w}px;` : 'width: 100%;'}
 `
 
-// ── Photo strip ───────────────────────────────────────────────────────────────
+// ── Mobile nav ────────────────────────────────────────────────────────────────
 
-const ImageStripWrapper = styled.div`
-  position: relative;
-  width: ${MASK_W}px;
-  height: ${MASK_H}px;
-  flex-shrink: 0;
-`
+const MobileNavRow = styled.div`
+  display: none;
 
-const ImageStrip = styled.div`
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  height: ${MASK_H}px;
-  overflow: clip;
-  mask-image: url('${IMG_SHAPE_MASK}');
-  mask-size: ${MASK_W}px ${MASK_H}px;
-  mask-repeat: no-repeat;
-  -webkit-mask-image: url('${IMG_SHAPE_MASK}');
-  -webkit-mask-size: ${MASK_W}px ${MASK_H}px;
-  -webkit-mask-repeat: no-repeat;
-`
-
-const PhotoCell = styled.div`
-  position: relative;
-  height: 100%;
-  flex-shrink: 0;
-`
-
-const PhotoInner = styled.div`
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-`
-
-const PhotoOverflow = styled.div`
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-`
-
-const RedOverlay = styled.div`
-  position: absolute;
-  inset: 0;
-  background: rgba(232, 52, 42, 0.5);
-`
-
-const YearLabel = styled.div`
-  position: absolute;
-  bottom: 0;
-  font-family: ${({ theme }) => theme.fonts.notch};
-  font-weight: ${({ theme }) => theme.fontWeights.bold};
-  font-size: 5rem;       /* 80px — outside theme scale */
-  line-height: 6.25rem;  /* 100px — outside theme scale */
-  letter-spacing: ${({ theme }) => theme.letterSpacings.tightest};
-  color: ${({ theme }) => theme.colors.text.inverse};
-  white-space: nowrap;
-  pointer-events: none;
-  user-select: none;
+  ${mq.mobile} {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
+  }
 `
 
 export default ProfessionalTimeline
