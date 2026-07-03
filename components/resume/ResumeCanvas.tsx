@@ -8,10 +8,11 @@ const ResumeCanvasClient = dynamic(
     ssr: false,
     loading: () => (
       <div style={{
-        width: '100%',
-        height: '600px',
-        background: '#f7f7f7',
-        borderRadius: '16px',
+        width: '820px',
+        height: '1160px',
+        background: 'white',
+        borderRadius: '12px',
+        boxShadow: '0 0 250px 26px rgba(232, 52, 42, 0.15)',
       }} />
     ),
   }
