@@ -8,22 +8,22 @@ import { useGlimm } from 'glimm/react'
 
 // ── Shared ────────────────────────────────────────────────────────────────────
 import SharedPageHeader from '@/components/shared/PageHeader'
-import HeaderImage from '@/components/about/HeaderImage'
-import ModeTogglePill from '@/components/about/ModeTogglePill'
+import HeaderImage from '@/components/about/professional/HeaderImage'
+import ModeTogglePill from '@/components/about/common/ModeTogglePill'
 
 // ── Professional ──────────────────────────────────────────────────────────────
-import AboutDescription from '@/components/about/AboutDescription'
-import MyTools from '@/components/about/MyTools'
-import Journey from '@/components/about/Journey'
-import ProfessionalTimeline from '@/components/about/ProfessionalTimeline'
-import AwardShelf from '@/components/about/AwardShelf'
+import AboutDescription from '@/components/about/common/AboutDescription'
+import MyTools from '@/components/about/professional/MyTools'
+import Journey from '@/components/about/professional/Journey'
+import ProfessionalTimeline from '@/components/about/professional/ProfessionalTimeline'
+import AwardShelf from '@/components/about/common/AwardShelf'
 
 // ── Personal ──────────────────────────────────────────────────────────────────
-import PersonalAboutDescription from '@/components/about/PersonalAboutDescription'
-import TravelSection from '@/components/about/TravelSection'
-import WorkDeskSection from '@/components/about/WorkDeskSection'
-import PodcastMediumSection from '@/components/about/PodcastMediumSection'
-import CreditCardsSection from '@/components/about/CreditCardsSection'
+import PersonalAboutDescription from '@/components/about/personal/PersonalAboutDescription'
+import TravelSection from '@/components/about/personal/TravelSection'
+import WorkDeskSection from '@/components/about/personal/WorkDeskSection'
+import PodcastMediumSection from '@/components/about/personal/PodcastMediumSection'
+import CreditCardsSection from '@/components/about/personal/CreditCardsSection'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 

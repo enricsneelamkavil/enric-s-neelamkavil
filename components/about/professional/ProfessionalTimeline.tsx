@@ -120,8 +120,9 @@ const ProfessionalTimeline = ({ events }: Props) => {
     return () => el.removeEventListener('scroll', updateScrollState)
   }, [updateScrollState])
 
-  const handleScrollLeft  = () => scrollRef.current?.scrollBy({ left: -SCROLL_STEP, behavior: 'smooth' })
-  const handleScrollRight = () => scrollRef.current?.scrollBy({ left:  SCROLL_STEP, behavior: 'smooth' })
+  const getStep = () => window.innerWidth <= 768 ? 220 : SCROLL_STEP
+  const handleScrollLeft  = () => scrollRef.current?.scrollBy({ left: -getStep(), behavior: 'smooth' })
+  const handleScrollRight = () => scrollRef.current?.scrollBy({ left:  getStep(), behavior: 'smooth' })
 
   return (
     <Section>
@@ -283,6 +284,7 @@ const ScrollWrapper = styled.div`
 
   ${mq.mobile} {
     width: 100vw;
+    padding-right: 24px;
   }
 `
 
@@ -299,7 +301,6 @@ const ScrollTrack = styled.div`
 
   ${mq.mobile} {
     gap: 24px;
-    padding-right: 24px;
     padding-left: 24px;
   }
 `

@@ -5,7 +5,7 @@ import styled from 'styled-components'
 import { mq } from '@/styles/theme'
 import SectionLabel from '@/components/shared/SectionLabel'
 import SectionHeader from '@/components/shared/SectionHeader'
-import TravelMap from '@/components/about/TravelMap'
+import TravelMap from '@/components/about/personal/TravelMap'
 
 // ─── Data ────────────────────────────────────────────────────────────────────
 

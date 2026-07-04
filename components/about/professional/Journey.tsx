@@ -280,7 +280,7 @@ const DescriptionRow = styled.div`
 `
 
 const ConnectorCol = styled.div`
-  width: 24px;
+  width: 8px;
   flex-shrink: 0;
   display: flex;
   justify-content: center;
