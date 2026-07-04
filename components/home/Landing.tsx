@@ -40,7 +40,7 @@ const Landing = () => {
       <MainLander>
         <WelcomeTag>
           <TagText>Hello</TagText>
-          <AppleIcon src={IMG_APPLE_ICON} alt="" />
+          <AppleIcon aria-hidden="true" />
           <TagText>Enric S Neelamkavil</TagText>
         </WelcomeTag>
 
@@ -155,10 +155,14 @@ const TagText = styled.span`
   text-transform: uppercase;
 `
 
-const AppleIcon = styled.img`
-  width: 16px;
-  height: 16px;
-  max-width: none;
+const AppleIcon = styled.span`
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  background-color: ${({ theme }) => theme.colors.text.highlight};
+  -webkit-mask: url(${IMG_APPLE_ICON}) no-repeat center / contain;
+  mask: url(${IMG_APPLE_ICON}) no-repeat center / contain;
+  flex-shrink: 0;
 `
 
 const TextContainer = styled.div`

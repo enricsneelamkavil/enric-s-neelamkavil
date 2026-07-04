@@ -46,8 +46,7 @@ const AwardCard = ({ name, subtitle, seal }: AwardCardProps) => (
 const AwardShelf = () => (
   <Section>
     <TitleContainer>
-      <DesktopLabel><SectionLabel>Recognition</SectionLabel></DesktopLabel>
-      <MobileLabel><SectionLabel>ACHIEVEMENTS</SectionLabel></MobileLabel>
+      <SectionLabel>Recognition</SectionLabel>
       <SectionHeader before="A " muted="shelf " after="of awards." />
     </TitleContainer>
 

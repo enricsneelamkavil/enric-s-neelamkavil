@@ -96,8 +96,7 @@ const CreditCardsSection = () => {
   return (
     <Section>
       <TitleBlock>
-        <DesktopLabelWrap><SectionLabel>CREDIT LINEUP</SectionLabel></DesktopLabelWrap>
-        <MobileLabelWrap><SectionLabel>COLLECT POINTS TO EXPERIENCE</SectionLabel></MobileLabelWrap>
+        <SectionLabel>CREDIT LINEUP</SectionLabel>
         <SectionHeader before="My " muted="Card" after=" collection." />
       </TitleBlock>
 
@@ -115,7 +114,7 @@ const CreditCardsSection = () => {
           <CTAText>{CTA_TEXT}</CTAText>
           <CTAButton href={PLUSH_URL} target="_blank" rel="noopener noreferrer">
             Find the right card
-            <img src="/icons/external.svg" alt="" aria-hidden="true" width={EXTERNAL_ICON_DESKTOP} height={EXTERNAL_ICON_DESKTOP} />
+            <CTAIcon $size={EXTERNAL_ICON_DESKTOP} aria-hidden="true" />
           </CTAButton>
         </CTAColumn>
       </CardInfoContainer>
@@ -148,7 +147,7 @@ const CreditCardsSection = () => {
         <CTAText>{CTA_TEXT}</CTAText>
         <MobileCTAButton href={PLUSH_URL} target="_blank" rel="noopener noreferrer">
           Find the right card
-          <img src="/icons/external.svg" alt="" aria-hidden="true" width={EXTERNAL_ICON_MOBILE} height={EXTERNAL_ICON_MOBILE} />
+          <CTAIcon $size={EXTERNAL_ICON_MOBILE} aria-hidden="true" />
         </MobileCTAButton>
       </MobileCTABlock>
     </Section>
@@ -333,8 +332,16 @@ const MobileCTAButton = styled.a`
   white-space: nowrap;
   flex-shrink: 0;
   cursor: pointer;
+`
 
-  img { display: block; flex-shrink: 0; }
+const CTAIcon = styled.span<{ $size: number }>`
+  display: inline-block;
+  width: ${({ $size }) => $size}px;
+  height: ${({ $size }) => $size}px;
+  background-color: ${({ theme }) => theme.colors.text.inverse};
+  -webkit-mask: url(/icons/external.svg) no-repeat center / contain;
+  mask: url(/icons/external.svg) no-repeat center / contain;
+  flex-shrink: 0;
 `
 
 export default CreditCardsSection

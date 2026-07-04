@@ -27,8 +27,7 @@ const GEAR: GearItem[] = [
 const WorkDeskSection = () => (
   <Section>
     <TitleBlock>
-      <DesktopLabelWrap><SectionLabel>THE TECH GLOVE BOX</SectionLabel></DesktopLabelWrap>
-      <MobileLabelWrap><SectionLabel>THE DESK</SectionLabel></MobileLabelWrap>
+      <SectionLabel>THE TECH GLOVE BOX</SectionLabel>
       <SectionHeader before="Where the " muted="work" after=" happens." />
     </TitleBlock>
 
@@ -38,13 +37,7 @@ const WorkDeskSection = () => (
         <GearItem key={name}>
           <GearName>{name}</GearName>
           {apple && (
-            <img
-              src="/icons/apple.svg"
-              alt="Apple"
-              width={8.293}
-              height={10.2}
-              style={{ flexShrink: 0 }}
-            />
+            <AppleIcon aria-hidden="true" />
           )}
           <GearDetail>{detail}</GearDetail>
         </GearItem>
@@ -57,13 +50,7 @@ const WorkDeskSection = () => (
         <MobileRow key={name} $first={i === 0}>
           <GearName>{name}</GearName>
           {apple && (
-            <img
-              src="/icons/apple.svg"
-              alt="Apple"
-              width={8.293}
-              height={10.2}
-              style={{ flexShrink: 0 }}
-            />
+            <AppleIcon aria-hidden="true" />
           )}
           <MobileDetail>{detail}</MobileDetail>
         </MobileRow>
@@ -177,6 +164,16 @@ const MobileDetail = styled.span`
   font-size: ${({ theme }) => theme.fontSizes.xs};
   line-height: ${({ theme }) => theme.lineHeights.tight};
   color: ${({ theme }) => theme.colors.text.tertiary};
+`
+
+const AppleIcon = styled.span`
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  background-color: ${({ theme }) => theme.colors.text.highlight};
+  -webkit-mask: url(/icons/apple.svg) no-repeat center / contain;
+  mask: url(/icons/apple.svg) no-repeat center / contain;
+  flex-shrink: 0;
 `
 
 export default WorkDeskSection

@@ -47,7 +47,7 @@ const WorkCard = ({
     <ProductContainer>
       <ProductTagsRow>
         <TagLabel>{tags[0]}</TagLabel>
-        <img src="/icons/diamond.svg" width={6} height={6} alt="" aria-hidden />
+        <DiamondIcon aria-hidden="true" />
         <TagLabel>{tags[1]}</TagLabel>
       </ProductTagsRow>
 
@@ -241,6 +241,16 @@ const TagLabel = styled.p`
   line-height: ${({ theme }) => theme.lineHeights.tight};
   color: ${({ theme }) => theme.colors.text.secondary};
   white-space: nowrap;
+`
+
+const DiamondIcon = styled.span`
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  background-color: ${({ theme }) => theme.colors.text.highlight};
+  -webkit-mask: url(/icons/diamond.svg) no-repeat center / contain;
+  mask: url(/icons/diamond.svg) no-repeat center / contain;
+  flex-shrink: 0;
 `
 
 const ProductInfoBlock = styled.div`

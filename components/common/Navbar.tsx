@@ -97,7 +97,7 @@ const Navbar = () => {
           aria-label="Ask Enric AI"
           onClick={() => { }}
         >
-          <img src={AGENT_ICON} alt="" width={32} height={23} />
+          <AgentIconSpan aria-hidden="true" />
         </AgentTriggerButton>
       </MobileNavWrapper>
     </>
@@ -205,13 +205,15 @@ const AgentTriggerButton = styled.button`
   border: none;
   background: transparent;
   cursor: pointer;
+`
 
-  img {
-    display: block;
-    width: 32px;
-    height: 23px;
-    object-fit: contain;
-  }
+const AgentIconSpan = styled.span`
+  display: block;
+  width: 32px;
+  height: 23px;
+  background-color: ${({ theme }) => theme.colors.text.highlight};
+  -webkit-mask: url(${AGENT_ICON}) no-repeat center / contain;
+  mask: url(${AGENT_ICON}) no-repeat center / contain;
 `
 
 const MobileNavItem = styled.div`

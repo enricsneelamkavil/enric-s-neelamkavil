@@ -6,8 +6,6 @@ import { mq } from '@/styles/theme'
 import SectionLabel from '@/components/shared/SectionLabel'
 import SectionHeader from '@/components/shared/SectionHeader'
 
-const CHECKMARK = '/about/personal/checkmark.svg'
-
 // ─── IST day ─────────────────────────────────────────────────────────────────
 
 const getISTDay = () =>
@@ -18,11 +16,11 @@ const getISTDay = () =>
 // ─── Task data ───────────────────────────────────────────────────────────────
 
 const TASKS = [
-  { label: 'Plan Sri Lanka',            completedOnHover: false },
+  { label: 'Plan Sri Lanka', completedOnHover: false },
   { label: 'Start drafting first book', completedOnHover: false },
-  { label: 'Redesign Portfolio',        completedOnHover: true  },
-  { label: 'Next medium article',       completedOnHover: false },
-  { label: 'Shoot podcast episode',     completedOnHover: false },
+  { label: 'Redesign Portfolio', completedOnHover: true },
+  { label: 'Next medium article', completedOnHover: false },
+  { label: 'Shoot podcast episode', completedOnHover: false },
 ]
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -74,14 +72,7 @@ const PersonalAboutDescription = () => {
               <Task key={label}>
                 <CheckBox $completedOnHover={completedOnHover} $hovered={widgetHovered}>
                   {completedOnHover && (
-                    <CheckIcon
-                      src={CHECKMARK}
-                      alt=""
-                      aria-hidden="true"
-                      width={8.5}
-                      height={6.2}
-                      $hovered={widgetHovered}
-                    />
+                    <CheckIcon aria-hidden="true" $hovered={widgetHovered} />
                   )}
                 </CheckBox>
                 <TaskLabel $completedOnHover={completedOnHover} $hovered={widgetHovered}>
@@ -194,7 +185,7 @@ const DayHeading = styled.div`
   line-height: ${({ theme }) => theme.lineHeights.tight};
   letter-spacing: 1.2px;
   color: ${({ theme }) => theme.colors.text.inverse};
-  text-align: center;
+  text-align: left;
   text-transform: uppercase;
   white-space: nowrap;
 `
@@ -256,7 +247,13 @@ const CheckBox = styled.div<{ $completedOnHover: boolean; $hovered: boolean }>`
   }}
 `
 
-const CheckIcon = styled.img<{ $hovered: boolean }>`
+const CheckIcon = styled.span<{ $hovered: boolean }>`
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  background-color: ${({ theme }) => theme.colors.text.inverse};
+  -webkit-mask: url(/icons/tick.svg) no-repeat center / contain;
+  mask: url(/icons/tick.svg) no-repeat center / contain;
   opacity: ${({ $hovered }) => ($hovered ? 1 : 0)};
   transition: opacity 0.15s ease;
 

@@ -47,7 +47,7 @@ const FeatureProduct = () => {
           <FeatureList>
             {FEATURES.map((f) => (
               <FeatureRow key={f}>
-                <img src="/icons/diamond.svg" width={8} height={8} alt="" aria-hidden />
+                <DiamondIcon aria-hidden="true" />
                 <FeatureText>{f}</FeatureText>
               </FeatureRow>
             ))}
@@ -209,6 +209,16 @@ const FeatureRow = styled.div`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing[2]};
+`
+
+const DiamondIcon = styled.span`
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  background-color: ${({ theme }) => theme.colors.text.highlight};
+  -webkit-mask: url(/icons/diamond.svg) no-repeat center / contain;
+  mask: url(/icons/diamond.svg) no-repeat center / contain;
+  flex-shrink: 0;
 `
 
 const FeatureText = styled.p`

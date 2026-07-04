@@ -54,7 +54,7 @@ const ENTRIES: JourneyEntry[] = [
     role: 'Graphic Designer / Video Editor',
     dates: 'Till May 2024',
     columns: [
-      'UI Design Lead at GTech MuLearn redesigning the official website, creating new flows, screens & dashboards for MuLearn.',
+      'UI Lead at GTech MuLearn redesigning the official website, creating new flows, screens & dashboards for MuLearn.',
       'Worked as a Graphic Design intern helping Hound Electric and EV High Performance Shop in their Graphic Design needs.',
       'Occasional Video Editor at Sanjos Voice, official media team of St. Joseph\'s Parish Shrine, Pavaratty.',
       'UI Designer in Christ College of Engineering Website Development team, Graphic Design Lead at GDSC CCE.',
@@ -338,13 +338,13 @@ const Column = styled.div`
     &::before {
       content: '';
       display: block;
-      width: 8px;
-      height: 8px;
+      width: 12px;
+      height: 12px;
       flex-shrink: 0;
-      margin-top: 8px;
-      background: ${({ theme }) => theme.colors.text.highlight};
-      border-radius: 2px;
-      transform: rotate(45deg);
+      margin-top: 4px;
+      background-color: ${({ theme }) => theme.colors.text.highlight};
+      -webkit-mask: url(/icons/diamond.svg) no-repeat center / contain;
+      mask: url(/icons/diamond.svg) no-repeat center / contain;
     }
 
     &:nth-child(n+3) {

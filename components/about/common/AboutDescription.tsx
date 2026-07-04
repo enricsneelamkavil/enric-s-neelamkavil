@@ -49,7 +49,7 @@ const AboutDescription = () => {
             <RowLabel>BASED</RowLabel>
             <RowValue>
               <ValueLight>Kerala, IN</ValueLight>
-              <img src="/icons/diamond.svg" width={6} height={6} alt="" aria-hidden />
+              <DiamondIcon aria-hidden="true" />
               <ValueRegular>{istTime}</ValueRegular>
             </RowValue>
           </HighlightRow>
@@ -58,7 +58,7 @@ const AboutDescription = () => {
             <RowLabel>CURRENTLY</RowLabel>
             <RowValue>
               <ValueLight>Product Designer</ValueLight>
-              <img src="/icons/diamond.svg" width={6} height={6} alt="" aria-hidden />
+              <DiamondIcon aria-hidden="true" />
               <ValueRegular>UST</ValueRegular>
             </RowValue>
           </HighlightRow>
@@ -209,6 +209,16 @@ const ValueRegular = styled.span`
     font-size: ${({ theme }) => theme.fontSizes.xs};
     line-height: 16px;
   }
+`
+
+const DiamondIcon = styled.span`
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  background-color: ${({ theme }) => theme.colors.text.highlight};
+  -webkit-mask: url(/icons/diamond.svg) no-repeat center / contain;
+  mask: url(/icons/diamond.svg) no-repeat center / contain;
+  flex-shrink: 0;
 `
 
 export default AboutDescription

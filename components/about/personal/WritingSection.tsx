@@ -10,7 +10,7 @@ import { fetchMediumArticles, type MediumArticle } from '@/lib/medium'
 // ─── Layout constants (Figma-derived) ────────────────────────────────────────
 const THUMBNAIL_SIZE = 56
 const THUMBNAIL_RADIUS = 8
-const ARROW_SIZE = 32
+const ARROW_SIZE = 24
 const EXTERNAL_ICON_DESKTOP = 18
 const EXTERNAL_ICON_MOBILE = 16
 
@@ -94,13 +94,7 @@ const WritingSection = () => {
               <ArticleReadTime>{readTime}</ArticleReadTime>
             </ArticleInfo>
             <ArrowWrap>
-              <img
-                src="/icons/external.svg"
-                alt=""
-                aria-hidden="true"
-                width={ARROW_SIZE}
-                height={ARROW_SIZE}
-              />
+              <ArrowIcon aria-hidden="true" />
             </ArrowWrap>
           </ArticleRow>
         ))}
@@ -175,7 +169,13 @@ const DesktopReadAll = styled(ReadAllButton)`
 
 const MobileReadAll = styled(ReadAllButton)`
   display: none;
-  ${mq.mobile} { display: flex; }
+  ${mq.mobile} {
+    display: flex;
+    align-self: flex-start;
+    padding: 12px 16px;
+    height: 42px;
+    border-radius: ${({ theme }) => theme.radii.md};
+  }
 `
 
 interface ArticleListProps { $loading: boolean }
@@ -251,10 +251,21 @@ const ArrowWrap = styled.div`
   width: ${ARROW_SIZE}px;
   height: ${ARROW_SIZE}px;
   flex-shrink: 0;
-
-  img { display: block; width: 100%; height: 100%; }
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   ${mq.mobile} { display: none; }
+`
+
+const ArrowIcon = styled.span`
+  display: inline-block;
+  width: ${ARROW_SIZE}px;
+  height: ${ARROW_SIZE}px;
+  background-color: ${({ theme }) => theme.colors.text.tertiary};
+  -webkit-mask: url(/icons/external.svg) no-repeat center / contain;
+  mask: url(/icons/external.svg) no-repeat center / contain;
+  flex-shrink: 0;
 `
 
 export default WritingSection

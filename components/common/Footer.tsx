@@ -594,6 +594,7 @@ const HeartImg = styled.img`
   width: 17px;
   height: 16px;
   max-width: none;
+  filter: brightness(0) invert(1);
 `
 
 const HourglassImg = styled.img`
@@ -601,6 +602,7 @@ const HourglassImg = styled.img`
   width: 13px;
   height: 16px;
   max-width: none;
+  filter: brightness(0) invert(1);
 `
 
 export default Footer

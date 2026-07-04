@@ -47,7 +47,7 @@ const Interests = () => {
   const items = INTERESTS.map((item) => (
     <Fragment key={item}>
       <InterestItem>{item}</InterestItem>
-      <img src="/icons/diamond.svg" width={10} height={10} alt="" aria-hidden />
+      <DiamondIcon aria-hidden="true" />
     </Fragment>
   ))
 
@@ -113,6 +113,16 @@ const InterestItem = styled.p`
     font-size: 1.5rem;
     line-height: 2rem;
   }
+`
+
+const DiamondIcon = styled.span`
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background-color: ${({ theme }) => theme.colors.text.highlight};
+  -webkit-mask: url(/icons/diamond.svg) no-repeat center / contain;
+  mask: url(/icons/diamond.svg) no-repeat center / contain;
+  flex-shrink: 0;
 `
 
 export default Interests

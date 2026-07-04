@@ -25,7 +25,7 @@ const Button = ({ label, variant = 'primary', href, external, onClick }: ButtonP
   const inner = (
     <>
       <Label $variant={variant}>{label}</Label>
-      <ArrowImg src="/icons/external.svg" alt="" aria-hidden="true" $variant={variant} />
+      <ArrowIcon aria-hidden="true" $variant={variant} />
     </>
   )
 
@@ -103,15 +103,17 @@ const Label = styled.span<{ $variant: Variant }>`
   white-space: nowrap;
 `
 
-const ArrowImg = styled.img<{ $variant: Variant }>`
+const ArrowIcon = styled.span<{ $variant: Variant }>`
   width: 18px;
   height: 18px;
-  display: block;
+  display: inline-block;
   flex-shrink: 0;
-  filter: ${({ $variant }) =>
+  background-color: ${({ theme, $variant }) =>
     $variant === 'primary'
-      ? 'brightness(0) invert(1)'
-      : 'brightness(0)'};
+      ? theme.colors.text.inverse
+      : theme.colors.text.secondary};
+  -webkit-mask: url(/icons/external.svg) no-repeat center / contain;
+  mask: url(/icons/external.svg) no-repeat center / contain;
 `
 
 export default Button
