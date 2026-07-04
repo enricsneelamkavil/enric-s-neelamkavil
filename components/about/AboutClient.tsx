@@ -22,7 +22,8 @@ import AwardShelf from '@/components/about/common/AwardShelf'
 import PersonalAboutDescription from '@/components/about/personal/PersonalAboutDescription'
 import TravelSection from '@/components/about/personal/TravelSection'
 import WorkDeskSection from '@/components/about/personal/WorkDeskSection'
-import PodcastMediumSection from '@/components/about/personal/PodcastMediumSection'
+import PodcastSection from '@/components/about/personal/PodcastSection'
+import WritingSection from '@/components/about/personal/WritingSection'
 import CreditCardsSection from '@/components/about/personal/CreditCardsSection'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -93,7 +94,8 @@ export default function AboutClient({ timelineEvents }: Props) {
           <PersonalAboutDescription />
           <TravelSection />
           <WorkDeskSection />
-          <PodcastMediumSection />
+          <PodcastSection />
+          <WritingSection />
           <CreditCardsSection />
         </ModeGroup>
 
