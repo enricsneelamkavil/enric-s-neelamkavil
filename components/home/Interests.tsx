@@ -2,7 +2,6 @@
 
 import { Fragment, useEffect, useRef } from 'react'
 import styled from 'styled-components'
-import DiamondBullet from '@/components/shared/DiamondBullet'
 import { mq } from '@/styles/theme'
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
@@ -48,7 +47,7 @@ const Interests = () => {
   const items = INTERESTS.map((item) => (
     <Fragment key={item}>
       <InterestItem>{item}</InterestItem>
-      <DiamondBullet size={10} />
+      <img src="/icons/diamond.svg" width={10} height={10} alt="" aria-hidden />
     </Fragment>
   ))
 

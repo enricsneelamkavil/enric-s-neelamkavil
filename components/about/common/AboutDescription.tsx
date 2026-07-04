@@ -5,7 +5,6 @@ import styled from 'styled-components'
 import { mq } from '@/styles/theme'
 import SectionLabel from '@/components/shared/SectionLabel'
 import SectionHeader from '@/components/shared/SectionHeader'
-import DiamondBullet from '@/components/shared/DiamondBullet'
 
 // ─── IST clock ───────────────────────────────────────────────────────────────
 
@@ -50,7 +49,7 @@ const AboutDescription = () => {
             <RowLabel>BASED</RowLabel>
             <RowValue>
               <ValueLight>Kerala, IN</ValueLight>
-              <DiamondBullet size={6} />
+              <img src="/icons/diamond.svg" width={6} height={6} alt="" aria-hidden />
               <ValueRegular>{istTime}</ValueRegular>
             </RowValue>
           </HighlightRow>
@@ -59,7 +58,7 @@ const AboutDescription = () => {
             <RowLabel>CURRENTLY</RowLabel>
             <RowValue>
               <ValueLight>Product Designer</ValueLight>
-              <DiamondBullet size={6} />
+              <img src="/icons/diamond.svg" width={6} height={6} alt="" aria-hidden />
               <ValueRegular>UST</ValueRegular>
             </RowValue>
           </HighlightRow>

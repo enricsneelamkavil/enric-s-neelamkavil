@@ -1,9 +1,18 @@
 import styled from 'styled-components'
 import { mq } from '@/styles/theme'
 
-const HeaderImage = () => (
+interface Props {
+  mode: 'professional' | 'personal'
+}
+
+const PHOTO = {
+  professional: '/about/professional/header.webp',
+  personal: '/about/personal/header.webp',
+}
+
+const HeaderImage = ({ mode }: Props) => (
   <Wrapper>
-    <Photo src="/about/professional/header.webp" alt="" aria-hidden />
+    <Photo src={PHOTO[mode]} alt="" aria-hidden />
   </Wrapper>
 )
 
@@ -22,8 +31,9 @@ const Wrapper = styled.div`
 
 const Photo = styled.img`
   width: 100%;
-  height: auto;
+  height: 100%;
   display: block;
+  object-fit: cover;
 `
 
 export default HeaderImage

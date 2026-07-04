@@ -40,23 +40,27 @@ portfolio/                        # project root
 │   │   ├── AwardShelf.tsx        ✅ Done
 │   │   └── MyWorks.tsx           ✅ Done
 │   ├── about/
-│   │   ├── AboutClient.tsx               ✅ Done — 'use client'; all About page state/layout; accepts timelineEvents prop
-│   │   ├── HeaderImage.tsx               ✅ Done — ENRIC letterform mask over panoramic banner photo
-│   │   ├── ModeTogglePill.tsx            ✅ Done — bottom mode toggle pill; jiggle arrow animation on hover
-│   │   ├── IntroSection.tsx              ✅ Done — title, subtitle, professional/personal mode toggle
-│   │   ├── ProfileImage.tsx              ✅ Done — accepts mode prop; different photo + icons per mode
-│   │   ├── AboutDescription.tsx          ✅ Done — bio paragraph, IST clock, highlights table
-│   │   ├── MyTools.tsx                   ✅ Done — desktop dock + separate MobileGrid (6×2 static grid)
-│   │   ├── Journey.tsx                   ✅ Done — CAREER LADDER label, 3 entries: UST + FunDesigns + Freelance
-│   │   ├── ProfessionalTimeline.tsx      ✅ Done — 12-card horizontal scroll; Supabase-connected; accepts events prop
-│   │   ├── AwardShelf.tsx                ✅ Done — 5 award cards with seal images
-│   │   ├── PersonalAboutDescription.tsx  ✅ Done — personal bio + To Do List widget
-│   │   ├── TravelSection.tsx             ✅ Done — travel title, desktop map, mobile flags/stats, albums
-│   │   ├── TravelMap.tsx                 ✅ Done — next/dynamic SSR wrapper for TravelMapClient
-│   │   ├── TravelMapClient.tsx           ✅ Done — draggable map canvas with pins, flags, stats
-│   │   ├── WorkDeskSection.tsx           ✅ Done — desk photo + gear inventory list
-│   │   ├── PodcastMediumSection.tsx      ✅ Done — podcast card + medium articles list
-│   │   └── CreditCardsSection.tsx        ✅ Done — 2×4 desktop grid + mobile swipe stack
+│   │   ├── AboutClient.tsx                       ✅ Done — 'use client'; all About page state/layout; accepts timelineEvents prop
+│   │   ├── common/
+│   │   │   ├── ModeTogglePill.tsx                ✅ Done — bottom mode toggle pill; jiggle arrow animation on hover
+│   │   │   ├── AboutDescription.tsx              ✅ Done — bio paragraph, IST clock, highlights table
+│   │   │   └── AwardShelf.tsx                    ✅ Done — 5 award cards with seal images
+│   │   ├── professional/
+│   │   │   ├── HeaderImage.tsx                   ✅ Done — accepts mode prop; shows different photo per mode; object-fit cover
+│   │   │   ├── IntroSection.tsx                  ✅ Done — title, subtitle, professional/personal mode toggle
+│   │   │   ├── ProfileImage.tsx                  ✅ Done — accepts mode prop; different photo + icons per mode
+│   │   │   ├── MyTools.tsx                       ✅ Done — desktop dock + separate MobileGrid (6×2 static grid)
+│   │   │   ├── Journey.tsx                       ✅ Done — CAREER LADDER label, 3 entries: UST + FunDesigns + Freelance
+│   │   │   └── ProfessionalTimeline.tsx          ✅ Done — 12-card horizontal scroll; Supabase-connected; accepts events prop
+│   │   └── personal/
+│   │       ├── PersonalAboutDescription.tsx      ✅ Done — personal bio + To Do List widget
+│   │       ├── TravelSection.tsx                 ✅ Done — travel title, desktop map, mobile flags/stats, albums
+│   │       ├── TravelMap.tsx                     ✅ Done — next/dynamic SSR wrapper for TravelMapClient
+│   │       ├── TravelMapClient.tsx               ✅ Done — draggable map canvas with pins, flags, stats
+│   │       ├── WorkDeskSection.tsx               ✅ Done — desk photo + gear inventory list
+│   │       ├── PodcastSection.tsx                ✅ Done — podcast logo, description, platform links
+│   │       ├── WritingSection.tsx                ✅ Done — 'use client'; Medium RSS articles; fallback-first loading
+│   │       └── CreditCardsSection.tsx            ✅ Done — horizontal overlap desktop stack + mobile swipe stack
 │   ├── works/
 │   │   ├── PageHeader.tsx        ✅ Done — centered "Work." title + subtitle
 │   │   ├── FilterRow.tsx         ✅ Done — filter chips: All / Case Study / Landing / Brand Identity
@@ -80,7 +84,7 @@ portfolio/                        # project root
 │   └── shared/
 │       ├── SectionLabel.tsx      ✅ Done — 16px desktop / 12px mobile, no pill/chip styling
 │       ├── SectionHeader.tsx     ✅ Done — 32px/40px desktop / 24px/32px mobile
-│       ├── DiamondBullet.tsx     ✅ Done
+│       ├── PageHeader.tsx        ✅ Done — centered page title + gradient agent SVG icon in label row
 │       └── ModeToggle.tsx        ✅ Done — left/right knob toggle, hover-preview animation
 ├── styles/
 │   ├── theme.ts                  ✅ Done — colors, fonts, spacing, breakpoints (bp + mq)
@@ -89,6 +93,7 @@ portfolio/                        # project root
 ├── lib/
 │   ├── supabase.ts               ✅ Done
 │   ├── timeline.ts               ✅ Done — TimelineEvent interface + getTimelineEvents() (orders by sort_order ASC)
+│   ├── medium.ts                 ✅ Done — fetchMediumArticles(); calls rss2json API; returns 3 articles with title/url/thumbnail/readTime
 │   └── pdfWorker.ts              ✅ Done — sets pdfjs worker URL (currently unused; worker set in ResumeCanvasClient.tsx instead)
 ├── hooks/                        # Custom hooks (useProjects, etc.)
 ├── types/                        # Shared TypeScript interfaces
@@ -105,26 +110,27 @@ portfolio/                        # project root
 - `components/common/Layout.tsx` ✅
 - `components/shared/SectionLabel.tsx` ✅
 - `components/shared/SectionHeader.tsx` ✅
-- `components/shared/DiamondBullet.tsx` ✅
+- `components/shared/PageHeader.tsx` ✅
 - `components/shared/ModeToggle.tsx` ✅
 - All `components/home/*.tsx` ✅
 - `components/about/AboutClient.tsx` ✅
-- `components/about/HeaderImage.tsx` ✅
-- `components/about/ModeTogglePill.tsx` ✅
-- `components/about/IntroSection.tsx` ✅
-- `components/about/ProfileImage.tsx` ✅
-- `components/about/AboutDescription.tsx` ✅
-- `components/about/MyTools.tsx` ✅
-- `components/about/Journey.tsx` ✅
-- `components/about/ProfessionalTimeline.tsx` ✅
-- `components/about/AwardShelf.tsx` ✅
-- `components/about/PersonalAboutDescription.tsx` ✅
-- `components/about/TravelSection.tsx` ✅
-- `components/about/TravelMap.tsx` ✅
-- `components/about/TravelMapClient.tsx` ✅
-- `components/about/WorkDeskSection.tsx` ✅
-- `components/about/PodcastMediumSection.tsx` ✅
-- `components/about/CreditCardsSection.tsx` ✅
+- `components/about/common/ModeTogglePill.tsx` ✅
+- `components/about/common/AboutDescription.tsx` ✅
+- `components/about/common/AwardShelf.tsx` ✅
+- `components/about/professional/HeaderImage.tsx` ✅
+- `components/about/professional/IntroSection.tsx` ✅
+- `components/about/professional/ProfileImage.tsx` ✅
+- `components/about/professional/MyTools.tsx` ✅
+- `components/about/professional/Journey.tsx` ✅
+- `components/about/professional/ProfessionalTimeline.tsx` ✅
+- `components/about/personal/PersonalAboutDescription.tsx` ✅
+- `components/about/personal/TravelSection.tsx` ✅
+- `components/about/personal/TravelMap.tsx` ✅
+- `components/about/personal/TravelMapClient.tsx` ✅
+- `components/about/personal/WorkDeskSection.tsx` ✅
+- `components/about/personal/PodcastSection.tsx` ✅
+- `components/about/personal/WritingSection.tsx` ✅
+- `components/about/personal/CreditCardsSection.tsx` ✅
 - `components/works/PageHeader.tsx` ✅
 - `components/works/FilterRow.tsx` ✅
 - `components/works/FeaturedCard.tsx` ✅
@@ -296,7 +302,8 @@ PageSections (gap: 32px desktop / 24px tablet / 24px mobile)
       PersonalAboutDescription
       TravelSection
       WorkDeskSection
-      PodcastMediumSection
+      PodcastSection
+      WritingSection
       CreditCardsSection
 
   BottomToggleWrapper
@@ -322,11 +329,12 @@ PageSections (gap: 32px desktop / 24px tablet / 24px mobile)
 - Calls the same `handleModeChange` — keeps both toggles in sync
 - `ModeLabel` and `ModeSwitch` styled components defined in `page.tsx` (same shape as IntroSection's but living in page.tsx)
 
-#### HeaderImage.tsx ✅
-- `public/about/header-banner.jpg` (panoramic collage) masked through `public/about/header-mask.svg` (ENRIC letterform paths, white fill)
-- CSS mask: `mask-image: url(...)`, `mask-size: 100% 100%`, `mask-mode: alpha`, `-webkit-` prefixes
-- `aspect-ratio: 1134 / 293`, `width: 1134px` desktop → `width: 100%` at tabletDown
-- SVG has `preserveAspectRatio="none"` so it stretches to match photo at any width
+#### HeaderImage.tsx ✅ (`components/about/professional/HeaderImage.tsx`)
+- Accepts `mode: 'professional' | 'personal'` prop
+- Professional: `/about/professional/header.webp`; Personal: `/about/personal/header.webp`
+- Simple photo with `object-fit: cover; width: 100%; height: 100%` — no mask applied
+- `Wrapper`: `width: 1134px; aspect-ratio: 1134 / 293; overflow: hidden` → `width: 100%` at `tabletDown`
+- `AboutClient.tsx` passes `mode={mode}` so the photo swaps automatically on toggle
 
 #### ModeTogglePill.tsx ✅
 - Pill button at bottom of About page; single click toggles between professional/personal modes
@@ -475,22 +483,33 @@ PageSections (gap: 32px desktop / 24px tablet / 24px mobile)
   - `DesktopText` (`display:none` on mobile) + `MobileText` (`display:none` on desktop)
 - Apple icon (`apple-icon.svg`, 8.293×10.2px) shown inline for Apple items
 
-#### PodcastMediumSection.tsx ✅
-- Two-column desktop layout (podcast column + articles column), stacks on mobile
-- Podcast card: logo, platform links (Apple Podcasts, Spotify, YouTube)
-- Medium articles: list of articles with individual direct Medium `href`s via the `ARTICLES` array
+#### PodcastSection.tsx ✅ (`components/about/personal/PodcastSection.tsx`)
+- Label: "SOMETIMES I SPEAK" / Header: "Hear my Podcast." (Podcast muted)
+- Logo: 120×120px at `/about/personal/podcast-logo.webp`
+- Platform icons: 32px desktop / 40px mobile, radius 8px/12px; paths from `/app-icons/{youtube,spotify,apple-podcasts}.webp`
+- ContentRow: side-by-side desktop → `flex-direction: column` on mobile
 
-#### CreditCardsSection.tsx ✅
+#### WritingSection.tsx ✅ (`components/about/personal/WritingSection.tsx`)
+- `'use client'` — fetches Medium RSS via `lib/medium.ts` on mount
+- Fallback-first: `useState(FALLBACK_ARTICLES)` renders immediately; live data replaces on success, fallback kept silently on error
+- `FALLBACK_ARTICLES` has hardcoded thumbnails from `cdn-images-1.medium.com` for the 3 known articles
+- `$loading` prop on `ArticleList`: `opacity: 0.5 → 1` transition when fetch resolves
+- Desktop: "Read all" button in `HeaderRow`; Mobile: "Read all" button below article list (hidden desktop via `DesktopReadAll`/`MobileReadAll` wrappers)
+- Arrow icon (32×32px, `ArrowWrap`) hidden on mobile
+- Article rows: `py: 20px` desktop / `py: 16px` mobile, `border-bottom: border.tertiary`
+
+#### CreditCardsSection.tsx ✅ (`components/about/personal/CreditCardsSection.tsx`)
 - **Single source of truth**: one `CARDS` array (8 cards, `.webp` paths from `/about/personal/cards/`)
-- **Desktop**: Grid layout using CSS Grid auto-fit (`repeat(auto-fit, minmax(260px, 1fr))`)
-  - Ensures a fluid 4-column desktop wrapping naturally down to 3 and 2 columns on tablet without squishing the images horizontally
-  - Hidden on mobile
+- **Desktop** (`CardInfoContainer`, hidden `mq.mobile`):
+  - `CardStack`: 8 `DesktopCard` elements with `flex: 1 0 0`, `aspect-ratio: 160/100`, `margin-right: -190px` (except last), `z-index: 8→1`, `isolation: isolate`
+  - `CTAColumn`: flex column, CTA text + dark `surface.inverse` button
+  - Dual `SectionLabel`: "CREDIT LINEUP" (desktop) / "COLLECT POINTS TO EXPERIENCE" (mobile)
 - **Mobile**: swipeable stack (`MobileStack`), hidden on desktop
   - Drag/swipe upward to cycle cards; `stackOrder` state tracks current order
   - Exit animation: `translateY(-200%)` + fade, then reorder after 350ms
-  - `MobileCard`: `aspect-ratio: 160/100`, `margin-bottom: -190px` for stack peek effect
-- Both desktop + mobile: `border-radius: theme.radii.lg`, `border: 1px solid border.tertiary`, `object-fit: cover`
-- CTA row links to `https://plush.money/in/find-your-card`
+  - `MobileCard`: `aspect-ratio: 160/100`, `margin-bottom: -185px` for stack peek effect
+  - `MobileCTABlock` below stack: CTA text + dark button (`padding: 12px 16px`, `font: 14px/18px`)
+- CTA links to `https://plush.money/in/find-your-card`
 
 ---
 
@@ -673,6 +692,7 @@ PageSections (pt: 140px desktop / 6rem tablet / 40px mobile, gap: 40px)
 |---|---|---|
 | Full page | `136:3016` | — |
 | About (professional) | `248:1175` | `284:834` |
+| About (personal) | `328:908` | — |
 | About — Image Banner | `248:1186` | — |
 | About — Travel map canvas | `328:996` | — |
 | Resume (full frame) | `282:772` | `306:1320` |
@@ -688,6 +708,17 @@ PageSections (pt: 140px desktop / 6rem tablet / 40px mobile, gap: 40px)
 | Contact — Services | `359:1560` | — |
 | Contact — Elsewhere | `359:1589` | — |
 | Contact — EnquiryForm Done state | `367:1227` | — |
+
+### PageHeader.tsx ✅ (shared — `components/shared/PageHeader.tsx`)
+- Used on every page: About, Works, Resume, Contact
+- Props: `label`, `titleBefore`, `titleMuted`, `titleAfter?`, `subtitle?`, `action?`
+- `LabelRow`: inline gradient agent SVG icon (12×12px) + label text
+  - Icon is an **inline SVG** (not `<img>`), path from `/icons/agent.svg` at 12×12 viewBox
+  - Gradient: `linearGradient` pink `#EC6AA8` → red `#E8342A` → yellow `#FFCC00` (80% opacity) — Figma node `407:1675`
+  - Gradient ID `agentIconGradient` defined in `<defs>` inside the SVG element
+- `Title`: `fonts.notch`, `fontWeights.medium`, `fontSizes['2xl']` desktop / `fontSizes.lg` mobile
+- `Muted` span: `colors.text.secondary` for the muted part of the title
+- Centered, `text-align: center`
 
 ### Title Container — Figma Spec (applies everywhere SectionLabel + SectionHeader are stacked)
 | | Desktop (LG) | Mobile (SM) |
@@ -708,32 +739,32 @@ PageSections (pt: 140px desktop / 6rem tablet / 40px mobile, gap: 40px)
 ### Professional About
 ```
 public/about/
-├── profile-group.png          # 431×470 RGBA — composited circle photo (professional)
-├── professional-image.webp    # Professional banner photo
+├── professional/
+│   ├── header.webp                # Header banner photo (professional mode) — used by HeaderImage.tsx
+│   ├── seals/
+│   │   ├── awwwards.webp
+│   │   ├── ust.webp
+│   │   ├── figma.webp
+│   │   └── ksum.webp
+│   ├── timeline/
+│   │   ├── card-01-young-jury.png … card-12-beach-hack.png  # 12 timeline event photos (PNG, from Figma)
+│   └── journey/
+│       ├── ust-icon.svg
+│       ├── fundesigns-icon.svg
+│       ├── freelance-icon.svg     # 28×28 design-tools scissors icon (for Freelance entry)
+│       ├── bullet-shimmer.svg
+│       ├── bullet-dot.svg
+│       └── bullet-container.svg
 ├── icons/
-│   ├── icon-1.svg … icon-6.svg   # 6 floating icons (professional mode)
-├── seals/
-│   ├── awwwards.webp
-│   ├── ust.webp
-│   ├── figma.webp
-│   └── ksum.webp
-├── header-banner.jpg              # Panoramic photo collage for ENRIC letterform banner
-├── header-mask.svg               # ENRIC letterform mask (white fill, preserveAspectRatio=none)
-├── timeline/
-│   ├── card-01-young-jury.png … card-12-beach-hack.png  # 12 timeline event photos (PNG, from Figma)
-└── journey/
-    ├── ust-icon.svg
-    ├── fundesigns-icon.svg
-    ├── freelance-icon.svg         # 28×28 design-tools scissors icon (for Freelance entry)
-    ├── bullet-shimmer.svg
-    ├── bullet-dot.svg
-    └── bullet-container.svg
+│   ├── icon-1.svg … icon-6.svg   # 6 floating icons (professional mode, ProfileImage.tsx)
+└── profile-group.png              # 431×470 RGBA — composited circle photo (professional)
 ```
 
 ### Personal About
 ```
 public/about/personal/
-├── personal-image.webp        # Personal mode banner photo
+├── header.webp                # Header banner photo (personal mode) — used by HeaderImage.tsx
+├── personal-image.webp        # Personal mode profile banner photo (ProfileImage.tsx)
 ├── checkmark.svg              # To Do List widget checkmark
 ├── icons/
 │   ├── icon-1.png … icon-6.png   # 6 floating icons (personal mode)
@@ -782,6 +813,13 @@ public/contact/social/
 > ⚠️ These 8 files need to be placed manually before deploying — `Elsewhere.tsx` references them at `/contact/social/{platform}.webp`
 
 ---
+
+## lib/medium.ts
+- `MediumArticle` interface: `{ title, url, thumbnail: string | null, readTime, pubDate }`
+- `fetchMediumArticles()` — fetches `https://api.rss2json.com/v1/api.json?rss_url=https://medium.com/feed/@enricsneelamkavil` (no API key needed), returns 3 articles
+- `calcReadTime(content)` — strips HTML, divides word count by 200 wpm, returns `"N min read"`
+- `extractThumbnail(item)` — prefers `item.thumbnail`, falls back to first `<img>` src in content HTML
+- Used by `WritingSection.tsx` with fallback-first pattern
 
 ## Supabase Client
 ```ts

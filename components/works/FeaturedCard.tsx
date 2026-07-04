@@ -1,6 +1,5 @@
 import styled from 'styled-components'
 import { mq } from '@/styles/theme'
-import DiamondBullet from '@/components/shared/DiamondBullet'
 import Button from '@/components/common/Button'
 
 // ─── Hardcoded Plush data ─────────────────────────────────────────────────────
@@ -50,7 +49,7 @@ const FeaturedCard = () => {
             <RowLabel>Role</RowLabel>
             <RoleValue>
               <RolePart>{roleParts[0]}</RolePart>
-              <DiamondBullet size={6} />
+              <img src="/icons/diamond.svg" width={6} height={6} alt="" aria-hidden />
               <RolePart>{roleParts[1]}</RolePart>
             </RoleValue>
           </HighlightRow>

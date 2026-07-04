@@ -4,7 +4,6 @@ import styled from 'styled-components'
 import Button from '@/components/common/Button'
 import SectionLabel from '@/components/shared/SectionLabel'
 import SectionHeader from '@/components/shared/SectionHeader'
-import DiamondBullet from '@/components/shared/DiamondBullet'
 import { mq } from '@/styles/theme'
 
 
@@ -48,7 +47,7 @@ const WorkCard = ({
     <ProductContainer>
       <ProductTagsRow>
         <TagLabel>{tags[0]}</TagLabel>
-        <DiamondBullet size={6} />
+        <img src="/icons/diamond.svg" width={6} height={6} alt="" aria-hidden />
         <TagLabel>{tags[1]}</TagLabel>
       </ProductTagsRow>
 

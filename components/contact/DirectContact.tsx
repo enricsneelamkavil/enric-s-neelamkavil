@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react'
 import styled from 'styled-components'
 import { mq } from '@/styles/theme'
-import DiamondBullet from '@/components/shared/DiamondBullet'
 
 // ─── IST clock ───────────────────────────────────────────────────────────────
 
@@ -39,7 +38,7 @@ const DirectContact = () => {
             <Label>Based</Label>
             <LocationValue>
               <ValueLight>Trivandrum, IN</ValueLight>
-              <DiamondBullet size={6} />
+              <img src="/icons/diamond.svg" width={6} height={6} alt="" aria-hidden />
               <ValueRegular>{istTime}</ValueRegular>
             </LocationValue>
           </RowInner>

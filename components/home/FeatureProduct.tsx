@@ -4,7 +4,6 @@ import styled from 'styled-components'
 import Button from '@/components/common/Button'
 import SectionLabel from '@/components/shared/SectionLabel'
 import SectionHeader from '@/components/shared/SectionHeader'
-import DiamondBullet from '@/components/shared/DiamondBullet'
 import { mq } from '@/styles/theme'
 
 
@@ -48,7 +47,7 @@ const FeatureProduct = () => {
           <FeatureList>
             {FEATURES.map((f) => (
               <FeatureRow key={f}>
-                <DiamondBullet size={8} />
+                <img src="/icons/diamond.svg" width={8} height={8} alt="" aria-hidden />
                 <FeatureText>{f}</FeatureText>
               </FeatureRow>
             ))}

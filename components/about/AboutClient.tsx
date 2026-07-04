@@ -74,7 +74,7 @@ export default function AboutClient({ timelineEvents }: Props) {
           titleMuted="two sides"
           titleAfter=" of one designer."
         />
-        <HeaderImage />
+        <HeaderImage mode={mode} />
       </IntroBlock>
 
       {/* Mode-specific content — grid stacks both groups; inactive fades out without layout shift */}
