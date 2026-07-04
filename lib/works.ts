@@ -52,20 +52,6 @@ export async function getProjects(): Promise<Project[]> {
   return (data ?? []) as Project[]
 }
 
-export async function getFeaturedProject(): Promise<Project | null> {
-  const { data, error } = await supabase
-    .from('projects')
-    .select('*')
-    .eq('featured', true)
-    .single()
-
-  if (error) {
-    // .single() throws PGRST116 when no rows found — treat as null
-    if (error.code === 'PGRST116') return null
-    throw new Error(error.message)
-  }
-  return data as Project
-}
 
 export async function getProjectsByType(type: ProjectType): Promise<Project[]> {
   const { data, error } = await supabase

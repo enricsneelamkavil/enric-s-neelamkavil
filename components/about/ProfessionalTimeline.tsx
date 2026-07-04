@@ -3,6 +3,7 @@
 import { useRef, useState, useEffect, useCallback } from 'react'
 import styled from 'styled-components'
 import { mq } from '@/styles/theme'
+import { type TimelineEvent } from '@/lib/timeline'
 import SectionLabel from '@/components/shared/SectionLabel'
 import SectionHeader from '@/components/shared/SectionHeader'
 
@@ -22,175 +23,71 @@ const SCROLL_STEP          = 600   // px per nav click
 const IMG_ARROW_LEFT  = '/icons/arrow-left.svg'
 const IMG_ARROW_RIGHT = '/icons/arrow-right.svg'
 
-// ─── Event data ───────────────────────────────────────────────────────────────
-
-type ImagePosition = 'above' | 'below'
+// ─── Photo crop types ─────────────────────────────────────────────────────────
 
 type CropSimple = { kind: 'simple' }
 type CropPortrait = { kind: 'portrait' }
 type CropPositioned = { kind: 'positioned'; h: string; left: string; top: string; w: string }
 type Crop = CropSimple | CropPortrait | CropPositioned
 
-interface TLEvent {
-  key: string
-  title: string
-  sub: string
-  desc: string
-  descW?: number
-  photo: string
-  imagePosition: ImagePosition
-  crop: Crop
+// Per-photo crop data keyed by photo_url — pure CSS implementation detail.
+// Default (no entry) = simple object-bottom cover.
+// Add an entry here whenever a new event's photo needs portrait or positioned cropping.
+const CROP_MAP: Record<string, Crop> = {
+  '/about/timeline/card-01-young-jury.png': { kind: 'portrait' },
+  '/about/timeline/card-02-graduation.png': {
+    kind: 'positioned', h: '207.51%', left: '-0.08%', top: '-50.51%', w: '100.08%',
+  },
+  '/about/timeline/card-05-designers-award.png': {
+    kind: 'positioned', h: '129.03%', left: '-6.1%', top: '-11.93%', w: '123.88%',
+  },
+  '/about/timeline/card-08-code-design-week.png': {
+    kind: 'positioned', h: '336.59%', left: '-25.71%', top: '-141.55%', w: '160.58%',
+  },
+  '/about/timeline/card-10-mulearn.png': {
+    kind: 'positioned', h: '173.76%', left: '-45.33%', top: '-17.99%', w: '167.23%',
+  },
 }
 
-// User's order (newest → oldest), odd positions = image below, even = image above
-const EVENTS: TLEvent[] = [
-  {
-    key: 'young-jury',
-    title: 'Young Jury 2025',
-    sub: 'Awwwards.',
-    desc: 'Selected as a jury member, evaluating and rating top digital designs globally.',
-    descW: 210,
-    photo: '/about/timeline/card-01-young-jury.png',
-    imagePosition: 'below',
-    crop: { kind: 'portrait' },
-  },
-  {
-    key: 'graduation',
-    title: 'Graduation',
-    sub: 'Christ College of Engineering',
-    desc: 'Graduated Bachelors of Technology (BTech.) in Computer Science & Engineering.',
-    photo: '/about/timeline/card-02-graduation.png',
-    imagePosition: 'above',
-    crop: { kind: 'positioned', h: '207.51%', left: '-0.08%', top: '-50.51%', w: '100.08%' },
-  },
-  {
-    key: 'lead-host',
-    title: 'Lead Host',
-    sub: 'DESIGNATHON 2024',
-    desc: "Hosted second edition of Designathon, right a year after CODe Design Week '23.",
-    photo: '/about/timeline/card-03-lead-host.png',
-    imagePosition: 'below',
-    crop: { kind: 'simple' },
-  },
-  {
-    key: 'config-apac',
-    title: 'Invited Attendee',
-    sub: 'Figma Config APAC',
-    desc: "Figma's first Config APAC at Marina Bay Sands Conventional Center, Singapore.",
-    photo: '/about/timeline/card-04-config-apac.png',
-    imagePosition: 'above',
-    crop: { kind: 'simple' },
-  },
-  {
-    key: 'designers-award',
-    title: 'Designers Award',
-    sub: 'Kerala Startup Mission',
-    desc: 'Won the position of Top 13 Designers in Branding Challenge at Huddle Global.',
-    photo: '/about/timeline/card-05-designers-award.png',
-    imagePosition: 'below',
-    crop: { kind: 'positioned', h: '129.03%', left: '-6.1%', top: '-11.93%', w: '123.88%' },
-  },
-  {
-    key: 'speaker',
-    title: 'Speaker',
-    sub: 'Christ College of Engineering',
-    desc: 'Handled multiple hands-on workshop sessions on interface design for digital products.',
-    photo: '/about/timeline/card-06-speaker.png',
-    imagePosition: 'above',
-    crop: { kind: 'simple' },
-  },
-  {
-    key: 'lollypop',
-    title: 'Participant attendee',
-    sub: 'Lollypop Designathon',
-    desc: 'Shortlisted attendee for Designathon 2024 hosted by Lollypop Design Studio.',
-    photo: '/about/timeline/card-07-lollypop.png',
-    imagePosition: 'below',
-    crop: { kind: 'simple' },
-  },
-  {
-    key: 'code-design-week',
-    title: 'Founder Host',
-    sub: "CODe Design Week (CDW '23)",
-    desc: 'Hosted the first ever Design Week, in Engineering Colleges across Kerala.',
-    photo: '/about/timeline/card-08-code-design-week.png',
-    imagePosition: 'above',
-    crop: { kind: 'positioned', h: '336.59%', left: '-25.71%', top: '-141.55%', w: '160.58%' },
-  },
-  {
-    key: 'figma-india',
-    title: 'Invited Attendee',
-    sub: 'Figma India',
-    desc: "Attended Figma's India office Launch at Sheraton Grand Convention Center, Bangalore.",
-    photo: '/about/timeline/card-09-figma-india.png',
-    imagePosition: 'below',
-    crop: { kind: 'simple' },
-  },
-  {
-    key: 'mulearn',
-    title: 'UI Designer',
-    sub: 'GTech MuLearn',
-    desc: 'First Internship as UI Designer, led a team, mentored junior designers.',
-    photo: '/about/timeline/card-10-mulearn.png',
-    imagePosition: 'above',
-    crop: { kind: 'positioned', h: '173.76%', left: '-45.33%', top: '-17.99%', w: '167.23%' },
-  },
-  {
-    key: 'chairman',
-    title: 'Chairman',
-    sub: 'Community of Developers (CODe)',
-    desc: 'Association of Department of Computer Science, Christ College of Engineering.',
-    descW: 222,
-    photo: '/about/timeline/card-11-chairman.png',
-    imagePosition: 'below',
-    crop: { kind: 'simple' },
-  },
-  {
-    key: 'beach-hack',
-    title: 'Co-host',
-    sub: 'BEACH HACK 5',
-    desc: 'Co-hosted the 5th edition of the flagship event Beach hackathon aka Beach Hack.',
-    photo: '/about/timeline/card-12-beach-hack.png',
-    imagePosition: 'above',
-    crop: { kind: 'simple' },
-  },
-]
+const getCrop = (photoUrl: string | null): Crop =>
+  (photoUrl && CROP_MAP[photoUrl]) ? CROP_MAP[photoUrl] : { kind: 'simple' }
 
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-const CardPhoto = ({ event }: { event: TLEvent }) => {
-  const { photo, crop } = event
-  const isPortrait = crop.kind === 'portrait'
-
+const CardPhoto = ({ photoUrl, crop }: { photoUrl: string; crop: Crop }) => {
   if (crop.kind === 'positioned') {
     return (
       <PhotoWrap>
-        <div style={{ position: 'absolute', inset: 0, overflow: 'hidden', borderRadius: 'inherit', pointerEvents: 'none' }}>
+        <div style={{
+          position: 'absolute', inset: 0, overflow: 'hidden',
+          borderRadius: 'inherit', pointerEvents: 'none',
+        }}>
           <img
             alt=""
-            src={photo}
-            style={{ position: 'absolute', height: crop.h, left: crop.left, top: crop.top, width: crop.w, maxWidth: 'none' }}
+            src={photoUrl}
+            style={{
+              position: 'absolute',
+              height: crop.h, left: crop.left, top: crop.top, width: crop.w,
+              maxWidth: 'none',
+            }}
           />
         </div>
       </PhotoWrap>
     )
   }
 
+  const isPortrait = crop.kind === 'portrait'
   return (
     <PhotoWrap $narrow={isPortrait}>
       <img
         alt=""
-        src={photo}
+        src={photoUrl}
         style={{
-          position: 'absolute',
-          inset: 0,
-          width: '100%',
-          height: '100%',
+          position: 'absolute', inset: 0,
+          width: '100%', height: '100%',
           objectFit: 'cover',
           objectPosition: isPortrait ? 'center' : 'bottom',
-          maxWidth: 'none',
-          borderRadius: 'inherit',
-          pointerEvents: 'none',
+          maxWidth: 'none', borderRadius: 'inherit', pointerEvents: 'none',
         }}
       />
     </PhotoWrap>
@@ -199,7 +96,11 @@ const CardPhoto = ({ event }: { event: TLEvent }) => {
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
-const ProfessionalTimeline = () => {
+interface Props {
+  events: TimelineEvent[]
+}
+
+const ProfessionalTimeline = ({ events }: Props) => {
   const scrollRef = useRef<HTMLDivElement>(null)
   const [canScrollLeft, setCanScrollLeft] = useState(false)
   const [canScrollRight, setCanScrollRight] = useState(true)
@@ -242,19 +143,28 @@ const ProfessionalTimeline = () => {
 
       <ScrollWrapper ref={scrollRef}>
         <ScrollTrack>
-          {EVENTS.map((event) => (
-            <EventCard key={event.key}>
-              {event.imagePosition === 'above' && <CardPhoto event={event} />}
-              <ContentBlock>
-                <HeaderBlock>
-                  <EventTitle>{event.title}</EventTitle>
-                  <EventSub>{event.sub}</EventSub>
-                </HeaderBlock>
-                <EventDesc $w={event.descW}>{event.desc}</EventDesc>
-              </ContentBlock>
-              {event.imagePosition === 'below' && <CardPhoto event={event} />}
-            </EventCard>
-          ))}
+          {events.map((event) => {
+            const crop = getCrop(event.photo_url)
+            return (
+              <EventCard key={event.id}>
+                {event.image_position === 'above' && event.photo_url && (
+                  <CardPhoto photoUrl={event.photo_url} crop={crop} />
+                )}
+                <ContentBlock>
+                  <HeaderBlock>
+                    <EventTitle>{event.title}</EventTitle>
+                    <EventSub>{event.subtitle}</EventSub>
+                  </HeaderBlock>
+                  {event.description && (
+                    <EventDesc>{event.description}</EventDesc>
+                  )}
+                </ContentBlock>
+                {event.image_position === 'below' && event.photo_url && (
+                  <CardPhoto photoUrl={event.photo_url} crop={crop} />
+                )}
+              </EventCard>
+            )
+          })}
         </ScrollTrack>
       </ScrollWrapper>
 
@@ -464,14 +374,14 @@ const EventSub = styled.p`
   }
 `
 
-const EventDesc = styled.p<{ $w?: number }>`
+const EventDesc = styled.p`
   margin: 0;
+  width: 100%;
   font-family: ${({ theme }) => theme.fonts.sans};
   font-weight: ${({ theme }) => theme.fontWeights.light};
   font-size: ${({ theme }) => theme.fontSizes.xs};
   line-height: ${({ theme }) => theme.lineHeights.tight};
   color: ${({ theme }) => theme.colors.text.secondary};
-  ${({ $w }) => $w != null ? `max-width: ${$w}px;` : 'width: 100%;'}
 `
 
 // ── Mobile nav ────────────────────────────────────────────────────────────────

@@ -6,7 +6,7 @@ import { mq } from '@/styles/theme'
 
 // ─── Tool definitions ─────────────────────────────────────────────────────────
 
-type Variant = 'flat' | 'rounded-fit' | 'rounded-overflow'
+type Variant = 'flat' | 'rounded-fit'
 
 interface Tool {
   name: string
@@ -15,23 +15,22 @@ interface Tool {
   shadow?: string
 }
 
-// "rounded-overflow" = image is ~124% of the 64px box, clipped by border-radius
-// "rounded-fit"      = image fills box exactly with object-cover
-// "flat"             = SVG, no radius, no shadow
+// "rounded-fit" = image fills 64px box with object-cover, 25% border-radius, drop shadow
+// "flat"        = SVG fills box exactly, no radius, no shadow
 
 const TOOLS: Tool[] = [
-  { name: 'Figma', src: 'app-icons/figma.webp', variant: 'rounded-overflow', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
-  { name: 'Photoshop', src: 'app-icons/photoshop.svg', variant: 'flat', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
-  { name: 'Sketch', src: 'app-icons/sketch.webp', variant: 'rounded-overflow', shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
-  { name: 'Illustrator', src: 'app-icons/illustrator.svg', variant: 'flat', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
-  { name: 'Lovable', src: 'app-icons/lovable.webp', variant: 'rounded-fit', shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
-  { name: 'XD', src: 'app-icons/xd.svg', variant: 'flat', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
-  { name: 'Gemini', src: 'app-icons/gemini.webp', variant: 'rounded-fit', shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
-  { name: 'ChatGPT', src: 'app-icons/chatgpt.webp', variant: 'rounded-fit', shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
-  { name: 'Claude', src: 'app-icons/claude.webp', variant: 'rounded-fit', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
-  { name: 'CorelDraw', src: 'app-icons/coreldraw.webp', variant: 'flat' },
-  { name: 'After Effects', src: 'app-icons/after-effects.svg', variant: 'flat', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
-  { name: 'Premiere Pro', src: 'app-icons/premiere-pro.svg', variant: 'flat', shadow: '0px 0px 12px rgba(0,0,0,0.25)' },
+  { name: 'Figma',         src: '/app-icons/figma.webp',         variant: 'rounded-fit', shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
+  { name: 'Photoshop',     src: '/app-icons/photoshop.svg',      variant: 'flat' },
+  { name: 'Sketch',        src: '/app-icons/sketch.webp',        variant: 'rounded-fit', shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
+  { name: 'Illustrator',   src: '/app-icons/illustrator.svg',    variant: 'flat' },
+  { name: 'Lovable',       src: '/app-icons/lovable.webp',       variant: 'rounded-fit', shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
+  { name: 'XD',            src: '/app-icons/xd.svg',             variant: 'flat' },
+  { name: 'Gemini',        src: '/app-icons/gemini.webp',        variant: 'rounded-fit', shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
+  { name: 'ChatGPT',       src: '/app-icons/chatgpt.webp',       variant: 'rounded-fit', shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
+  { name: 'Claude',        src: '/app-icons/claude.webp',        variant: 'rounded-fit', shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
+  { name: 'CorelDraw',     src: '/app-icons/coreldraw.webp',     variant: 'rounded-fit', shadow: '0px 0px 12px rgba(0,0,0,0.15)' },
+  { name: 'After Effects', src: '/app-icons/after-effects.svg',  variant: 'flat' },
+  { name: 'Premiere Pro',  src: '/app-icons/premiere-pro.svg',   variant: 'flat' },
 ]
 
 const RISE = 16
@@ -62,21 +61,10 @@ const MyTools = () => {
             onMouseLeave={() => setHovered(null)}
             title={tool.name}
           >
-            {tool.variant === 'flat' && (
-              <FlatImg src={tool.src} alt={tool.name} />
-            )}
-            {tool.variant === 'rounded-fit' && (
-              <RoundedBox $shadow={tool.shadow!}>
-                <FitImg src={tool.src} alt={tool.name} />
-              </RoundedBox>
-            )}
-            {tool.variant === 'rounded-overflow' && (
-              <RoundedBox $shadow={tool.shadow!}>
-                <OverflowClip>
-                  <OverflowImg src={tool.src} alt={tool.name} />
-                </OverflowClip>
-              </RoundedBox>
-            )}
+            {tool.variant === 'flat'
+              ? <FlatImg src={tool.src} alt={tool.name} />
+              : <RoundedBox $shadow={tool.shadow!}><FitImg src={tool.src} alt={tool.name} /></RoundedBox>
+            }
           </IconSlot>
         ))}
       </DockContainer>
@@ -84,21 +72,10 @@ const MyTools = () => {
       <MobileGrid>
         {TOOLS.map((tool) => (
           <MobileCell key={tool.name} title={tool.name}>
-            {tool.variant === 'flat' && (
-              <FlatImg src={tool.src} alt={tool.name} />
-            )}
-            {tool.variant === 'rounded-fit' && (
-              <RoundedBox $shadow={tool.shadow!}>
-                <FitImg src={tool.src} alt={tool.name} />
-              </RoundedBox>
-            )}
-            {tool.variant === 'rounded-overflow' && (
-              <RoundedBox $shadow={tool.shadow!}>
-                <OverflowClip>
-                  <OverflowImg src={tool.src} alt={tool.name} />
-                </OverflowClip>
-              </RoundedBox>
-            )}
+            {tool.variant === 'flat'
+              ? <FlatImg src={tool.src} alt={tool.name} />
+              : <RoundedBox $shadow={tool.shadow!}><FitImg src={tool.src} alt={tool.name} /></RoundedBox>
+            }
           </MobileCell>
         ))}
       </MobileGrid>
@@ -176,23 +153,6 @@ const FitImg = styled.img`
   height: 100%;
   object-fit: cover;
   border-radius: 25%;
-  pointer-events: none;
-`
-
-const OverflowClip = styled.div`
-  position: absolute;
-  inset: 0;
-  overflow: hidden;
-  border-radius: 25%;
-  pointer-events: none;
-`
-
-const OverflowImg = styled.img`
-  position: absolute;
-  left: -12%;
-  top: -12%;
-  width: 124%;
-  height: 124%;
   pointer-events: none;
 `
 

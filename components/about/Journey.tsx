@@ -4,35 +4,27 @@ import { mq } from '@/styles/theme'
 import SectionLabel from '@/components/shared/SectionLabel'
 import SectionHeader from '@/components/shared/SectionHeader'
 
-// ─── Assets ───────────────────────────────────────────────────────────────────
-
-const IMG_BULLET_SHIMMER    = '/about/journey/bullet-shimmer.svg'
-const IMG_BULLET_DOT        = '/about/journey/bullet-dot.svg'
-const IMG_BULLET_CONTAINER  = '/about/journey/bullet-container.svg'
-
 // ─── Entry data ───────────────────────────────────────────────────────────────
 
 interface JourneyEntry {
-  key:        string
-  bullet:     'shimmer' | 'container'
-  logo:       string
-  logoW:      number
-  logoH:      number
-  href:       string
-  role:       string
-  dates:      string
-  columns:    React.ReactNode[]
+  key: string
+  logo: string
+  logoW: number
+  logoH: number
+  href: string
+  role: string
+  dates: string
+  columns: React.ReactNode[]
 }
 
 const ENTRIES: JourneyEntry[] = [
   {
-    key:    'ust',
-    bullet: 'shimmer',
-    logo:   '/about/journey/ust-icon.svg',
+    key: 'ust',
+    logo: '/about/professional/journey/ust-icon.svg',
     logoW: 26, logoH: 28,
-    href:   'https://ust.com',
-    role:   'Associate Product Designer',
-    dates:  'August 2024 – Present',
+    href: 'https://ust.com',
+    role: 'Associate Product Designer',
+    dates: 'August 2024 – Present',
     columns: [
       "Building the world's most human centred travel app, personalised recommendations, and stress-free travel all in one place.",
       'Developed wireframes and interactive prototypes, accelerating timelines to enhance design approval rates.',
@@ -41,13 +33,12 @@ const ENTRIES: JourneyEntry[] = [
     ],
   },
   {
-    key:    'fundesigns',
-    bullet: 'container',
-    logo:   '/about/journey/fundesigns-icon.svg',
+    key: 'fundesigns',
+    logo: '/about/professional/journey/fundesigns-icon.svg',
     logoW: 28, logoH: 28,
-    href:   'https://fundesign.in',
-    role:   'Lead UI Designer',
-    dates:  'May 2024 – July 2024',
+    href: 'https://fundesign.in',
+    role: 'Lead UI Designer',
+    dates: 'May 2024 – July 2024',
     columns: [
       'Crafting user-centric products and the best experiences delivering the promise for clients all over the world.',
       'Led a design team to complete 15+ major projects, improving experiences for multiple clients for the company.',
@@ -56,13 +47,12 @@ const ENTRIES: JourneyEntry[] = [
     ],
   },
   {
-    key:    'freelance',
-    bullet: 'container',
-    logo:   '/about/journey/freelance-icon.svg',
+    key: 'freelance',
+    logo: '/about/professional/journey/freelance-icon.svg',
     logoW: 28, logoH: 28,
-    href:   'https://mulearn.org',
-    role:   'Graphic Designer / Video Editor',
-    dates:  'Till May 2024',
+    href: 'https://mulearn.org',
+    role: 'Graphic Designer / Video Editor',
+    dates: 'Till May 2024',
     columns: [
       'UI Design Lead at GTech MuLearn redesigning the official website, creating new flows, screens & dashboards for MuLearn.',
       'Worked as a Graphic Design intern helping Hound Electric and EV High Performance Shop in their Graphic Design needs.',
@@ -87,13 +77,13 @@ const Journey = () => (
         return (
           <Fragment key={entry.key}>
             <EntryRow>
-              <BulletImg
-                src={entry.bullet === 'shimmer' ? IMG_BULLET_SHIMMER : IMG_BULLET_CONTAINER}
-                alt=""
-                aria-hidden="true"
-              />
-              {entry.bullet === 'shimmer' && (
-                <BulletInnerDot src={IMG_BULLET_DOT} alt="" aria-hidden="true" />
+              {i === 0 ? (
+                <LiveBullet>
+                  <PulseRing />
+                  <BulletDot />
+                </LiveBullet>
+              ) : (
+                <BulletDot />
               )}
 
               <LogoLink href={entry.href} target="_blank" rel="noopener noreferrer">
@@ -181,27 +171,42 @@ const EntryRow = styled.div`
   }
 `
 
-const BulletImg = styled.img`
-  display: block;
-  width: 24px;
-  height: 24px;
+const BulletDot = styled.div`
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: ${({ theme }) => theme.colors.text.primary};
   flex-shrink: 0;
-  pointer-events: none;
 
   ${mq.mobile} {
     display: none;
   }
 `
 
-const BulletInnerDot = styled.img`
+const PulseRing = styled.div`
   position: absolute;
-  left: 6px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 12px;
-  height: 12px;
-  display: block;
-  pointer-events: none;
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: ${({ theme }) => theme.colors.text.primary};
+  opacity: 0.3;
+  animation: pulse 2s ease-out infinite;
+
+  @keyframes pulse {
+    0%   { transform: scale(1); opacity: 0.3; }
+    70%  { transform: scale(2); opacity: 0; }
+    100% { transform: scale(2); opacity: 0; }
+  }
+`
+
+const LiveBullet = styled.div`
+  position: relative;
+  width: 8px;
+  height: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 
   ${mq.mobile} {
     display: none;

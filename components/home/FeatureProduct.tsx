@@ -119,7 +119,6 @@ const ImagePanel = styled.div`
   flex-shrink: 0;
   border-radius: ${({ theme }) => theme.radii['2xl']};
   overflow: hidden;
-  background: linear-gradient(to bottom, #f3efe6, #ebe5d8);
 
   ${mq.tablet} {
     flex: 1 0 0;

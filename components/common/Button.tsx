@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import styled, { css, useTheme } from 'styled-components'
+import styled, { css } from 'styled-components'
 import { mq } from '@/styles/theme'
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -17,25 +17,6 @@ interface ButtonProps {
   onClick?: () => void
 }
 
-// ─── Arrow icon (inline SVG — no expiring asset URLs) ─────────────────────────
-
-const ArrowIcon = ({ variant }: { variant: Variant }) => {
-  const theme = useTheme()
-  const color =
-    variant === 'primary' ? theme.colors.icon.primary : theme.colors.icon.inverse
-  return (
-    <svg width="10" height="10" viewBox="0 0 10 10" fill="none" aria-hidden="true">
-      <path
-        d="M2 8L8 2M8 2H4M8 2V6"
-        stroke={color}
-        strokeWidth="1.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
-}
-
 // ─── Component ────────────────────────────────────────────────────────────────
 
 const Button = ({ label, variant = 'primary', href, external, onClick }: ButtonProps) => {
@@ -44,9 +25,7 @@ const Button = ({ label, variant = 'primary', href, external, onClick }: ButtonP
   const inner = (
     <>
       <Label $variant={variant}>{label}</Label>
-      <IconBox $variant={variant}>
-        <ArrowIcon variant={variant} />
-      </IconBox>
+      <ArrowImg src="/icons/external.svg" alt="" aria-hidden="true" $variant={variant} />
     </>
   )
 
@@ -124,18 +103,15 @@ const Label = styled.span<{ $variant: Variant }>`
   white-space: nowrap;
 `
 
-const IconBox = styled.div<{ $variant: Variant }>`
-  display: flex;
-  align-items: center;
-  justify-content: center;
+const ArrowImg = styled.img<{ $variant: Variant }>`
   width: 18px;
   height: 18px;
-  border-radius: ${({ theme }) => theme.radii.full};
+  display: block;
   flex-shrink: 0;
-  background-color: ${({ theme, $variant }) =>
+  filter: ${({ $variant }) =>
     $variant === 'primary'
-      ? theme.colors.icon.inverse
-      : theme.colors.icon.secondary};
+      ? 'brightness(0) invert(1)'
+      : 'brightness(0)'};
 `
 
 export default Button

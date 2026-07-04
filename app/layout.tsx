@@ -3,6 +3,7 @@ import {
   Stack_Sans_Headline,
   Stack_Sans_Notch,
 } from 'next/font/google'
+import { GlimmProvider } from 'glimm/react'
 import StyledComponentsRegistry from '@/styles/StyledComponentsRegistry'
 import Layout from '@/components/common/Layout'
 import './globals.css'
@@ -57,9 +58,11 @@ export default function RootLayout({
   return (
     <html lang="en" className={fontClasses}>
       <body>
-        <StyledComponentsRegistry>
-          <Layout>{children}</Layout>
-        </StyledComponentsRegistry>
+        <GlimmProvider palette="prism" sweepMs={1000} outroMs={650}>
+          <StyledComponentsRegistry>
+            <Layout>{children}</Layout>
+          </StyledComponentsRegistry>
+        </GlimmProvider>
       </body>
     </html>
   )

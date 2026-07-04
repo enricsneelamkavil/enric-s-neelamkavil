@@ -2,21 +2,32 @@ import styled from 'styled-components'
 import { mq } from '@/styles/theme'
 import DiamondBullet from '@/components/shared/DiamondBullet'
 import Button from '@/components/common/Button'
-import type { Project } from '@/types/project'
+
+// ─── Hardcoded Plush data ─────────────────────────────────────────────────────
+
+const PLUSH = {
+  title: 'Plush',
+  tagline: 'Your Personalised AI Powered Credit Card Assistant',
+  long_description: 'Plush simplifies the credit card ecosystem through card discovery, comparison, personalised portfolio tracking, and community-driven insights. It\'s the clearest example of how to solve a confusing problem simply, and don\'t make the user do the work of understanding it.',
+  role: 'Founder • Designer',
+  timeline: 'In Progress',
+  tags: ['CASE STUDY', 'FIN TECH', 'APPLICATION'],
+  cover_image_url: '/home/works/featured/plush-feature.webp',
+  logo_url: '/home/works/featured/plush-logo.svg',
+  cta_label: 'Visit Plush',
+  cta_url: 'https://plush.money',
+} as const
 
 // Logo dimensions (Figma-derived, not in theme)
 const LOGO_W_DESKTOP = 189
 const LOGO_H_DESKTOP = 56
-const LOGO_W_MOBILE  = 136
-const LOGO_H_MOBILE  = 40
+const LOGO_W_MOBILE = 136
+const LOGO_H_MOBILE = 40
 
-interface Props {
-  project: Project
-}
+// ─── Component ────────────────────────────────────────────────────────────────
 
-const FeaturedCard = ({ project }: Props) => {
-  // Split "Founder • Designer" → ["Founder", "Designer"] for the diamond bullet
-  const roleParts = project.role?.split(' • ') ?? []
+const FeaturedCard = () => {
+  const roleParts = PLUSH.role.split(' • ')
 
   return (
     <Card>
@@ -25,23 +36,12 @@ const FeaturedCard = ({ project }: Props) => {
 
         {/* Logo + tagline — always first */}
         <LogoBlock>
-          {project.logo_url ? (
-            <LogoImg
-              src={project.logo_url}
-              alt={project.title}
-            />
-          ) : (
-            <TitleFallback>{project.title}</TitleFallback>
-          )}
-          {project.tagline && (
-            <Tagline>{project.tagline}</Tagline>
-          )}
+          <LogoImg src={PLUSH.logo_url} alt={PLUSH.title} />
+          <Tagline>{PLUSH.tagline}</Tagline>
         </LogoBlock>
 
         {/* Description — desktop: 2nd; mobile: 3rd */}
-        {project.long_description && (
-          <Description>{project.long_description}</Description>
-        )}
+        <Description>{PLUSH.long_description}</Description>
 
         {/* Highlights table — desktop: 3rd; mobile: 2nd */}
         <Highlights>
@@ -49,29 +49,23 @@ const FeaturedCard = ({ project }: Props) => {
           <HighlightRow>
             <RowLabel>Role</RowLabel>
             <RoleValue>
-              {roleParts.length > 1 ? (
-                <>
-                  <RolePart>{roleParts[0]}</RolePart>
-                  <DiamondBullet size={6} />
-                  <RolePart>{roleParts[1]}</RolePart>
-                </>
-              ) : (
-                <RolePart>{project.role}</RolePart>
-              )}
+              <RolePart>{roleParts[0]}</RolePart>
+              <DiamondBullet size={6} />
+              <RolePart>{roleParts[1]}</RolePart>
             </RoleValue>
           </HighlightRow>
 
           {/* Row 2 — Timeline */}
           <HighlightRow>
             <RowLabel>Timeline</RowLabel>
-            <ValueText>{project.timeline}</ValueText>
+            <ValueText>{PLUSH.timeline}</ValueText>
           </HighlightRow>
 
           {/* Row 3 — Tags (border-bottom + slightly taller padding) */}
           <HighlightRow $last>
             <RowLabel>Tags</RowLabel>
             <TagContainer>
-              {project.tags.map((tag) => (
+              {PLUSH.tags.map((tag) => (
                 <Tag key={tag}>{tag}</Tag>
               ))}
             </TagContainer>
@@ -79,25 +73,15 @@ const FeaturedCard = ({ project }: Props) => {
         </Highlights>
 
         {/* CTA button — always last */}
-        {project.cta_url && (
-          <CtaWrapper>
-            <Button
-              label={project.cta_label ?? 'View project'}
-              href={project.cta_url}
-            />
-          </CtaWrapper>
-        )}
+        <CtaWrapper>
+          <Button label={PLUSH.cta_label} href={PLUSH.cta_url} />
+        </CtaWrapper>
       </LeftContent>
 
       {/* ── Cover image (right on desktop, top on mobile) ────────── */}
-      {project.cover_image_url && (
-        <CoverImageWrap>
-          <CoverImg
-            src={project.cover_image_url}
-            alt={project.title}
-          />
-        </CoverImageWrap>
-      )}
+      <CoverImageWrap>
+        <CoverImg src={PLUSH.cover_image_url} alt={PLUSH.title} />
+      </CoverImageWrap>
     </Card>
   )
 }
@@ -138,7 +122,6 @@ const LeftContent = styled.div`
   }
 `
 
-// LogoBlock is always first — no explicit order needed (DOM order = 0)
 const LogoBlock = styled.div`
   display: flex;
   flex-direction: column;
@@ -158,14 +141,6 @@ const LogoImg = styled.img`
   }
 `
 
-const TitleFallback = styled.span`
-  font-family: ${({ theme }) => theme.fonts.notch};
-  font-weight: ${({ theme }) => theme.fontWeights.medium};
-  font-size: ${({ theme }) => theme.fontSizes.lg};
-  line-height: ${({ theme }) => theme.lineHeights.loose};
-  color: ${({ theme }) => theme.colors.text.primary};
-`
-
 const Tagline = styled.p`
   margin: 0;
   font-family: ${({ theme }) => theme.fonts.sans};
@@ -175,7 +150,6 @@ const Tagline = styled.p`
   color: ${({ theme }) => theme.colors.text.tertiary};
 `
 
-// Description: desktop order 2 → mobile order 3
 const Description = styled.p`
   margin: 0;
   font-family: ${({ theme }) => theme.fonts.sans};
@@ -192,7 +166,6 @@ const Description = styled.p`
 
 // ─── Highlights table ────────────────────────────────────────────────────────
 
-// Highlights: desktop order 3 → mobile order 2
 const Highlights = styled.div`
   display: flex;
   flex-direction: column;
@@ -287,7 +260,6 @@ const Tag = styled.span`
 
 // ─── CTA ─────────────────────────────────────────────────────────────────────
 
-// Always last in the column regardless of order swaps
 const CtaWrapper = styled.div`
   order: 4;
 `

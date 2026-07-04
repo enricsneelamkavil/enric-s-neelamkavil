@@ -8,6 +8,7 @@
 
 ## Supabase Usage
 - `projects` table — case study content (title, description, tags, cover image URL)
+- `timeline_events` table — professional timeline cards; fetched server-side in `app/about/page.tsx`
 - Storage bucket — images and assets
 - `/api/visitor` route — POST increments visitor counter, returns `{ count: number }`
 
@@ -16,7 +17,7 @@
 portfolio/                        # project root
 ├── app/
 │   ├── page.tsx                  # Home ✅ Done
-│   ├── about/page.tsx            # About ✅ Done — 'use client', professional/personal mode toggle
+│   ├── about/page.tsx            # About ✅ Done — server component; fetches timeline_events, renders AboutClient
 │   ├── works/page.tsx            # Works ✅ Done — 'use client' (WorksClient), filter state, Supabase connected
 │   ├── resume/page.tsx           # Resume ✅ Done — 'use client' (zoom state)
 │   ├── contact/page.tsx          # Contact ✅ Done — 'use client', two-column sticky layout
@@ -39,13 +40,15 @@ portfolio/                        # project root
 │   │   ├── AwardShelf.tsx        ✅ Done
 │   │   └── MyWorks.tsx           ✅ Done
 │   ├── about/
+│   │   ├── AboutClient.tsx               ✅ Done — 'use client'; all About page state/layout; accepts timelineEvents prop
+│   │   ├── HeaderImage.tsx               ✅ Done — ENRIC letterform mask over panoramic banner photo
+│   │   ├── ModeTogglePill.tsx            ✅ Done — bottom mode toggle pill; jiggle arrow animation on hover
 │   │   ├── IntroSection.tsx              ✅ Done — title, subtitle, professional/personal mode toggle
 │   │   ├── ProfileImage.tsx              ✅ Done — accepts mode prop; different photo + icons per mode
 │   │   ├── AboutDescription.tsx          ✅ Done — bio paragraph, IST clock, highlights table
 │   │   ├── MyTools.tsx                   ✅ Done — desktop dock + separate MobileGrid (6×2 static grid)
-│   │   ├── Journey.tsx                   ✅ Done — CAREER LADDER label, UST + FunDesigns only
-│   │   ├── ProfessionalTimeline.tsx      ✅ Done — desktop horizontal scrollable timeline
-│   │   ├── ProfessionalTimelineMobile.tsx ✅ Done — mobile vertical timeline
+│   │   ├── Journey.tsx                   ✅ Done — CAREER LADDER label, 3 entries: UST + FunDesigns + Freelance
+│   │   ├── ProfessionalTimeline.tsx      ✅ Done — 12-card horizontal scroll; Supabase-connected; accepts events prop
 │   │   ├── AwardShelf.tsx                ✅ Done — 5 award cards with seal images
 │   │   ├── PersonalAboutDescription.tsx  ✅ Done — personal bio + To Do List widget
 │   │   ├── TravelSection.tsx             ✅ Done — travel title, desktop map, mobile flags/stats, albums
@@ -85,6 +88,7 @@ portfolio/                        # project root
 │   └── StyledComponentsRegistry.tsx  ✅ Done — SSR fix for styled-components + Next.js
 ├── lib/
 │   ├── supabase.ts               ✅ Done
+│   ├── timeline.ts               ✅ Done — TimelineEvent interface + getTimelineEvents() (orders by sort_order ASC)
 │   └── pdfWorker.ts              ✅ Done — sets pdfjs worker URL (currently unused; worker set in ResumeCanvasClient.tsx instead)
 ├── hooks/                        # Custom hooks (useProjects, etc.)
 ├── types/                        # Shared TypeScript interfaces
@@ -104,13 +108,15 @@ portfolio/                        # project root
 - `components/shared/DiamondBullet.tsx` ✅
 - `components/shared/ModeToggle.tsx` ✅
 - All `components/home/*.tsx` ✅
+- `components/about/AboutClient.tsx` ✅
+- `components/about/HeaderImage.tsx` ✅
+- `components/about/ModeTogglePill.tsx` ✅
 - `components/about/IntroSection.tsx` ✅
 - `components/about/ProfileImage.tsx` ✅
 - `components/about/AboutDescription.tsx` ✅
 - `components/about/MyTools.tsx` ✅
 - `components/about/Journey.tsx` ✅
 - `components/about/ProfessionalTimeline.tsx` ✅
-- `components/about/ProfessionalTimelineMobile.tsx` ✅
 - `components/about/AwardShelf.tsx` ✅
 - `components/about/PersonalAboutDescription.tsx` ✅
 - `components/about/TravelSection.tsx` ✅
@@ -192,6 +198,12 @@ layout.maxWidth = '1168px'
 radii:       lg=12px, xl=16px, 2xl=20px, 3xl=24px, full=9999px
 ```
 
+## Icon Color Convention
+- All SVG icons in `/icons/` are designed in `text.secondary` color (`#5C5C5C`) by default
+- **Never assume the default color is correct** — always check Figma for the intended color at each specific usage point
+- Apply the correct color via CSS `filter` or a fill override (e.g. wrapping the `<img>` in a styled element with `color` + `filter: brightness(...)` or using an inline SVG with `currentColor`)
+- This applies to every icon from `/icons/` used in any component
+
 ## Architecture Rules
 - Every visual section = its own component file, even if used once
 - Page files only import and compose sections — zero JSX logic in pages
@@ -256,42 +268,39 @@ export default ComponentName
 ### About ✅ Done
 **Figma frames:** Desktop `248:1175` · Mobile `284:834`
 
-**Page file:** `app/about/page.tsx` — `'use client'`, manages `mode: 'professional' | 'personal'` state
+**Page file:** `app/about/page.tsx` — server component; `export const dynamic = 'force-dynamic'`; fetches `timeline_events` from Supabase, passes to `<AboutClient timelineEvents={events} />`
+
+**Client component:** `components/about/AboutClient.tsx` — `'use client'`; manages `mode: 'professional' | 'personal'` state + snapping animation
 
 **Behaviour:**
 - Mode persisted to `localStorage` key `portfolio_about_mode` — restored on mount via `useEffect`
 - On mode change: `snapping` state fires `scale(0.98)` on ModeContent for 150ms, then snaps back; page scrolls to top smoothly
-- `handleModeChange` wired to both the top `IntroSection` toggle and the bottom `BottomToggleWrapper`
+- `handleModeChange` wired to both the top `IntroSection` toggle and the bottom `ModeTogglePill`
 
 **Composition — both mode groups always in DOM; inactive is `position: absolute` so it takes no layout height:**
 ```
 PageSections (gap: 32px desktop / 24px tablet / 24px mobile)
-  IntroSection                          ← always visible (top mode toggle lives here)
+  IntroBlock
+    SharedPageHeader
+    HeaderImage                         ← ENRIC letterform mask over banner photo
 
   ModeContent (position: relative; overflow: clip)
     ModeGroup $active=professional      ← active = position: relative; inactive = position: absolute top:0 left:0
-      LandingGroup (gap: 80px desktop / 64px tablet / 72px mobile)
-        ProfileImageWrapper $isPro=true ← negative margins pull photo up, collapse bottom gap
-          ProfileImage mode="professional"
-        AboutDescription
+      AboutDescription
       MyTools
       Journey
-      DesktopTimeline (display: none on mobile)
-        ProfessionalTimeline
-      MobileTimeline (display: none on desktop)
-        ProfessionalTimelineMobile
+      ProfessionalTimeline              ← single responsive component; receives events prop
       AwardShelf
 
     ModeGroup $active=personal
-      LandingGroup
-        ProfileImage mode="personal"    ← no ProfileImageWrapper on personal side
-        PersonalAboutDescription
+      PersonalAboutDescription
       TravelSection
       WorkDeskSection
       PodcastMediumSection
       CreditCardsSection
 
-  BottomToggleWrapper                   ← second mode toggle fixed at bottom of page content
+  BottomToggleWrapper
+    ModeTogglePill                      ← replaces old two-label ModeToggle; jiggle arrow on hover
 ```
 
 **ModeContent / ModeGroup pattern:**
@@ -313,8 +322,23 @@ PageSections (gap: 32px desktop / 24px tablet / 24px mobile)
 - Calls the same `handleModeChange` — keeps both toggles in sync
 - `ModeLabel` and `ModeSwitch` styled components defined in `page.tsx` (same shape as IntroSection's but living in page.tsx)
 
+#### HeaderImage.tsx ✅
+- `public/about/header-banner.jpg` (panoramic collage) masked through `public/about/header-mask.svg` (ENRIC letterform paths, white fill)
+- CSS mask: `mask-image: url(...)`, `mask-size: 100% 100%`, `mask-mode: alpha`, `-webkit-` prefixes
+- `aspect-ratio: 1134 / 293`, `width: 1134px` desktop → `width: 100%` at tabletDown
+- SVG has `preserveAspectRatio="none"` so it stretches to match photo at any width
+
+#### ModeTogglePill.tsx ✅
+- Pill button at bottom of About page; single click toggles between professional/personal modes
+- Props: `mode: 'professional' | 'personal'`, `onModeChange: (mode) => void`
+- Label text: "Switch to Personal Mode" / "Switch to Professional Mode"
+- `IconCircle` (40×40px, `surface.primary` bg, `border.tertiary` border, `radii.full`) contains left-pointing arrow SVG (`text.highlight` color)
+- Jiggle keyframe animation on `ArrowWrap` triggers on `Pill:hover`
+- Desktop padding: `12px 16px 12px 12px`; Mobile: `8px 16px 8px 8px`
+- Mobile label: `fontWeights.light` (desktop uses `fontWeights.regular`)
+
 #### IntroSection.tsx ✅
-- `'use client'`, receives `mode` and `onModeChange` as props from `page.tsx`
+- `'use client'`, receives `mode` and `onModeChange` as props from `AboutClient`
 - PageTitle "About Me." (Period in `colors.text.secondary`)
 - PageSubtitle "Two sides of one designer"
 - ModeToggle (from `components/shared/ModeToggle.tsx`) between two ModeLabel buttons
@@ -367,7 +391,8 @@ PageSections (gap: 32px desktop / 24px tablet / 24px mobile)
 
 #### Journey.tsx ✅
 - Label: `"CAREER LADDER"` — SectionLabel + SectionHeader, no gap
-- 2 entries only: UST (Aug 2024–Present), FunDesigns (May–Jul 2024) — CCE removed
+- 3 entries: UST (Aug 2024–Present), FunDesigns (May–Jul 2024), Freelance (Till May 2024 — GTech MuLearn + Hound Electric + Sanjos Voice + GDSC CCE)
+- Freelance icon: `/about/journey/freelance-icon.svg` (28×28, design-tools scissors icon)
 - Bullet assets: `bullet-shimmer.svg`, `bullet-dot.svg`, `bullet-container.svg`
 - Desktop: horizontal description columns (4 per entry), ConnectorLine between entries
 - Mobile: vertical layout, BulletImg/BulletInnerDot/DateTag hidden, ConnectorCol hidden
@@ -380,16 +405,17 @@ PageSections (gap: 32px desktop / 24px tablet / 24px mobile)
 - Seals from `public/about/seals/`: `awwwards.webp`, `ust.webp`, `figma.webp`, `ksum.webp`
 - AwardsRow: horizontal scroll on mobile with `scroll-snap-type: x mandatory`
 
-#### ProfessionalTimeline.tsx ✅ (desktop)
-- Hidden on mobile (`display: none` in `mq.mobile`)
-- Horizontal scrollable timeline with photo strip and year labels
-- TitleBlock: no gap (Figma spec)
-
-#### ProfessionalTimelineMobile.tsx ✅ (mobile)
-- Hidden on desktop (`display: none` above `mq.mobile`)
-- Vertical timeline layout uses `clip-path` for pixel-perfect ribbon notches on `StripWrapper`
-- `StripWrapper` width is responsive (`137px` down to `90px` at `<=402px`), while inner `StripContent` maintains absolute `137px` width to perfectly crop photos without distorting height
-- TitleBlock: no gap (Figma spec)
+#### ProfessionalTimeline.tsx ✅
+- Single responsive component (replaces old desktop + mobile split)
+- Accepts `events: TimelineEvent[]` prop from `AboutClient` (fetched server-side)
+- 12-card horizontal scroll; cards 264px desktop / 200px mobile; photos 169px tall desktop / 128px mobile
+- `image_position: 'above' | 'below'` per card (from DB) controls content/photo stacking order
+- Photo crops via `CROP_MAP` keyed by `photo_url` — stores CSS positioning data for 5 cards that need non-standard cropping (graduation, designers award, CODe design week, GTech MuLearn, Young Jury portrait)
+- `getCrop(photoUrl)` returns `CROP_MAP[url] ?? { kind: 'simple' }` — default is `object-bottom` cover
+- Desktop nav in TitleRow (hidden on mobile); mobile nav row below scroll track (hidden on desktop)
+- `ScrollWrapper`: `width: calc(100% + (100vw - 100%) / 2)` bleeds to viewport right edge
+- TitleBlock: `SectionLabel("MY JOURNEY 2022 → 2026")` + `SectionHeader("Being through so far.")`
+- Photo assets: `/about/timeline/card-01-young-jury.png` through `card-12-beach-hack.png` (downloaded from Figma)
 
 ---
 
@@ -691,9 +717,14 @@ public/about/
 │   ├── ust.webp
 │   ├── figma.webp
 │   └── ksum.webp
+├── header-banner.jpg              # Panoramic photo collage for ENRIC letterform banner
+├── header-mask.svg               # ENRIC letterform mask (white fill, preserveAspectRatio=none)
+├── timeline/
+│   ├── card-01-young-jury.png … card-12-beach-hack.png  # 12 timeline event photos (PNG, from Figma)
 └── journey/
     ├── ust-icon.svg
     ├── fundesigns-icon.svg
+    ├── freelance-icon.svg         # 28×28 design-tools scissors icon (for Freelance entry)
     ├── bullet-shimmer.svg
     ├── bullet-dot.svg
     └── bullet-container.svg
@@ -763,6 +794,47 @@ export const supabase = createClient(
 )
 ```
 
+## Supabase — timeline_events Table
+
+```sql
+CREATE TABLE timeline_events (
+  id uuid primary key default gen_random_uuid(),
+  title text not null,
+  subtitle text not null,
+  description text,
+  photo_url text,
+  image_position text not null default 'above'
+    check (image_position in ('above', 'below')),
+  sort_order integer not null default 0,
+  created_at timestamptz not null default now()
+);
+
+alter table timeline_events enable row level security;
+create policy "Public read" on timeline_events
+  for select using (true);
+```
+
+**Sort order convention:** lowest `sort_order` = newest (shown first in scroll). To prepend a new event, give it sort_order 0 and increment all others, or insert with sort_order -1.
+
+**Photo crop overrides** live in `CROP_MAP` inside `ProfessionalTimeline.tsx` keyed by `photo_url`. Default crop is `object-bottom cover`. Add an entry to `CROP_MAP` when a new event photo needs portrait or positioned cropping.
+
+**INSERT SQL for 12 current events:**
+```sql
+INSERT INTO timeline_events (title, subtitle, description, photo_url, image_position, sort_order) VALUES
+  ('Young Jury 2025', 'Awwwards.', 'Selected as a jury member, evaluating and rating top digital designs globally.', '/about/timeline/card-01-young-jury.png', 'below', 0),
+  ('Graduation', 'Christ College of Engineering', 'Graduated Bachelors of Technology (BTech.) in Computer Science & Engineering.', '/about/timeline/card-02-graduation.png', 'above', 1),
+  ('Lead Host', 'DESIGNATHON 2024', 'Hosted second edition of Designathon, right a year after CODe Design Week ''23.', '/about/timeline/card-03-lead-host.png', 'below', 2),
+  ('Invited Attendee', 'Figma Config APAC', 'Figma''s first Config APAC at Marina Bay Sands Conventional Center, Singapore.', '/about/timeline/card-04-config-apac.png', 'above', 3),
+  ('Designers Award', 'Kerala Startup Mission', 'Won the position of Top 13 Designers in Branding Challenge at Huddle Global.', '/about/timeline/card-05-designers-award.png', 'below', 4),
+  ('Speaker', 'Christ College of Engineering', 'Handled multiple hands-on workshop sessions on interface design for digital products.', '/about/timeline/card-06-speaker.png', 'above', 5),
+  ('Participant attendee', 'Lollypop Designathon', 'Shortlisted attendee for Designathon 2024 hosted by Lollypop Design Studio.', '/about/timeline/card-07-lollypop.png', 'below', 6),
+  ('Founder Host', 'CODe Design Week (CDW ''23)', 'Hosted the first ever Design Week, in Engineering Colleges across Kerala.', '/about/timeline/card-08-code-design-week.png', 'above', 7),
+  ('Invited Attendee', 'Figma India', 'Attended Figma''s India office Launch at Sheraton Grand Convention Center, Bangalore.', '/about/timeline/card-09-figma-india.png', 'below', 8),
+  ('UI Designer', 'GTech MuLearn', 'First Internship as UI Designer, led a team, mentored junior designers.', '/about/timeline/card-10-mulearn.png', 'above', 9),
+  ('Chairman', 'Community of Developers (CODe)', 'Association of Department of Computer Science, Christ College of Engineering.', '/about/timeline/card-11-chairman.png', 'below', 10),
+  ('Co-host', 'BEACH HACK 5', 'Co-hosted the 5th edition of the flagship event Beach hackathon aka Beach Hack.', '/about/timeline/card-12-beach-hack.png', 'above', 11);
+```
+
 ## Environment Variables
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://rdkhdnbzhuwvthxagzdz.supabase.co
@@ -790,5 +862,6 @@ RESEND_API_KEY=re_...          # Resend API key — add to Vercel env vars befor
 
 ### Global
 - [x] ~~Wire MyWorks to Supabase (`projects` table) when Works page is ready~~ ✅ Done — Works page connected
+- [x] ~~Wire ProfessionalTimeline to Supabase~~ ✅ Done — `timeline_events` table; run CREATE TABLE + INSERT SQL above in Supabase SQL editor
 - [ ] Define and implement PersonalAgent mobile interaction
 - [ ] Wire PersonalAgent to `/api/agent` (Anthropic SDK)

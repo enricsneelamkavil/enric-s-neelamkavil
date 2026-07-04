@@ -26,7 +26,7 @@ const CTA_WORDS = ['build', 'design', 'dream', 'develop', 'ship'] as const
 const PAGE_LINKS = [
   { label: 'Home', href: '/' },
   { label: 'About', href: '/about' },
-  { label: 'Work', href: '/works' },
+  { label: 'Works', href: '/works' },
   { label: 'Resume', href: '/resume' },
   { label: 'Contact', href: '/contact' },
 ]
@@ -78,8 +78,8 @@ const HeartIcon = () => {
 
 const Footer = () => {
   const [visitorCount, setVisitorCount] = useState<number | null>(null)
-  const [wordIdx, setWordIdx]   = useState(0)
-  const [fading, setFading]     = useState(false)
+  const [wordIdx, setWordIdx] = useState(0)
+  const [fading, setFading] = useState(false)
 
   useEffect(() => {
     const interval = setInterval(() => {

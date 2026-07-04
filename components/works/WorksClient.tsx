@@ -11,25 +11,20 @@ import type { Project } from '@/types/project'
 
 interface Props {
   projects: Project[]
-  featuredProject: Project | null
 }
 
-const WorksClient = ({ projects, featuredProject }: Props) => {
+const WorksClient = ({ projects }: Props) => {
   const [activeFilter, setActiveFilter] = useState('all')
 
-  // Grid never includes the featured project — it lives in FeaturedCard only
   const gridProjects = useMemo(() => {
-    const nonFeatured = projects.filter((p) => !p.featured)
-    if (activeFilter === 'all') return nonFeatured
-    return nonFeatured.filter((p) => p.type === activeFilter)
+    if (activeFilter === 'all') return projects
+    return projects.filter((p) => p.type === activeFilter)
   }, [projects, activeFilter])
 
-  // FeaturedCard renders on 'all' tab and when the active filter matches the featured project's type
-  const showFeatured =
-    featuredProject !== null &&
-    (activeFilter === 'all' || activeFilter === featuredProject.type)
+  // FeaturedCard (Plush) is hardcoded — always show on 'all' and 'case-study' tabs
+  const showFeatured = activeFilter === 'all' || activeFilter === 'case-study'
 
-  // Count label: number of items currently visible (featured card counts as 1)
+  // Count label: featured card counts as 1 extra when visible
   const totalShown = showFeatured ? gridProjects.length + 1 : gridProjects.length
 
   // Per-tab badge counts — derived from full projects list
@@ -54,7 +49,7 @@ const WorksClient = ({ projects, featuredProject }: Props) => {
           counts={counts}
           totalShown={totalShown}
         />
-        {showFeatured && <FeaturedCard project={featuredProject!} />}
+        {showFeatured && <FeaturedCard />}
       </HeroGroup>
 
       {gridProjects.length > 0 && <WorksGrid projects={gridProjects} />}
