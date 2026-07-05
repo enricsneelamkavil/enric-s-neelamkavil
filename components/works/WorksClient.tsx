@@ -29,10 +29,12 @@ const WorksClient = ({ projects }: Props) => {
   const totalShown = showFeatured ? gridProjects.length + 1 : gridProjects.length
 
   // Per-tab badge counts — derived from full projects list
+  // +1 on 'all' and 'case-study': the hardcoded FeaturedCard (Plush) isn't in `projects`
+  // but is shown on both those tabs, so it must count toward their badges.
   const counts = useMemo(
     () => ({
-      all:              projects.length,
-      'case-study':     projects.filter((p) => p.type === 'case-study').length,
+      all:              projects.length + 1,
+      'case-study':     projects.filter((p) => p.type === 'case-study').length + 1,
       'landing':        projects.filter((p) => p.type === 'landing').length,
       'brand-identity': projects.filter((p) => p.type === 'brand-identity').length,
     }),

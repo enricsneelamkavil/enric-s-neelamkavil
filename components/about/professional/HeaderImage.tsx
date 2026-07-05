@@ -22,7 +22,6 @@ const Wrapper = styled.div`
   width: 1134px;
   flex-shrink: 0;
   aspect-ratio: 1134 / 293;
-  overflow: hidden;
 
   ${mq.tabletDown} {
     width: 100%;
@@ -31,9 +30,9 @@ const Wrapper = styled.div`
 
 const Photo = styled.img`
   width: 100%;
-  height: 100%;
+  height: auto;
   display: block;
-  object-fit: cover;
+  object-fit: contain;
 `
 
 export default HeaderImage

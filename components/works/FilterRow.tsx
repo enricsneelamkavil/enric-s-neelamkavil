@@ -42,7 +42,7 @@ const FilterRow = ({ activeFilter, onFilterChange, counts, totalShown, view, onV
 
     <RightGroup>
       <CountLabel>
-        <CountNum>{totalShown}</CountNum>
+        <CountNum>{totalShown.toString().padStart(2, '0')}</CountNum>
         <CountText> shown</CountText>
       </CountLabel>
 

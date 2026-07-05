@@ -4,13 +4,6 @@ import SharedPageHeader from '@/components/shared/PageHeader'
 
 const PDF_PATH = '/resume.pdf'
 
-const DownloadArrow = () => (
-  <svg width="18" height="18" viewBox="0 0 18 18" fill="none" aria-hidden>
-    <path d="M9 2v10M5.5 9L9 12.5 12.5 9" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M3 16h12" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
-  </svg>
-)
-
 const PageHeader = () => (
   <SharedPageHeader
     label="RESUME"
@@ -20,7 +13,7 @@ const PageHeader = () => (
     action={
       <DownloadBtn href={PDF_PATH} download="enric-s-neelamkavil-resume.pdf">
         <BtnText>Download</BtnText>
-        <DownloadArrow />
+        <DownloadIcon src="/icons/download.svg" alt="" aria-hidden width={18} height={18} />
       </DownloadBtn>
     }
   />
@@ -62,6 +55,13 @@ const BtnText = styled.span`
     font-size: 0.875rem; /* 14px — between theme tokens, Figma mobile spec */
     line-height: 1.125rem;
   }
+`
+
+const DownloadIcon = styled.img`
+  display: block;
+  flex-shrink: 0;
+  /* /icons/ SVGs default to text.secondary (#5C5C5C) — invert to white for this dark button */
+  filter: brightness(0) invert(1);
 `
 
 export default PageHeader
