@@ -15,9 +15,11 @@ interface Props {
   onFilterChange: (filter: string) => void
   counts: Record<string, number>
   totalShown: number
+  view: 'grid' | 'list'
+  onViewChange: (view: 'grid' | 'list') => void
 }
 
-const FilterRow = ({ activeFilter, onFilterChange, counts, totalShown }: Props) => (
+const FilterRow = ({ activeFilter, onFilterChange, counts, totalShown, view, onViewChange }: Props) => (
   <Row>
     <Tablist>
       {TABS.filter(({ value }) => (counts[value] ?? 0) > 0).map(({ label, value }) => {
@@ -37,10 +39,30 @@ const FilterRow = ({ activeFilter, onFilterChange, counts, totalShown }: Props) 
         )
       })}
     </Tablist>
-    <CountLabel>
-      <CountNum>{totalShown}</CountNum>
-      <CountText> shown</CountText>
-    </CountLabel>
+
+    <RightGroup>
+      <CountLabel>
+        <CountNum>{totalShown}</CountNum>
+        <CountText> shown</CountText>
+      </CountLabel>
+
+      <ViewToggle>
+        <ViewSlot
+          $active={view === 'grid'}
+          onClick={() => onViewChange('grid')}
+          aria-label="Grid view"
+        >
+          <ViewIcon $active={view === 'grid'} $icon="grid" />
+        </ViewSlot>
+        <ViewSlot
+          $active={view === 'list'}
+          onClick={() => onViewChange('list')}
+          aria-label="List view"
+        >
+          <ViewIcon $active={view === 'list'} $icon="list" />
+        </ViewSlot>
+      </ViewToggle>
+    </RightGroup>
   </Row>
 )
 
@@ -113,14 +135,23 @@ const TabBadge = styled.span<{ $active: boolean }>`
     $active ? theme.colors.text.inverse : theme.colors.text.primary};
 `
 
-const CountLabel = styled.p`
-  margin: 0;
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-  line-height: ${({ theme }) => theme.lineHeights.normal};
+// ─── Right group (count + view toggle) — hidden on mobile ────────────────────
+
+const RightGroup = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
 
   ${mq.mobile} {
     display: none;
   }
+`
+
+const CountLabel = styled.p`
+  margin: 0;
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  line-height: ${({ theme }) => theme.lineHeights.normal};
 `
 
 const CountNum = styled.span`
@@ -133,6 +164,39 @@ const CountText = styled.span`
   font-family: ${({ theme }) => theme.fonts.sans};
   font-weight: ${({ theme }) => theme.fontWeights.light};
   color: ${({ theme }) => theme.colors.text.secondary};
+`
+
+// ─── View toggle ──────────────────────────────────────────────────────────────
+
+const ViewToggle = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: ${({ theme }) => theme.spacing[2]};
+  border: 1px solid ${({ theme }) => theme.colors.border.tertiary};
+  border-radius: ${({ theme }) => theme.radii.lg};
+`
+
+const ViewSlot = styled.button<{ $active: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: ${({ theme }) => theme.spacing[2]};
+  border-radius: ${({ theme }) => theme.radii.md};
+  border: none;
+  cursor: pointer;
+  background: ${({ $active, theme }) =>
+    $active ? theme.colors.surface.highlight : 'transparent'};
+`
+
+const ViewIcon = styled.span<{ $active: boolean; $icon: 'grid' | 'list' }>`
+  display: block;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  background-color: ${({ $active }) => ($active ? '#ffffff' : '#5C5C5C')};
+  -webkit-mask: ${({ $icon }) => `url(/icons/${$icon}.svg) no-repeat center / contain`};
+  mask: ${({ $icon }) => `url(/icons/${$icon}.svg) no-repeat center / contain`};
 `
 
 export default FilterRow

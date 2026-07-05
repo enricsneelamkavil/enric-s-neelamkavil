@@ -70,7 +70,7 @@ export default function AboutClient({ timelineEvents }: Props) {
       <IntroBlock>
         <SharedPageHeader
           label="ABOUT"
-          titleBefore="Just "
+          titleBefore=""
           titleMuted="two sides"
           titleAfter=" of one designer."
         />

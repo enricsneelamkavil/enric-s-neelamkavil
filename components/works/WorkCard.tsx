@@ -3,24 +3,27 @@ import styled, { css } from 'styled-components'
 import { mq } from '@/styles/theme'
 import type { Project } from '@/types/project'
 
-// Figma-derived — between radii.lg (12px) and radii.xl (16px)
-const IMAGE_RADIUS = '14px'
+// Figma-derived measurements (not in theme)
+const IMAGE_RADIUS = '14px'  // outer container — between radii.lg and radii.xl
 
 interface Props {
   project: Project
+  view?: 'grid' | 'list'
 }
 
-const WorkCard = ({ project }: Props) => {
+const WorkCard = ({ project, view }: Props) => {
   const inner = (
     <>
-      <ImageContainer>
-        {project.cover_image_url && (
-          <CardImg src={project.cover_image_url} alt={project.title} />
-        )}
+      <ImageContainer $view={view}>
+        <ImageFrame $view={view}>
+          {project.cover_image_url && (
+            <CardImg $view={view} src={project.cover_image_url} alt={project.title} />
+          )}
+        </ImageFrame>
       </ImageContainer>
 
-      <Info>
-        <TitleGroup>
+      <Info $view={view}>
+        <TitleGroup $view={view}>
           <Title>
             {project.title}<Period>.</Period>
           </Title>
@@ -28,7 +31,7 @@ const WorkCard = ({ project }: Props) => {
         </TitleGroup>
 
         {project.tags.length > 0 && (
-          <TagRow>
+          <TagRow $view={view}>
             {project.tags.map((tag) => (
               <Tag key={tag}>{tag}</Tag>
             ))}
@@ -39,12 +42,13 @@ const WorkCard = ({ project }: Props) => {
   )
 
   if (!project.cta_url) {
-    return <CardDiv>{inner}</CardDiv>
+    return <CardDiv $view={view}>{inner}</CardDiv>
   }
 
   if (project.cta_url.startsWith('http')) {
     return (
       <CardAnchor
+        $view={view}
         href={project.cta_url}
         target="_blank"
         rel="noopener noreferrer"
@@ -54,65 +58,100 @@ const WorkCard = ({ project }: Props) => {
     )
   }
 
-  return <CardLink href={project.cta_url}>{inner}</CardLink>
+  return <CardLink $view={view} href={project.cta_url}>{inner}</CardLink>
 }
 
 // ─── Shared card base ─────────────────────────────────────────────────────────
 
-const cardBase = css`
+const cardBase = css<{ $view?: 'grid' | 'list' }>`
   display: flex;
-  flex-direction: column;
+  flex-direction: ${({ $view }) => ($view === 'list' ? 'row' : 'column')};
+  align-items: ${({ $view }) => ($view === 'list' ? 'center' : 'stretch')};
   gap: ${({ theme }) => theme.spacing[6]};
   width: 100%;
+  height: ${({ $view }) => ($view === 'list' ? '160px' : 'auto')};
   text-decoration: none;
   color: inherit;
   cursor: pointer;
-`
-
-const CardDiv    = styled.div`${cardBase}`
-const CardAnchor = styled.a`${cardBase}`
-const CardLink   = styled(Link)`${cardBase}`
-
-// ─── Image container ─────────────────────────────────────────────────────────
-
-const ImageContainer = styled.div`
-  position: relative;
-  width: 100%;
-  height: 280px;
-  flex-shrink: 0;
-  overflow: hidden;
-  border-radius: ${IMAGE_RADIUS};
-  border: 1px solid ${({ theme }) => theme.colors.border.tertiary};
 
   ${mq.mobile} {
+    flex-direction: column;
+    align-items: stretch;
     height: auto;
-    aspect-ratio: 660 / 394;
   }
 `
 
-const CardImg = styled.img`
-  position: absolute;
-  inset: 0;
+const CardDiv    = styled.div<{ $view?: 'grid' | 'list' }>`${cardBase}`
+const CardAnchor = styled.a<{ $view?: 'grid' | 'list' }>`${cardBase}`
+const CardLink   = styled(Link)<{ $view?: 'grid' | 'list' }>`${cardBase}`
+
+// ─── Image container ─────────────────────────────────────────────────────────
+
+const ImageContainer = styled.div<{ $view?: 'grid' | 'list' }>`
+  width: ${({ $view }) => ($view === 'list' ? '168px' : '100%')};
+  flex-shrink: ${({ $view }) => ($view === 'list' ? '0' : 'unset')};
+  height: auto;
+  margin: 0;
+  padding: ${({ $view }) => ($view === 'list' ? '4px' : '8px')};
+  border: 1px solid ${({ theme }) => theme.colors.border.tertiary};
+  border-radius: ${({ $view }) => ($view === 'list' ? '8px' : IMAGE_RADIUS)};
+  overflow: hidden;
+
+  ${mq.mobile} {
+    width: 100%;
+    flex-shrink: unset;
+    padding: 8px;
+    border-radius: 14px;
+  }
+`
+
+const ImageFrame = styled.div<{ $view?: 'grid' | 'list' }>`
+  position: relative;
   width: 100%;
-  height: 100%;
-  object-fit: contain;
+  height: ${({ $view }) => ($view === 'list' ? '100%' : 'auto')};
+  overflow: clip;
+
+  ${mq.mobile} {
+    height: auto;
+  }
+`
+
+const CardImg = styled.img<{ $view?: 'grid' | 'list' }>`
+  display: block;
+  width: 100%;
+  height: auto;
+  object-fit: cover;
   object-position: center;
+  border-radius: ${({ $view }) => ($view === 'list' ? '4px' : '8px')};
+
+  ${mq.mobile} {
+    border-radius: 8px;
+  }
 `
 
 // ─── Info block ───────────────────────────────────────────────────────────────
 
-const Info = styled.div`
+const Info = styled.div<{ $view?: 'grid' | 'list' }>`
   display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing[3]};
-  width: 100%;
+  flex-direction: ${({ $view }) => ($view === 'list' ? 'row' : 'column')};
+  align-items: ${({ $view }) => ($view === 'list' ? 'center' : 'stretch')};
+  gap: ${({ $view, theme }) => ($view === 'list' ? '0' : theme.spacing[3])};
+  ${({ $view }) => ($view === 'list' ? 'flex: 1; min-width: 0;' : 'width: 100%;')}
+
+  ${mq.mobile} {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+    gap: ${({ theme }) => theme.spacing[3]};
+  }
 `
 
-const TitleGroup = styled.div`
+const TitleGroup = styled.div<{ $view?: 'grid' | 'list' }>`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing[1]};
   width: 100%;
+  ${({ $view }) => ($view === 'list' ? 'flex: 1; min-width: 0;' : '')}
 `
 
 const Title = styled.h3`
@@ -139,11 +178,22 @@ const Desc = styled.p`
 
 // ─── Tags ─────────────────────────────────────────────────────────────────────
 
-const TagRow = styled.div`
+const TagRow = styled.div<{ $view?: 'grid' | 'list' }>`
   display: flex;
   flex-wrap: nowrap;
   gap: 6px;
   align-items: center;
+  ${({ $view }) => ($view === 'list' ? css`
+    margin-left: auto;
+    flex-shrink: 0;
+    align-self: center;
+  ` : '')}
+
+  ${mq.mobile} {
+    margin-left: 0;
+    flex-shrink: unset;
+    align-self: flex-start;
+  }
 `
 
 const Tag = styled.span`

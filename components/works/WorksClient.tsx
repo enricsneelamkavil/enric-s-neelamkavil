@@ -3,7 +3,7 @@
 import { useState, useMemo } from 'react'
 import styled from 'styled-components'
 import { mq } from '@/styles/theme'
-import PageHeader from './PageHeader'
+import PageHeader from '@/components/shared/PageHeader'
 import FilterRow from './FilterRow'
 import FeaturedCard from './FeaturedCard'
 import WorksGrid from './WorksGrid'
@@ -15,6 +15,7 @@ interface Props {
 
 const WorksClient = ({ projects }: Props) => {
   const [activeFilter, setActiveFilter] = useState('all')
+  const [view, setView] = useState<'grid' | 'list'>('grid')
 
   const gridProjects = useMemo(() => {
     if (activeFilter === 'all') return projects
@@ -42,17 +43,24 @@ const WorksClient = ({ projects }: Props) => {
     <PageSections>
       {/* Header + filter tabs + featured card share a tighter gap on mobile */}
       <HeroGroup>
-        <PageHeader />
+        <PageHeader
+          label="WORKS"
+          titleBefore="crafting the "
+          titleMuted="finest"
+          titleAfter=" of all."
+        />
         <FilterRow
           activeFilter={activeFilter}
           onFilterChange={setActiveFilter}
           counts={counts}
           totalShown={totalShown}
+          view={view}
+          onViewChange={setView}
         />
         {showFeatured && <FeaturedCard />}
       </HeroGroup>
 
-      {gridProjects.length > 0 && <WorksGrid projects={gridProjects} />}
+      {gridProjects.length > 0 && <WorksGrid projects={gridProjects} view={view} />}
 
       {gridProjects.length === 0 && !showFeatured && (
         <EmptyState>

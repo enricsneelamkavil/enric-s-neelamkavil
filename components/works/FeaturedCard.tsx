@@ -1,20 +1,17 @@
 import styled from 'styled-components'
 import { mq } from '@/styles/theme'
-import Button from '@/components/common/Button'
 
 // ─── Hardcoded Plush data ─────────────────────────────────────────────────────
 
 const PLUSH = {
   title: 'Plush',
   tagline: 'Your Personalised AI Powered Credit Card Assistant',
-  long_description: 'Plush simplifies the credit card ecosystem through card discovery, comparison, personalised portfolio tracking, and community-driven insights. It\'s the clearest example of how to solve a confusing problem simply, and don\'t make the user do the work of understanding it.',
+  long_description: "Plush simplifies the credit card ecosystem through card discovery, comparison, personalised portfolio tracking, and community-driven insights. Built to replace confusion with clarity, Plush helps users make smarter card decisions without pressure, complexity, or unnecessary financial jargon.",
   role: 'Founder • Designer',
-  timeline: 'In Progress',
+  market: 'Direct-to-Consumer (D2C)',
   tags: ['CASE STUDY', 'FIN TECH', 'APPLICATION'],
   cover_image_url: '/home/works/featured/plush-feature.webp',
   logo_url: '/home/works/featured/plush-logo.svg',
-  cta_label: 'Visit Plush',
-  cta_url: 'https://plush.money',
 } as const
 
 // Logo dimensions (Figma-derived, not in theme)
@@ -33,16 +30,25 @@ const FeaturedCard = () => {
       {/* ── Left content (text side) ─────────────────────────────── */}
       <LeftContent>
 
-        {/* Logo + tagline — always first */}
+        {/* Title+badge+description — shown on both desktop and mobile */}
+        <UpperBlock>
+          <DesktopTitleRow>
+            <PlushTitle>Plush<TitlePeriod>.</TitlePeriod></PlushTitle>
+            <FeaturedBadge>
+              <LaurelIcon />
+              <FeaturedText>Featured</FeaturedText>
+            </FeaturedBadge>
+          </DesktopTitleRow>
+          <Description>{PLUSH.long_description}</Description>
+        </UpperBlock>
+
+        {/* Logo + tagline — hidden everywhere, no equivalent in Figma spec */}
         <LogoBlock>
           <LogoImg src={PLUSH.logo_url} alt={PLUSH.title} />
           <Tagline>{PLUSH.tagline}</Tagline>
         </LogoBlock>
 
-        {/* Description — desktop: 2nd; mobile: 3rd */}
-        <Description>{PLUSH.long_description}</Description>
-
-        {/* Highlights table — desktop: 3rd; mobile: 2nd */}
+        {/* Highlights table (desktop only — hidden on mobile per Figma) */}
         <Highlights>
           {/* Row 1 — Role */}
           <HighlightRow>
@@ -54,13 +60,13 @@ const FeaturedCard = () => {
             </RoleValue>
           </HighlightRow>
 
-          {/* Row 2 — Timeline */}
+          {/* Row 2 — Market */}
           <HighlightRow>
-            <RowLabel>Timeline</RowLabel>
-            <ValueText>{PLUSH.timeline}</ValueText>
+            <RowLabel>Market</RowLabel>
+            <ValueText>{PLUSH.market}</ValueText>
           </HighlightRow>
 
-          {/* Row 3 — Tags (border-bottom + slightly taller padding) */}
+          {/* Row 3 — Tags (no bottom padding) */}
           <HighlightRow $last>
             <RowLabel>Tags</RowLabel>
             <TagContainer>
@@ -70,17 +76,14 @@ const FeaturedCard = () => {
             </TagContainer>
           </HighlightRow>
         </Highlights>
-
-        {/* CTA button — always last */}
-        <CtaWrapper>
-          <Button label={PLUSH.cta_label} href={PLUSH.cta_url} />
-        </CtaWrapper>
       </LeftContent>
 
       {/* ── Cover image (right on desktop, top on mobile) ────────── */}
-      <CoverImageWrap>
-        <CoverImg src={PLUSH.cover_image_url} alt={PLUSH.title} />
-      </CoverImageWrap>
+      <CoverImageOuter>
+        <CoverImageInner>
+          <CoverImg src={PLUSH.cover_image_url} alt={PLUSH.title} />
+        </CoverImageInner>
+      </CoverImageOuter>
     </Card>
   )
 }
@@ -90,11 +93,11 @@ const FeaturedCard = () => {
 const Card = styled.div`
   display: flex;
   align-items: center;
-  gap: ${({ theme }) => theme.spacing[10]};
+  gap: ${({ theme }) => theme.spacing[6]};
   border: 1px solid ${({ theme }) => theme.colors.border.tertiary};
   border-radius: ${({ theme }) => theme.radii['3xl']};
   padding: ${({ theme }) => theme.spacing[6]};
-  overflow: clip;
+  overflow: hidden;
   width: 100%;
   max-width: ${({ theme }) => theme.layout.maxWidth};
 
@@ -111,8 +114,9 @@ const Card = styled.div`
 const LeftContent = styled.div`
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
   gap: ${({ theme }) => theme.spacing[6]};
-  flex: 1;
+  flex: 1 1 0;
   min-width: 0;
   justify-content: center;
 
@@ -122,7 +126,7 @@ const LeftContent = styled.div`
 `
 
 const LogoBlock = styled.div`
-  display: flex;
+  display: none;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing[1]};
   order: 1;
@@ -155,12 +159,7 @@ const Description = styled.p`
   font-weight: ${({ theme }) => theme.fontWeights.light};
   font-size: ${({ theme }) => theme.fontSizes.sm};
   line-height: ${({ theme }) => theme.lineHeights.normal};
-  color: ${({ theme }) => theme.colors.text.primary};
-  order: 2;
-
-  ${mq.mobile} {
-    order: 3;
-  }
+  color: ${({ theme }) => theme.colors.text.secondary};
 `
 
 // ─── Highlights table ────────────────────────────────────────────────────────
@@ -169,10 +168,10 @@ const Highlights = styled.div`
   display: flex;
   flex-direction: column;
   width: 100%;
-  order: 3;
+  order: 2;
 
   ${mq.mobile} {
-    order: 2;
+    display: none;
   }
 `
 
@@ -180,10 +179,8 @@ const HighlightRow = styled.div<{ $last?: boolean }>`
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: ${({ $last }) => ($last ? '14px 0' : '13px 0')};
+  padding: ${({ $last }) => $last ? '12px 0 0' : '12px 0'};
   border-top: 1px solid ${({ theme }) => theme.colors.border.tertiary};
-  ${({ $last, theme }) =>
-    $last && `border-bottom: 1px solid ${theme.colors.border.tertiary};`}
 `
 
 const RowLabel = styled.span`
@@ -257,26 +254,94 @@ const Tag = styled.span`
   white-space: nowrap;
 `
 
-// ─── CTA ─────────────────────────────────────────────────────────────────────
+// ─── Title row + featured badge (shown on both desktop and mobile) ───────────
 
-const CtaWrapper = styled.div`
-  order: 4;
+const UpperBlock = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  order: 1;
+`
+
+const DesktopTitleRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 24px;
+`
+
+const PlushTitle = styled.h3`
+  margin: 0;
+  font-family: ${({ theme }) => theme.fonts.notch};
+  font-weight: ${({ theme }) => theme.fontWeights.medium};
+  font-size: ${({ theme }) => theme.fontSizes.lg};
+  line-height: ${({ theme }) => theme.lineHeights.loose};
+  color: ${({ theme }) => theme.colors.text.primary};
+`
+
+const TitlePeriod = styled.span`
+  color: ${({ theme }) => theme.colors.text.highlight};
+`
+
+const FeaturedBadge = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: ${({ theme }) => `${theme.colors.text.highlight}1a`};
+  border-radius: 4px;
+  flex-shrink: 0;
+`
+
+const LaurelIcon = styled.span`
+  display: block;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  background-color: ${({ theme }) => theme.colors.text.highlight};
+  -webkit-mask: url(/icons/laurel.svg) no-repeat center / contain;
+  mask: url(/icons/laurel.svg) no-repeat center / contain;
+`
+
+const FeaturedText = styled.span`
+  font-family: ${({ theme }) => theme.fonts.sans};
+  font-weight: ${({ theme }) => theme.fontWeights.regular};
+  font-size: ${({ theme }) => theme.fontSizes.xs};
+  line-height: ${({ theme }) => theme.lineHeights.tight};
+  color: ${({ theme }) => theme.colors.text.highlight};
+  white-space: nowrap;
 `
 
 // ─── Cover image ─────────────────────────────────────────────────────────────
 
-const CoverImageWrap = styled.div`
-  position: relative;
-  width: 541px;
-  height: 474px;
-  flex-shrink: 0;
+const CoverImageOuter = styled.div`
+  flex: 0 0 45%;
+  align-self: stretch;
   overflow: hidden;
+  border-radius: ${({ theme }) => theme.radii.xl};
+  position: relative;
 
   ${mq.mobile} {
     order: -1;
+    flex: none;
     width: 100%;
     height: auto;
+    position: relative;
     aspect-ratio: 540 / 473;
+  }
+`
+
+const CoverImageInner = styled.div`
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+
+  ${mq.mobile} {
+    position: relative;
+    width: 100%;
+    padding-top: 87.6%;
   }
 `
 
