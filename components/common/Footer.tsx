@@ -104,12 +104,12 @@ const Footer = () => {
       try {
         const res = await fetch('/api/visitor', { method: 'POST' })
         const data = await res.json()
-        if (data && data.count !== null) {
+        if (data && data.count != null) {
           setVisitorCount(data.count)
-          sessionStorage.setItem('visitorCount', data.count.toString())
+          sessionStorage.setItem('visitorCount', String(data.count))
         }
-      } catch (err) {
-        console.error('Failed to fetch visitor count', err)
+      } catch {
+        // Visitor count is non-critical — fail silently, never break the page.
       }
     }
 

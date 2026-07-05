@@ -9,8 +9,9 @@
 ## Supabase Usage
 - `projects` table — case study content (title, description, tags, cover image URL)
 - `timeline_events` table — professional timeline cards; fetched server-side in `app/about/page.tsx`
+- `visitor_logs` / `visitor_counter` tables — per-IP/day dedup + running total for the visitor counter (see below)
 - Storage bucket — images and assets
-- `/api/visitor` route — POST increments visitor counter, returns `{ count: number }`
+- `/api/visitor` route — POST, dedupes by IP+day via `increment_visitor_count_deduped` RPC, returns `{ count: number }`
 
 ## Folder Structure
 ```
@@ -22,7 +23,7 @@ portfolio/                        # project root
 │   ├── resume/page.tsx           # Resume ✅ Done — 'use client' (zoom state)
 │   ├── contact/page.tsx          # Contact ✅ Done — 'use client', two-column sticky layout
 │   ├── api/
-│   │   ├── visitor/route.ts      # POST — increments visitor counter
+│   │   ├── visitor/route.ts      # POST — dedupes by IP+day, increments visitor counter
 │   │   └── contact/route.ts      # POST — Resend email to enricsneelamkavil@gmail.com
 │   └── layout.tsx                # Global layout (Navbar + Footer + PersonalAgent)
 ├── components/
@@ -86,7 +87,8 @@ portfolio/                        # project root
 │   ├── GlobalStyle.ts            ✅ Done
 │   └── StyledComponentsRegistry.tsx  ✅ Done — SSR fix for styled-components + Next.js
 ├── lib/
-│   ├── supabase.ts               ✅ Done
+│   ├── supabase.ts               ✅ Done — anon-key client, safe for client components / RLS-readable tables
+│   ├── supabaseAdmin.ts          ✅ Done — service-role client, SERVER-ONLY; bypasses RLS (visitor counter)
 │   ├── timeline.ts               ✅ Done — TimelineEvent interface + getTimelineEvents() (orders by sort_order ASC)
 │   ├── medium.ts                 ✅ Done — fetchMediumArticles(); calls rss2json API; returns 3 articles with title/url/thumbnail/readTime
 │   └── pdfWorker.ts              ✅ Done — sets pdfjs worker URL (currently unused; worker set in ResumeCanvasClient.tsx instead)
@@ -268,7 +270,7 @@ export default ComponentName
 **Client component:** `components/about/AboutClient.tsx` — `'use client'`; manages `mode: 'professional' | 'personal'` state + snapping animation
 
 **Behaviour:**
-- Mode persisted to `localStorage` key `portfolio_about_mode` — restored on mount via `useEffect`
+- Mode is plain `useState('professional')` — **no persistence** (no localStorage/sessionStorage). Always resets to professional on page load/refresh; deliberate, don't reintroduce persistence here without being asked.
 - On mode change: `snapping` state fires `scale(0.98)` on ModeContent for 150ms, then snaps back; page scrolls to top smoothly
 - `handleModeChange` wired to both the top `IntroSection` toggle and the bottom `ModeTogglePill`
 
@@ -789,10 +791,71 @@ INSERT INTO timeline_events (title, subtitle, description, photo_url, image_posi
   ('Co-host', 'BEACH HACK 5', 'Co-hosted the 5th edition of the flagship event Beach hackathon aka Beach Hack.', '/about/timeline/card-12-beach-hack.png', 'above', 11);
 ```
 
+## Supabase — Visitor Counter (`visitor_logs` + `visitor_counter`)
+
+Self-contained: dedup log + running total both live here, independent of the older `increment_visitor_count()` RPC (retired — its backing table was never inspectable with the anon key on hand).
+
+```sql
+-- Clean slate in case an earlier draft of this (uuid-keyed visitor_logs,
+-- boolean-keyed visitor_counter, increment_visitor_count_deduped) was ever run.
+drop function if exists increment_visitor_count_deduped(text);
+drop function if exists increment_visitor_unique();
+drop table if exists visitor_logs;
+drop table if exists visitor_counter;
+
+create table visitor_counter (
+  id int primary key default 1,
+  count bigint not null default 243,
+  constraint single_row check (id = 1)
+);
+
+create table visitor_logs (
+  ip text not null,
+  visited_date date not null default current_date,
+  primary key (ip, visited_date)
+);
+
+-- Atomic dedup + increment. Takes p_ip as an explicit parameter rather than
+-- reading current_setting('request.headers') for the caller's IP — this RPC
+-- is called server-to-server from app/api/visitor/route.ts (Next.js → Supabase),
+-- so PostgREST would only ever see OUR server's own request headers there, not
+-- the original site visitor's. route.ts extracts the real IP itself (from
+-- x-forwarded-for / x-real-ip on the INCOMING request to our route) and passes
+-- it in explicitly.
+create or replace function increment_visitor_unique(p_ip text)
+returns bigint
+language plpgsql
+security definer
+as $$
+declare
+  current_count bigint;
+begin
+  insert into visitor_logs (ip, visited_date)
+  values (p_ip, current_date)
+  on conflict (ip, visited_date) do nothing;
+
+  if found then
+    update visitor_counter set count = count + 1 where id = 1;
+  end if;
+
+  select count into current_count from visitor_counter where id = 1;
+  return current_count;
+end;
+$$;
+
+alter table visitor_counter enable row level security;
+alter table visitor_logs enable row level security;
+create policy "Public read counter" on visitor_counter for select using (true);
+create policy "Service role logs" on visitor_logs using (false);
+```
+
+`app/api/visitor/route.ts` calls `increment_visitor_unique(p_ip)` via `getSupabaseAdmin()` in `lib/supabaseAdmin.ts` (lazy service-role client) — not the shared anon-key `lib/supabase.ts` client, since `visitor_logs`'s RLS policy denies anon/authenticated entirely (though the function is `SECURITY DEFINER`, so it'd bypass RLS either way; the service-role client is kept for consistency/defense-in-depth). IP is read from `x-forwarded-for` (first entry, comma-split) falling back to `x-real-ip`, then passed as the `p_ip` argument — never inferred from Postgres/PostgREST request context.
+
 ## Environment Variables
 ```
 NEXT_PUBLIC_SUPABASE_URL=https://rdkhdnbzhuwvthxagzdz.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_630z8GqkaL53xi1EXO_1HQ_VZ-t3EoZ
+SUPABASE_SERVICE_ROLE_KEY=...   # Supabase service role (secret) key — server-only, never NEXT_PUBLIC_. Used by lib/supabaseAdmin.ts (getSupabaseAdmin()) for the visitor counter. Add to Vercel env vars before deploying.
 RESEND_API_KEY=re_...          # Resend API key — add to Vercel env vars before deploying
 ```
 
