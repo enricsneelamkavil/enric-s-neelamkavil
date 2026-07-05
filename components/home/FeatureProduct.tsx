@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import styled from 'styled-components'
 import Button from '@/components/common/Button'
 import SectionLabel from '@/components/shared/SectionLabel'
@@ -30,7 +31,7 @@ const FeatureProduct = () => {
       <Article>
         {/* ── Left: image panel ── */}
         <ImagePanel>
-          <BgImage src={IMG_BG} alt="" />
+          <BgImage src={IMG_BG} alt="" fill sizes="(max-width: 768px) 100vw, 540px" />
         </ImagePanel>
 
         {/* ── Right: content ── */}
@@ -133,11 +134,7 @@ const ImagePanel = styled.div`
   }
 `
 
-const BgImage = styled.img`
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+const BgImage = styled(Image)`
   object-fit: cover;
   object-position: bottom;
 `

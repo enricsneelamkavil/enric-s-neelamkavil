@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import styled from 'styled-components'
 import Button from '@/components/common/Button'
 import SectionLabel from '@/components/shared/SectionLabel'
@@ -7,9 +8,9 @@ import SectionHeader from '@/components/shared/SectionHeader'
 import { mq } from '@/styles/theme'
 
 
-const IMG_URBAN_TRASH = 'home/works/urban-trash.webp'
-const IMG_REPUTE_UP = 'home/works/repute-up.webp'
-const IMG_UNNATHI = 'home/works/unnathi.webp'
+const IMG_URBAN_TRASH = '/home/works/urban-trash.webp'
+const IMG_REPUTE_UP = '/home/works/repute-up.webp'
+const IMG_UNNATHI = '/home/works/unnathi.webp'
 
 // ─── WorkCard sub-component ───────────────────────────────────────────────────
 
@@ -24,6 +25,8 @@ interface WorkCardProps {
   buttonExternal?: boolean
   showcaseImg: string
   showcaseAlt: string
+  showcaseW: number
+  showcaseH: number
 }
 
 const WorkCard = ({
@@ -37,11 +40,19 @@ const WorkCard = ({
   buttonExternal,
   showcaseImg,
   showcaseAlt,
+  showcaseW,
+  showcaseH,
 }: WorkCardProps) => (
   <CardOuter $gradient={gradient}>
     {/* Image: order-1 on desktop, order-0 (first) on mobile via CSS */}
     <ImageArea>
-      <ShowcaseImg src={showcaseImg} alt={showcaseAlt} />
+      <ShowcaseImg
+        src={showcaseImg}
+        alt={showcaseAlt}
+        width={showcaseW}
+        height={showcaseH}
+        sizes="(max-width: 768px) 100vw, 50vw"
+      />
     </ImageArea>
 
     <ProductContainer>
@@ -95,6 +106,8 @@ const MyWorks = () => {
         buttonExternal
         showcaseImg={IMG_URBAN_TRASH}
         showcaseAlt="Urban Trash product showcase"
+        showcaseW={1900}
+        showcaseH={1133}
       />
 
       <WorkCard
@@ -107,6 +120,8 @@ const MyWorks = () => {
         buttonHref="https://www.behance.net/gallery/229810827/ReputeUp-AI-Review-Management-Landing"
         showcaseImg={IMG_REPUTE_UP}
         showcaseAlt="ReputeUp AI product showcase"
+        showcaseW={2000}
+        showcaseH={1011}
       />
 
       <WorkCard
@@ -119,6 +134,8 @@ const MyWorks = () => {
         buttonHref="https://www.behance.net/gallery/177469589/Unnathi-Kerala-Website-Showcase"
         showcaseImg={IMG_UNNATHI}
         showcaseAlt="Unnathi product showcase"
+        showcaseW={1900}
+        showcaseH={1040}
       />
     </Section>
   )
@@ -316,7 +333,7 @@ const ImageArea = styled.div`
   }
 `
 
-const ShowcaseImg = styled.img`
+const ShowcaseImg = styled(Image)`
   display: block;
   width: 100%;
   height: 100%;

@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import styled from 'styled-components'
 import SectionLabel from '@/components/shared/SectionLabel'
 import SectionHeader from '@/components/shared/SectionHeader'
@@ -11,22 +12,22 @@ const AWARDS = [
   {
     name: 'Awwwards Young Jury',
     subtitle: 'Jury Member (2026, 2025)',
-    logo: 'home/awards-logos/awwwards.svg',
+    logo: '/home/awards-logos/awwwards.svg',
   },
   {
     name: 'Awwwards Honors',
     subtitle: 'enric.design (2025)',
-    logo: 'home/awards-logos/awwwards.svg',
+    logo: '/home/awards-logos/awwwards.svg',
   },
   {
     name: 'Config APAC Attendee',
     subtitle: 'Singapore (2024)',
-    logo: 'home/awards-logos/figma.svg',
+    logo: '/home/awards-logos/figma.svg',
   },
   {
     name: 'Huddle Designers Award',
     subtitle: 'Kelp Kookies (2023)',
-    logo: 'home/awards-logos/ksum.svg',
+    logo: '/home/awards-logos/ksum.svg',
   },
 ] as const
 
@@ -41,7 +42,7 @@ interface AwardCardProps {
 const AwardCard = ({ name, subtitle, logo }: AwardCardProps) => (
   <CardWrapper>
     <GarlandWrapper>
-      <GarlandImg src={IMG_GARLAND} alt="" />
+      <GarlandImg src={IMG_GARLAND} alt="" fill sizes="152px" />
     </GarlandWrapper>
     <AwardLogo src={logo} alt={name} />
     <AwardInfo>
@@ -147,13 +148,8 @@ const GarlandWrapper = styled.div`
   flex-shrink: 0;
 `
 
-const GarlandImg = styled.img`
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+const GarlandImg = styled(Image)`
   object-position: bottom;
-  max-width: none;
   pointer-events: none;
 `
 

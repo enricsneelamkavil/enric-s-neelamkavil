@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import Image from 'next/image'
 import styled from 'styled-components'
 import { mq } from '@/styles/theme'
 import SectionLabel from '@/components/shared/SectionLabel'
@@ -86,7 +87,7 @@ const WritingSection = () => {
             $first={i === 0}
           >
             {thumbnail
-              ? <ThumbnailImg src={thumbnail} alt="" />
+              ? <ThumbnailImg src={thumbnail} alt="" width={THUMBNAIL_SIZE} height={THUMBNAIL_SIZE} />
               : <ThumbnailPlaceholder />
             }
             <ArticleInfo>
@@ -219,7 +220,7 @@ const ThumbnailPlaceholder = styled.div`
   background: ${({ theme }) => theme.colors.surface.tertiary};
 `
 
-const ThumbnailImg = styled.img`
+const ThumbnailImg = styled(Image)`
   ${ThumbnailBase}
 `
 

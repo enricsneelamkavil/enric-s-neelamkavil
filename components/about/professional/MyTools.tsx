@@ -1,6 +1,7 @@
 'use client'
 
 import { useState } from 'react'
+import Image from 'next/image'
 import styled from 'styled-components'
 import { mq } from '@/styles/theme'
 
@@ -63,7 +64,7 @@ const MyTools = () => {
           >
             {tool.variant === 'flat'
               ? <FlatImg src={tool.src} alt={tool.name} />
-              : <RoundedBox $shadow={tool.shadow!}><FitImg src={tool.src} alt={tool.name} /></RoundedBox>
+              : <RoundedBox $shadow={tool.shadow!}><FitImg src={tool.src} alt={tool.name} fill sizes="64px" /></RoundedBox>
             }
           </IconSlot>
         ))}
@@ -74,7 +75,7 @@ const MyTools = () => {
           <MobileCell key={tool.name} title={tool.name}>
             {tool.variant === 'flat'
               ? <FlatImg src={tool.src} alt={tool.name} />
-              : <RoundedBox $shadow={tool.shadow!}><FitImg src={tool.src} alt={tool.name} /></RoundedBox>
+              : <RoundedBox $shadow={tool.shadow!}><FitImg src={tool.src} alt={tool.name} fill sizes="64px" /></RoundedBox>
             }
           </MobileCell>
         ))}
@@ -146,11 +147,7 @@ const RoundedBox = styled.div<{ $shadow: string }>`
   position: relative;
 `
 
-const FitImg = styled.img`
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+const FitImg = styled(Image)`
   object-fit: cover;
   border-radius: 25%;
   pointer-events: none;

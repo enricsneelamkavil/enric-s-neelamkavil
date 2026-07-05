@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import styled from 'styled-components'
 import { mq } from '@/styles/theme'
 import SectionLabel from '@/components/shared/SectionLabel'
@@ -32,7 +33,7 @@ interface AwardCardProps {
 const AwardCard = ({ name, subtitle, seal }: AwardCardProps) => (
   <CardWrapper>
     <SealBox>
-      <SealImg src={seal} alt={name} />
+      <SealImg src={seal} alt={name} fill sizes="120px" />
     </SealBox>
     <AwardInfo>
       <AwardName>{name}</AwardName>
@@ -138,14 +139,9 @@ const SealBox = styled.div`
   flex-shrink: 0;
 `
 
-const SealImg = styled.img`
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+const SealImg = styled(Image)`
   object-fit: cover;
   pointer-events: none;
-  display: block;
 `
 
 const AwardInfo = styled.div`

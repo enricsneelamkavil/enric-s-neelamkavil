@@ -29,6 +29,7 @@ const ModeTogglePill = ({ mode, onModeChange }: Props) => {
   const isDraggingRef = useRef(false)
   const dragXRef      = useRef(0)
   const maxDragRef    = useRef(200)
+  const circWRef      = useRef(CIRCLE_D)
 
   const [dragX,      setDragX]      = useState(0)
   const [isDragging, setIsDragging] = useState(false)
@@ -45,10 +46,13 @@ const ModeTogglePill = ({ mode, onModeChange }: Props) => {
 
   // Use clientWidth for inner pill space and offsetWidth for outer circle box
   // This ensures exact 6px right padding at the end position without border discrepancies
+  // Both reads happen only here (mount/resize/pointerdown) — never during the move
+  // handler or render body, which would force a synchronous reflow on every drag frame.
   const calculateMaxDrag = useCallback(() => {
     if (!pillRef.current || !circleRef.current) return 200
     const pillW = pillRef.current.clientWidth
     const circW = circleRef.current.offsetWidth
+    circWRef.current = circW
     return Math.max(1, pillW - circW - PAD * 2)
   }, [])
 
@@ -97,7 +101,7 @@ const ModeTogglePill = ({ mode, onModeChange }: Props) => {
     }
   }
 
-  const circW = circleRef.current?.offsetWidth ?? CIRCLE_D
+  const circW = circWRef.current
   const maxD = maxDragRef.current || 200
   const progress = Math.min(1, Math.max(0, dragX / maxD))
 

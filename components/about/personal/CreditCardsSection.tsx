@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useRef } from 'react'
+import Image from 'next/image'
 import styled from 'styled-components'
 import { mq } from '@/styles/theme'
 import SectionLabel from '@/components/shared/SectionLabel'
@@ -105,7 +106,7 @@ const CreditCardsSection = () => {
         <CardStack>
           {CARDS.map(({ key, src, alt }, i) => (
             <DesktopCard key={key} $zIndex={TOTAL - i} $last={i === TOTAL - 1}>
-              <img src={src} alt={alt} draggable={false} />
+              <Image src={src} alt={alt} draggable={false} fill sizes="(max-width: 768px) 0px, 20vw" />
             </DesktopCard>
           ))}
         </CardStack>
@@ -136,7 +137,7 @@ const CreditCardsSection = () => {
               onPointerUp={isTop ? handlePointerUp : undefined}
               onPointerCancel={isTop ? handlePointerUp : undefined}
             >
-              <img src={card.src} alt={card.alt} draggable={false} />
+              <Image src={card.src} alt={card.alt} draggable={false} fill sizes="(max-width: 768px) 100vw, 0px" />
             </MobileCard>
           )
         })}

@@ -1,6 +1,7 @@
 'use client'
 
 import { useRef, useState, useEffect, useCallback } from 'react'
+import Image from 'next/image'
 import styled from 'styled-components'
 import { mq } from '@/styles/theme'
 import { type TimelineEvent } from '@/lib/timeline'
@@ -25,7 +26,7 @@ const IMG_ARROW_RIGHT = '/icons/arrow-right.svg'
 
 const CardPhoto = ({ photoUrl }: { photoUrl: string }) => (
   <PhotoWrap>
-    <PhotoImg alt="" src={photoUrl} />
+    <PhotoImg alt="" src={photoUrl} fill sizes="(max-width: 768px) 200px, 264px" />
   </PhotoWrap>
 )
 
@@ -265,12 +266,7 @@ const PhotoWrap = styled.div`
   }
 `
 
-const PhotoImg = styled.img`
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  max-width: none;
+const PhotoImg = styled(Image)`
   border-radius: inherit;
   pointer-events: none;
   object-fit: cover;

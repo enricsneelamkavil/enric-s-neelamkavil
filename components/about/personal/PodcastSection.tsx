@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import styled from 'styled-components'
 import { mq } from '@/styles/theme'
 import SectionLabel from '@/components/shared/SectionLabel'
@@ -65,7 +66,7 @@ const PodcastSection = () => (
                 rel="noopener noreferrer"
                 aria-label={name}
               >
-                <img src={src} alt={name} draggable={false} />
+                <Image src={src} alt={name} draggable={false} fill sizes="40px" />
               </PlatformLink>
             ))}
           </PlatformsRow>
@@ -106,7 +107,7 @@ const ContentRow = styled.div`
   }
 `
 
-const PodcastLogo = styled.img`
+const PodcastLogo = styled(Image)`
   display: block;
   width: ${LOGO_SIZE}px;
   height: ${LOGO_SIZE}px;
@@ -168,6 +169,7 @@ const PlatformsRow = styled.div`
 `
 
 const PlatformLink = styled.a`
+  position: relative;
   display: block;
   width: ${PLATFORM_SIZE_DESKTOP}px;
   height: ${PLATFORM_SIZE_DESKTOP}px;

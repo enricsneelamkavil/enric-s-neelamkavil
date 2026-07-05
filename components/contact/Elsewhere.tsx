@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import styled from 'styled-components'
 import { mq } from '@/styles/theme'
 
@@ -17,13 +18,13 @@ const PLATFORMS: Platform[][] = [
     {
       name: 'LinkedIn',
       handle: 'enricsneelamkavil',
-      icon: 'app-icons/linkedin.webp',
+      icon: '/app-icons/linkedin.webp',
       href: 'https://www.linkedin.com/in/enricsneelamkavil/',
     },
     {
       name: 'Instagram',
       handle: 'enricsneelamkavil',
-      icon: 'app-icons/instagram.webp',
+      icon: '/app-icons/instagram.webp',
       href: 'https://www.instagram.com/enricsneelamkavil/',
     },
   ],
@@ -91,7 +92,7 @@ const Elsewhere = () => (
               aria-label={`${name} — ${handle}`}
             >
               <IconWrap>
-                <img src={icon} alt={name} draggable={false} />
+                <Image src={icon} alt={name} draggable={false} fill sizes="40px" />
               </IconWrap>
               <Details>
                 <PlatformName>{name}</PlatformName>

@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import styled from 'styled-components'
 import { mq } from '@/styles/theme'
 
@@ -81,7 +82,13 @@ const FeaturedCard = () => {
       {/* ── Cover image (right on desktop, top on mobile) ────────── */}
       <CoverImageOuter>
         <CoverImageInner>
-          <CoverImg src={PLUSH.cover_image_url} alt={PLUSH.title} />
+          <CoverImg
+            src={PLUSH.cover_image_url}
+            alt={PLUSH.title}
+            fill
+            priority
+            sizes="(max-width: 768px) 100vw, 45vw"
+          />
         </CoverImageInner>
       </CoverImageOuter>
     </Card>
@@ -345,11 +352,7 @@ const CoverImageInner = styled.div`
   }
 `
 
-const CoverImg = styled.img`
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+const CoverImg = styled(Image)`
   object-fit: cover;
 `
 

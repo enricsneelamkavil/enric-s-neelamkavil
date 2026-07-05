@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import styled from 'styled-components'
 import { mq } from '@/styles/theme'
 
@@ -10,9 +11,14 @@ const PHOTO = {
   personal: '/about/personal/header.webp',
 }
 
+// Native photo dims (both mode photos share this size) — used for Next/Image's
+// intrinsic sizing; CSS below still controls the actual rendered size.
+const PHOTO_W = 1900
+const PHOTO_H = 469
+
 const HeaderImage = ({ mode }: Props) => (
   <Wrapper>
-    <Photo src={PHOTO[mode]} alt="" aria-hidden />
+    <Photo src={PHOTO[mode]} alt="" aria-hidden width={PHOTO_W} height={PHOTO_H} priority sizes="100vw" />
   </Wrapper>
 )
 
@@ -28,7 +34,7 @@ const Wrapper = styled.div`
   }
 `
 
-const Photo = styled.img`
+const Photo = styled(Image)`
   width: 100%;
   height: auto;
   display: block;

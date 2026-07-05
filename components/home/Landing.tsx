@@ -1,5 +1,6 @@
 'use client'
 
+import Image from 'next/image'
 import styled, { keyframes } from 'styled-components'
 import { mq } from '@/styles/theme'
 
@@ -21,7 +22,7 @@ const LOGO_PATHS = [
   '/home/company-logos/opengrad-logo.svg',
   '/home/company-logos/deep5-logo.svg',
   '/home/company-logos/mulearn-logo.svg',
-  'home/company-logos/reputeup-logo.svg',
+  '/home/company-logos/reputeup-logo.svg',
 ] as const
 
 // ─── Animation ───────────────────────────────────────────────────────────────
@@ -60,6 +61,9 @@ const Landing = () => {
           <PhotoFill
             src={IMG_LEFT}
             alt="Close-up of lush green foliage and terracotta roof tiles"
+            fill
+            priority
+            sizes="(max-width: 768px) 33vw, (max-width: 1024px) 33vw, 380px"
           />
         </PhotoPanel>
 
@@ -67,6 +71,9 @@ const Landing = () => {
           <PhotoFill
             src={IMG_MAIN}
             alt="Portrait of Enric S Neelamkavil"
+            fill
+            priority
+            sizes="(max-width: 768px) 33vw, (max-width: 1024px) 33vw, 380px"
           />
         </PhotoPanel>
 
@@ -74,6 +81,9 @@ const Landing = () => {
           <PhotoFill
             src={IMG_RIGHT}
             alt="Close-up of large tropical leaves"
+            fill
+            priority
+            sizes="(max-width: 768px) 33vw, (max-width: 1024px) 33vw, 380px"
           />
         </PhotoPanel>
       </PhotoRow>
@@ -256,11 +266,7 @@ const PhotoPanel = styled.div`
   }
 `
 
-const PhotoFill = styled.img`
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
+const PhotoFill = styled(Image)`
   object-fit: cover;
   object-position: bottom;
 `
