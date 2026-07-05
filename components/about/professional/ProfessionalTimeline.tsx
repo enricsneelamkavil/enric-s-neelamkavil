@@ -60,6 +60,38 @@ const ProfessionalTimeline = ({ events }: Props) => {
   const handleScrollLeft  = () => scrollRef.current?.scrollBy({ left: -getStep(), behavior: 'smooth' })
   const handleScrollRight = () => scrollRef.current?.scrollBy({ left:  getStep(), behavior: 'smooth' })
 
+  // ── Pointer drag-to-scroll (desktop mouse only — touch already scrolls
+  // natively via overflow-x + -webkit-overflow-scrolling, so it's left alone
+  // to keep its native momentum instead of fighting it with JS) ─────────────
+  const [isDragging, setIsDragging] = useState(false)
+  const isDraggingRef = useRef(false)
+  const startXRef = useRef(0)
+  const scrollLeftStartRef = useRef(0)
+
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (e.pointerType !== 'mouse') return
+    const el = scrollRef.current
+    if (!el) return
+    el.setPointerCapture(e.pointerId)
+    isDraggingRef.current = true
+    startXRef.current = e.clientX
+    scrollLeftStartRef.current = el.scrollLeft
+    setIsDragging(true)
+  }
+
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    if (!isDraggingRef.current) return
+    const el = scrollRef.current
+    if (!el) return
+    el.scrollLeft = scrollLeftStartRef.current - (e.clientX - startXRef.current)
+  }
+
+  const handlePointerUp = () => {
+    if (!isDraggingRef.current) return
+    isDraggingRef.current = false
+    setIsDragging(false)
+  }
+
   return (
     <Section>
 
@@ -78,7 +110,15 @@ const ProfessionalTimeline = ({ events }: Props) => {
         </DesktopNavButtons>
       </TitleRow>
 
-      <ScrollWrapper ref={scrollRef}>
+      <ScrollWrapper
+        ref={scrollRef}
+        $isDragging={isDragging}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
+        onPointerLeave={handlePointerUp}
+      >
         <ScrollTrack>
           {events.map((event) => (
             <EventCard key={event.id}>
@@ -204,12 +244,14 @@ const NavIcon = styled.img`
 
 // ── Scroll area ───────────────────────────────────────────────────────────────
 
-const ScrollWrapper = styled.div`
+const ScrollWrapper = styled.div<{ $isDragging: boolean }>`
   width: calc(100% + (100vw - 100%) / 2);
   overflow-x: auto;
   scrollbar-width: none;
   &::-webkit-scrollbar { display: none; }
   -webkit-overflow-scrolling: touch;
+  cursor: ${({ $isDragging }) => ($isDragging ? 'grabbing' : 'grab')};
+  user-select: ${({ $isDragging }) => ($isDragging ? 'none' : 'auto')};
 
   ${mq.tablet} {
     width: calc(100% + 24px);

@@ -381,13 +381,12 @@ PageSections (gap: 32px desktop / 24px tablet / 24px mobile)
 - Accepts `events: TimelineEvent[]` prop from `AboutClient` (fetched server-side)
 - 12-card horizontal scroll; cards 264px desktop / 200px mobile; photos 169px tall desktop / 128px mobile
 - `image_position: 'above' | 'below'` per card (from DB) controls content/photo stacking order
-- Photo crops via `CROP_MAP` keyed by `photo_url` — stores CSS positioning data for 5 cards that need non-standard cropping (graduation, designers award, CODe design week, GTech MuLearn, Young Jury portrait)
-- `getCrop(photoUrl)` returns `CROP_MAP[url] ?? { kind: 'simple' }` — default is `object-bottom` cover
+- **No per-card crop overrides** — `CROP_MAP` was removed entirely. Every photo uses uniform `PhotoImg` (`next/image`, `fill`) with `object-fit: cover; object-position: center`. If a future photo needs a non-standard crop, that's a fresh decision, not something to restore from history.
 - Desktop nav in TitleRow (hidden on mobile); mobile nav row below scroll track (hidden on desktop)
+- **Drag-to-scroll**: `ScrollWrapper` also supports pointer drag-scrolling on desktop (mouse only — gated on `e.pointerType === 'mouse'` so native touch momentum scrolling isn't fought by JS). `onPointerDown` captures the pointer and records `startX`/`scrollLeft`; `onPointerMove` writes `el.scrollLeft` directly from refs (no React state per frame — only `isDragging` is state, for cursor/`user-select` styling). Works alongside the existing nav buttons — both drive the same `scrollRef`.
 - `ScrollWrapper`: `width: calc(100% + (100vw - 100%) / 2)` bleeds to viewport right edge
 - TitleBlock: `SectionLabel("MY JOURNEY 2022 → 2026")` + `SectionHeader("Being through so far.")`
-- **Timeline images: stored in Supabase Storage, not in `public/` — no local assets needed.** Live `photo_url` values are full Storage URLs (`https://rdkhdnbzhuwvthxagzdz.supabase.co/storage/v1/object/public/images/about/personal/timeline/{name}.webp`), e.g. `awwwards.webp`, `graduation.webp`, `figma-blr.webp` — not the `/about/timeline/card-NN-*.png` local paths shown in the INSERT SQL below.
-> ⚠️ `CROP_MAP`'s keys (`/about/timeline/card-02-graduation.png` etc.) no longer match the live `photo_url` values, so the 4 positioned-crop overrides (graduation, designers award, CODe design week, GTech MuLearn) are currently falling through to the default `simple` crop instead of applying. The INSERT SQL further below is also stale — it reflects local paths, not what's actually in the table now. Neither has been touched here; flagging for a decision on whether to update `CROP_MAP` keys to the new Storage URLs.
+- **Timeline images: stored in Supabase Storage, not in `public/` — no local assets needed.** Live `photo_url` values are full Storage URLs (`https://rdkhdnbzhuwvthxagzdz.supabase.co/storage/v1/object/public/images/about/personal/timeline/{name}.webp`), e.g. `awwwards.webp`, `graduation.webp`, `figma-blr.webp` — not the `/about/timeline/card-NN-*.png` local paths shown in the INSERT SQL further below (that SQL block is historical/stale — don't re-run it against the live table).
 
 ---
 
@@ -470,6 +469,7 @@ PageSections (pt: 140px desktop / 6rem tablet / 40px mobile)
 #### PageHeader.tsx ✅
 - Centered "Resume." title — period in `colors.text.secondary`
 - Subtitle "The one pager" — `fonts.sans` regular, `fontSizes.sm` desktop / `fontSizes.xs` mobile
+- `action`: dark `DownloadBtn` (`<a download>` to `/resume.pdf`) — icon is `<img src="/icons/download.svg">` (not an inline SVG), tinted white via `filter: brightness(0) invert(1)` per the standard `/icons/` color convention (default fill is `text.secondary`)
 
 #### ResumeCanvas.tsx ✅
 - Thin `next/dynamic` wrapper — imports `ResumeCanvasClient` with `ssr: false`
@@ -481,7 +481,8 @@ PageSections (pt: 140px desktop / 6rem tablet / 40px mobile)
 - **Worker:** `pdfjs.GlobalWorkerOptions.workerSrc = \`https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs\`` — set at module level (safe because this file is never server-evaluated)
 - Import `'react-pdf/dist/Page/TextLayer.css'` for text selection layer
 - **No zoom** — renders two fixed-width `Page` instances side by side in the DOM (`DesktopPage` at `CARD_W = 820px`, `MobilePage` at `MOBILE_W = 300px`), toggled via `display: none` in `mq.mobile` rather than a resize listener or CSS transform
-- `loading={<></>}` on `Document` and both `Page`s — suppresses flash
+- **Loading placeholder (no layout jump):** `Canvas` wrapper has a fixed `width` + `aspect-ratio: 820/1160`, reserving the card's final footprint before the PDF loads. `Placeholder` (surface.tertiary, pulsing opacity 0.6↔1 via `keyframes`) and `ContentLayer` (the actual `Document`/`Page`s) are absolutely stacked inside it and cross-fade via opacity, driven by a `loaded` state flipped in `onLoadSuccess` on `<Document>`. The red glow `box-shadow` lives once on `Canvas` itself, not on the inner layers — a child's box-shadow would get clipped by the parent's `overflow: hidden`.
+- `loading={<></>}` on `Document` and both `Page`s — suppresses react-pdf's own flash
 - `onError` on `Document` logs to console for diagnosis
 - PDF asset: `public/resume.pdf` — place manually
 
@@ -642,6 +643,29 @@ PageSections (pt: 140px desktop / 6rem tablet / 40px mobile, gap: 40px)
 
 ---
 
+## Images — `next/image` convention
+
+Raster photo/logo images (`.webp`, `.png`, `.jpg`) use `next/image`, not plain `<img>`. Decorative/UI SVGs do not — see exceptions below.
+
+**Pattern by case:**
+- **Above-the-fold** (Landing hero photos, Works `FeaturedCard` cover, About `HeaderImage` banner): `priority` prop, eager-loaded.
+- **Parent already sized (fixed dimensions, `position: relative`)**: `fill` prop + `sizes`. This is the default for anything that was previously a `position: absolute; inset: 0` raw `<img>` — same positioning strategy, just via `next/image`.
+- **Known static intrinsic dimensions** (`MyWorks` showcase images, `HeaderImage`, `WritingSection` Medium thumbnails): explicit `width`/`height` instead of `fill` — used wherever the existing CSS relies on natural/hybrid sizing (e.g. `height: auto` at some breakpoints) that `fill` would break.
+- Styled via `styled(Image)` (not `styled.img`) when the site needs styled-components theme access — `next/image` still renders a real `<img>` under the hood, so nested `img { ... }` CSS selectors and `filter`/`object-fit` overrides keep working unchanged.
+
+**Exceptions — left as plain `<img>` / `styled.img`, do not convert:**
+- Any SVG source, regardless of folder (`/icons/`, `/app-icons/`, `/shapes/`, `/about/**/travel/*.svg`, company/tool logos, etc.) — `next/image`'s optimization pipeline provides no benefit for vector assets and requires extra `dangerouslyAllowSVG` config to even pass through.
+- `works/WorkCard.tsx`'s `CardImg` (`project.cover_image_url`) — Supabase-uploaded, arbitrary aspect ratio, and the grid intentionally lets each card take its image's natural height (`height: auto`). Converting would require forcing a fixed aspect-ratio onto `ImageFrame`, cropping any future upload that doesn't match it. Deliberately left alone.
+- `ResumeCanvasClient.tsx`'s PDF canvas (react-pdf renders to `<canvas>`, not an image).
+
+**`next.config.ts` → `images.remotePatterns`:**
+- `rdkhdnbzhuwvthxagzdz.supabase.co` (`/storage/v1/object/**`) — covers both `projects.cover_image_url` (signed URLs) and `timeline_events.photo_url` (public URLs)
+- `cdn-images-1.medium.com`, `miro.medium.com` — Medium's own CDN hosts, for `WritingSection.tsx`'s article thumbnails
+
+> ⚠️ `WritingSection.tsx`'s thumbnail source isn't fully predictable — `lib/medium.ts`'s fallback logic can grab the first `<img>` src from arbitrary RSS post content, not just Medium's own CDN. `next/image` throws a hard runtime error for a hostname not in `remotePatterns` (unlike a plain `<img>`, which just silently 404s). The two Medium hosts above cover the hardcoded fallback articles and most real Medium-hosted images, but a genuinely third-party-hosted thumbnail would still error. Accepted risk — flagged here so a future crash from this is easy to trace back.
+
+---
+
 ## Asset Paths
 
 ### Professional About
@@ -659,7 +683,7 @@ public/about/professional/
     ├── fundesigns-icon.svg
     └── freelance-icon.svg     # 28×28 design-tools scissors icon (for Freelance entry)
 ```
-**Timeline images: stored in Supabase Storage, not in `public/` — no local assets needed.** There is no `public/about/timeline/` folder; `ProfessionalTimeline.tsx` renders `event.photo_url` straight from the `timeline_events` table, which holds full Supabase Storage URLs for all 12 events. See the `ProfessionalTimeline.tsx` section above for the `CROP_MAP` staleness note.
+**Timeline images: stored in Supabase Storage, not in `public/` — no local assets needed.** There is no `public/about/timeline/` folder; `ProfessionalTimeline.tsx` renders `event.photo_url` straight from the `timeline_events` table, which holds full Supabase Storage URLs for all 12 events.
 
 > `components/about/professional/ProfileImage.tsx` was removed at some point (only `HeaderImage.tsx`, `Journey.tsx`, `MyTools.tsx`, `ProfessionalTimeline.tsx` remain in this folder) — it and its assets (`icons/icon-1.svg…icon-6.svg`, `bullet-shimmer.svg`, `bullet-dot.svg`, `bullet-container.svg`, `profile-group.png`) are gone and no longer documented. The composition tree above already reflects this (no `ProfileImage`/`ProfileImageWrapper` step).
 
@@ -746,9 +770,9 @@ create policy "Public read" on timeline_events
 
 **Sort order convention:** lowest `sort_order` = newest (shown first in scroll). To prepend a new event, give it sort_order 0 and increment all others, or insert with sort_order -1.
 
-**Photo crop overrides** live in `CROP_MAP` inside `ProfessionalTimeline.tsx` keyed by `photo_url`. Default crop is `object-bottom cover`. Add an entry to `CROP_MAP` when a new event photo needs portrait or positioned cropping.
+**Photo cropping:** uniform for every card — `object-fit: cover; object-position: center` via `PhotoImg` in `ProfessionalTimeline.tsx`. There is no per-photo override mechanism anymore (`CROP_MAP` was removed).
 
-**INSERT SQL for 12 current events:**
+**⚠️ INSERT SQL below is historical/stale** — it shows the local `/about/timeline/card-NN-*.png` paths from before the table was migrated to Supabase Storage URLs. Do not re-run this against the live table; it would overwrite working `photo_url` values with broken local paths. Kept for reference on column structure only.
 ```sql
 INSERT INTO timeline_events (title, subtitle, description, photo_url, image_position, sort_order) VALUES
   ('Young Jury 2025', 'Awwwards.', 'Selected as a jury member, evaluating and rating top digital designs globally.', '/about/timeline/card-01-young-jury.png', 'below', 0),
