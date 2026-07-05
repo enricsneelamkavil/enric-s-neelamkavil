@@ -5,6 +5,7 @@ import {
 } from 'next/font/google'
 import { GlimmProvider } from 'glimm/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
+import { Analytics } from '@vercel/analytics/next'
 import StyledComponentsRegistry from '@/styles/StyledComponentsRegistry'
 import Layout from '@/components/common/Layout'
 import './globals.css'
@@ -65,6 +66,7 @@ export default function RootLayout({
           </StyledComponentsRegistry>
         </GlimmProvider>
         <SpeedInsights />
+        <Analytics />
       </body>
     </html>
   )
