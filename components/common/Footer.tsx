@@ -218,7 +218,7 @@ const FooterWrapper = styled.footer`
   background: linear-gradient(
     to top,
     ${({ theme }) => theme.colors.surface.highlight} 280px,
-    #FFFFFF calc(50% + 140px)
+    ${({ theme }) => theme.colors.background.primary} calc(50% + 140px)
   );
   display: flex;
   flex-direction: column;

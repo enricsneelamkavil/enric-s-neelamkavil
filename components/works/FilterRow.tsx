@@ -194,7 +194,8 @@ const ViewIcon = styled.span<{ $active: boolean; $icon: 'grid' | 'list' }>`
   width: 16px;
   height: 16px;
   flex-shrink: 0;
-  background-color: ${({ $active }) => ($active ? '#ffffff' : '#5C5C5C')};
+  background-color: ${({ $active, theme }) =>
+    $active ? theme.colors.icon.inverse : theme.colors.icon.secondary};
   -webkit-mask: ${({ $icon }) => `url(/icons/${$icon}.svg) no-repeat center / contain`};
   mask: ${({ $icon }) => `url(/icons/${$icon}.svg) no-repeat center / contain`};
 `

@@ -48,15 +48,12 @@ portfolio/                        # project root
 │   │   ├── professional/
 │   │   │   ├── HeaderImage.tsx                   ✅ Done — accepts mode prop; shows different photo per mode; object-fit cover
 │   │   │   ├── IntroSection.tsx                  ✅ Done — title, subtitle, professional/personal mode toggle
-│   │   │   ├── ProfileImage.tsx                  ✅ Done — accepts mode prop; different photo + icons per mode
 │   │   │   ├── MyTools.tsx                       ✅ Done — desktop dock + separate MobileGrid (6×2 static grid)
 │   │   │   ├── Journey.tsx                       ✅ Done — CAREER LADDER label, 3 entries: UST + FunDesigns + Freelance
 │   │   │   └── ProfessionalTimeline.tsx          ✅ Done — 12-card horizontal scroll; Supabase-connected; accepts events prop
 │   │   └── personal/
 │   │       ├── PersonalAboutDescription.tsx      ✅ Done — personal bio + To Do List widget
-│   │       ├── TravelSection.tsx                 ✅ Done — travel title, desktop map, mobile flags/stats, albums
-│   │       ├── TravelMap.tsx                     ✅ Done — next/dynamic SSR wrapper for TravelMapClient
-│   │       ├── TravelMapClient.tsx               ✅ Done — draggable map canvas with pins, flags, stats
+│   │       ├── TravelSection.tsx                 ✅ Done — "Travel Passport": stamp seals grid + count-up stats + CTA (same on all breakpoints, no map)
 │   │       ├── WorkDeskSection.tsx               ✅ Done — desk photo + gear inventory list
 │   │       ├── PodcastSection.tsx                ✅ Done — podcast logo, description, platform links
 │   │       ├── WritingSection.tsx                ✅ Done — 'use client'; Medium RSS articles; fallback-first loading
@@ -70,10 +67,8 @@ portfolio/                        # project root
 │   │   └── WorksClient.tsx       ✅ Done — 'use client', filter state, Supabase fetch
 │   ├── resume/
 │   │   ├── PageHeader.tsx        ✅ Done — centered "Resume." title + subtitle
-│   │   ├── Toolbar.tsx           ✅ Done — PDF metadata + zoom/print (desktop only)
 │   │   ├── ResumeCanvas.tsx      ✅ Done — next/dynamic wrapper (ssr: false) for SSR safety
-│   │   ├── ResumeCanvasClient.tsx ✅ Done — all react-pdf code, client-only
-│   │   └── DownloadSection.tsx   ✅ Done — dark card, Download + Email Enric CTAs
+│   │   └── ResumeCanvasClient.tsx ✅ Done — all react-pdf code, client-only
 │   ├── contact/
 │   │   ├── PageHeader.tsx        ✅ Done — centered "Contact Me." title + "Let's talk" subtitle
 │   │   ├── EnquiryForm.tsx       ✅ Done — 'use client', chips + fields + Resend API submission
@@ -119,14 +114,11 @@ portfolio/                        # project root
 - `components/about/common/AwardShelf.tsx` ✅
 - `components/about/professional/HeaderImage.tsx` ✅
 - `components/about/professional/IntroSection.tsx` ✅
-- `components/about/professional/ProfileImage.tsx` ✅
 - `components/about/professional/MyTools.tsx` ✅
 - `components/about/professional/Journey.tsx` ✅
 - `components/about/professional/ProfessionalTimeline.tsx` ✅
 - `components/about/personal/PersonalAboutDescription.tsx` ✅
 - `components/about/personal/TravelSection.tsx` ✅
-- `components/about/personal/TravelMap.tsx` ✅
-- `components/about/personal/TravelMapClient.tsx` ✅
 - `components/about/personal/WorkDeskSection.tsx` ✅
 - `components/about/personal/PodcastSection.tsx` ✅
 - `components/about/personal/WritingSection.tsx` ✅
@@ -138,10 +130,8 @@ portfolio/                        # project root
 - `components/works/WorksGrid.tsx` ✅
 - `components/works/WorksClient.tsx` ✅
 - `components/resume/PageHeader.tsx` ✅
-- `components/resume/Toolbar.tsx` ✅
 - `components/resume/ResumeCanvas.tsx` ✅
 - `components/resume/ResumeCanvasClient.tsx` ✅
-- `components/resume/DownloadSection.tsx` ✅
 - `components/contact/PageHeader.tsx` ✅
 - `components/contact/EnquiryForm.tsx` ✅
 - `components/contact/DirectContact.tsx` ✅
@@ -169,7 +159,6 @@ export const mq = {
 - `MyWorks WorkCard`: side-by-side at tablet AND desktop — stacks only on mobile
 - `Footer InfoRow`: `flex-wrap: wrap` at tablet
 - Full-bleed horizontal scroll (albums, awards): use `overflow-x: auto; scroll-snap-type: x mandatory` on container, `scroll-snap-align: start; flex-shrink: 0` on cards — no negative-margin bleed escapes
-- Travel map desktop canvas hides at `mq.tabletDown` (≤1024px), not just mobile
 - Contact two-column layout collapses at `mq.tabletDown` (≤1024px) — right col (500px) + gap leaves left col too narrow at tablet
 
 ## globals.css — Known Global Rule
@@ -316,14 +305,6 @@ PageSections (gap: 32px desktop / 24px tablet / 24px mobile)
 - Inactive `ModeGroup`: `position: absolute; top: 0; left: 0; opacity: 0; visibility: hidden; pointer-events: none` — zero layout footprint
 - `ModeGroup` gap: 80px desktop / 64px tablet / 72px mobile; `padding-bottom`: 62px desktop / 48px tablet+mobile
 
-**ProfileImageWrapper (professional only):**
-- Wraps `<ProfileImage mode="professional" />` in the professional `LandingGroup`
-- Applies negative margins so the face position aligns with where the original photo sat:
-  - Desktop: `margin-top: -44px; margin-bottom: -120px`
-  - Tablet: `margin-top: -35px; margin-bottom: -90px`
-  - Mobile: `margin-top: -25px; margin-bottom: -60px`
-- Personal mode does NOT use this wrapper — `<ProfileImage mode="personal" />` is placed directly
-
 **BottomToggleWrapper:**
 - Renders a second `ModeSwitch` (ModeLabel + ModeToggle + ModeLabel) below all page content
 - Calls the same `handleModeChange` — keeps both toggles in sync
@@ -352,24 +333,6 @@ PageSections (gap: 32px desktop / 24px tablet / 24px mobile)
 - ModeToggle (from `components/shared/ModeToggle.tsx`) between two ModeLabel buttons
 - ModeLabel: `fontSizes.sm` (16px) on mobile, `fontSizes.lg` (32px) desktop, notch bold, color changes on `$active`
 - Mobile: padding-top 40px, reduced gaps
-
-#### ProfileImage.tsx ✅
-- Accepts `mode: 'professional' | 'personal'` prop — different photo + floating icons per mode
-- Figma node: `248:1186` (professional banner)
-- **Banner**: `position: relative; width: 1168px; height: 621px; overflow: clip`
-  - Tablet: `width: 100%; height: 499.7px`
-  - Mobile: `width: 100%; height: 357px`
-- **PhotoCenter**: `position: absolute; inset: 0; display: flex; align-items: center; justify-content: center` — centers both absolutely-positioned PhotoGroups
-- **PhotoGroup**: always `position: absolute; width: 523px` — both photos overlay each other in the same space; active = `opacity: 1; z-index: 2`, inactive = `opacity: 0; z-index: 1`
-  - Tablet: `width: 420px`
-  - Mobile: `width: min(300px, 100%)`
-  - Crossfade transition: active fades in over 0.4s; inactive snaps out instantly (`opacity 0s 0.4s`)
-- **IconsGroup**: `position: absolute; left: 50%; transform: translateX(-50%); width: 1167.51px; height: 100%`
-  - Tablet: additionally `transform: translateX(-50%) scale(0.805)` to scale icons down proportionally
-  - Mobile: `display: none` — icons entirely hidden
-  - Contains 6 `IconBox` elements (position absolute, Figma pixel coords) — different sets per mode
-  - Professional icons: `/about/icons/icon-1.svg` … `icon-6.svg`
-  - Personal icons: `/about/personal/icons/icon-1.png` … `icon-6.png`
 
 #### ModeToggle.tsx ✅ (shared)
 - `'use client'`, props: `selection: 'left'|'right'`, `onToggle: (side) => void`
@@ -423,7 +386,8 @@ PageSections (gap: 32px desktop / 24px tablet / 24px mobile)
 - Desktop nav in TitleRow (hidden on mobile); mobile nav row below scroll track (hidden on desktop)
 - `ScrollWrapper`: `width: calc(100% + (100vw - 100%) / 2)` bleeds to viewport right edge
 - TitleBlock: `SectionLabel("MY JOURNEY 2022 → 2026")` + `SectionHeader("Being through so far.")`
-- Photo assets: `/about/timeline/card-01-young-jury.png` through `card-12-beach-hack.png` (downloaded from Figma)
+- **Timeline images: stored in Supabase Storage, not in `public/` — no local assets needed.** Live `photo_url` values are full Storage URLs (`https://rdkhdnbzhuwvthxagzdz.supabase.co/storage/v1/object/public/images/about/personal/timeline/{name}.webp`), e.g. `awwwards.webp`, `graduation.webp`, `figma-blr.webp` — not the `/about/timeline/card-NN-*.png` local paths shown in the INSERT SQL below.
+> ⚠️ `CROP_MAP`'s keys (`/about/timeline/card-02-graduation.png` etc.) no longer match the live `photo_url` values, so the 4 positioned-crop overrides (graduation, designers award, CODe design week, GTech MuLearn) are currently falling through to the default `simple` crop instead of applying. The INSERT SQL further below is also stale — it reflects local paths, not what's actually in the table now. Neither has been touched here; flagging for a decision on whether to update `CROP_MAP` keys to the new Storage URLs.
 
 ---
 
@@ -436,52 +400,25 @@ PageSections (gap: 32px desktop / 24px tablet / 24px mobile)
 - **To Do List widget**: 5 tasks, one (`Redesign Portfolio`) checks itself on hover
   - `DayHeading`: red bar (`surface.highlight`) with current IST day name
   - `CardBody`: white card overlaps red bar by 10px (natural DOM stacking, no z-index)
-  - `CheckBox`: 16×16px, border when unchecked, `surface.inverse` fill + SVG tick when done
+  - `CheckBox`: 16×16px, border when unchecked, `surface.inverse` fill + CSS-masked `/icons/tick.svg` when done
   - `TaskLabel`: `text-decoration: line-through` when done
   - Widget rotates `5deg` on hover
 
 #### TravelSection.tsx ✅
-- Desktop: shows `TravelMap` (draggable canvas) — hidden at `mq.tabletDown` (≤1024px)
-- Mobile/tablet: shows `MobileFlagsRow` (5 flags, raise on hover/tap, tooltip on tap) + `MobileStatsCard`
-  - Flag tooltips use `$isFirst` and `$isLast` to dynamically adjust `left`/`transform` boundaries to prevent cutting off at the screen edges
-  - No tooltips on desktop flags (those are inside TravelMapClient)
-- Travel albums: horizontal scroll row — `AlbumsScroller` uses AwardShelf pattern (`overflow-x: auto; scroll-snap-type: x mandatory`), no negative-margin bleed
-- 5 album photos from `/about/personal/travel/{country}-1.webp`
-- Flag assets: `/about/personal/travel/{country}-flag.svg` (exact naming: `qatar-flag.svg`, etc.)
-
-#### TravelMap.tsx ✅
-- Thin `next/dynamic` wrapper, `ssr: false` — SSR firewall for TravelMapClient
-- Shows `surface.tertiary` placeholder (`width: 100%; max-width: 1168px; height: 522px`) while loading
-
-#### TravelMapClient.tsx ✅
-- **Canvas**: 1168×522px, `surface.tertiary` background, `overflow: hidden`, `border-radius: radii['3xl']`
-- **Map geometry**:
-  - `MAP_W=2536, MAP_H=2474, CANVAS_W=1168, CANVAS_H=522`
-  - `MAP_X0=-684` (centers map horizontally), `MAP_Y0=-1237` (shows Asia/Middle East)
-  - `MapImg` uses `map.webp` (switched from SVG for payload/GPU optimization)
-  - Drag `offset` starts at `{x:0, y:0}`; bounds: X ∈ [-684, 684], Y ∈ [-715, 1237]
-- **MapLayer**: `position: absolute; inset: 0; will-change: transform` — translates by drag offset
-  - Children: `MapImg` (map SVG at CSS position) — moves with layer
-  - Pins are **inside MapLayer** — translate with map on drag, anchored to map coordinates
-- **Pins**: 6 countries (INDIA, OMAN, SINGAPORE, MALAYSIA, VIETNAM, QATAR) at Figma canvas coords
-  - `PinTag` chip: `padding: 6px` all sides, `border-radius: radii.lg`, `gap: 4px` from dot
-  - `dotFirst` prop controls dot-before-label vs label-before-dot order
-  - No tooltip on desktop — raise only not applicable (pins don't hover)
-- **FlagsStrip**: `position: absolute; right: 15px; top: 15px` — outside MapLayer, fixed in canvas
-  - 5 flags: Qatar, Singapore, Malaysia, Vietnam, Oman — raise `translateY(-6px)` on hover
-  - No tooltip on desktop
-- **StatsCard**: `position: absolute; left: 15px; bottom: 15px` — outside MapLayer, fixed in canvas
-  - 3 stats: 06 countries / 55 flights / 2% world; count-up via IntersectionObserver
-- **Drag**: `setPointerCapture` + `onPointerDown/Move/Up`; only upward drag clamped
-- Hidden at `mq.tabletDown` via `DesktopMap` wrapper in TravelSection
+- No longer a map — `TravelMap.tsx` / `TravelMapClient.tsx` (draggable canvas, pins, flags) were removed entirely; this is now a single self-contained component, same on all breakpoints
+- `SectionLabel("TRAVEL PASSPORT")` + `SectionHeader("Places I've been to.")`
+- `StampsContainer`: `surface.tertiary` card (`radii.xl`, padding 40px desktop / 32px 16px mobile) holding 6 rotated stamp SVGs (`STAMPS` array), alternating `±5deg` rotation
+  - Stamp assets: `/about/personal/travel/{country}.svg` — india, qatar, singapore, malaysia, vietnam, oman
+- Stats + CTA below, count-up via `IntersectionObserver` (`STAT_TARGETS = [6, 55, 2]` → countries/flights/world%)
+  - Desktop (`DesktopStatsRow`): stats left + `CTABlock` (copy + "Travel with me" `mailto:` button) right, hidden at `mq.tabletDown`
+  - Mobile (`MobileStatsRow` + `MobileCTABlock`): stats row, then CTA block below, shown at `mq.tabletDown`
+- No travel albums, no country flags with tooltips, no draggable map — all removed in this rewrite
 
 #### WorkDeskSection.tsx ✅
-- Left: desk photo (`desk-bg.png`) with Apple Watch screen overlay + iPhone screen overlay
-- Right: `Inventory` list — 9 gear items from `GEAR` array
-- `GearItem` interface has optional `mobileDetail?: string` — when set, shows different text on mobile
-  - iPhone 16 Pro Max: desktop "256 · Natural Titanium · Smartphone", mobile "256 · Natural Titanium · Phone"
-  - `DesktopText` (`display:none` on mobile) + `MobileText` (`display:none` on desktop)
-- Apple icon (`apple-icon.svg`, 8.293×10.2px) shown inline for Apple items
+- No photo — fully text-based gear list now (the desk photo + Apple Watch/iPhone screen overlays described here previously don't exist in the component or in `public/`)
+- Desktop (`GearContainer`): flex-wrap inline row of 8 items from the `GEAR` array (name + detail, no `mobileDetail` field — same detail text on all breakpoints)
+- Mobile (`MobileInventory`): stacked table-row pattern (`MobileRow`, bordered), detail right-aligned
+- Apple icon: `AppleIcon` styled span, CSS `mask: url(/icons/apple.svg)` tinted `text.highlight` — shown inline next to Apple-brand gear items (`apple: true` in `GEAR`)
 
 #### PodcastSection.tsx ✅ (`components/about/personal/PodcastSection.tsx`)
 - Label: "SOMETIMES I SPEAK" / Header: "Hear my Podcast." (Podcast muted)
@@ -516,40 +453,23 @@ PageSections (gap: 32px desktop / 24px tablet / 24px mobile)
 ### Resume ✅ Done
 **Figma frames:** Desktop `282:772` · Mobile `306:1320`
 
-**Page file:** `app/resume/page.tsx` — `'use client'` (zoom state lives here) + `export const dynamic = 'force-dynamic'` (prevents static prerendering that would pull in react-pdf on the server)
+**Page file:** `app/resume/page.tsx` — `export const dynamic = 'force-dynamic'` (prevents static prerendering that would pull in react-pdf on the server). No zoom state — the page just composes `PageHeader` + `ResumeCanvas` at a fixed render width.
 
 **Dependencies:** `react-pdf@10.4.1` — installed via `npm install react-pdf`
 
-**Composition:**
+**Composition (current — Toolbar and DownloadSection have been removed from the page; only these two sections render):**
 ```
 PageSections (pt: 140px desktop / 6rem tablet / 40px mobile)
-  └── HeaderGroup (gap: 80px desktop / 24px mobile)
+  └── ResumeHeader (gap + padding-bottom: theme.spacing[20] desktop / spacing[10]+spacing[8] mobile)
         ├── PageHeader
-        └── DetailsGroup (gap: 40px desktop / 32px mobile)
-              ├── Toolbar       zoom + onZoomIn + onZoomOut props
-              ├── ResumeCanvas  zoom prop
-              └── DownloadSection
+        └── ResumeCanvas   (no props — fixed-width render, no zoom)
 ```
 
-**Zoom state (page.tsx):**
-- `useState(100)` — default 100%
-- `ZOOM_MIN / ZOOM_MAX / ZOOM_STEP` imported from `Toolbar.tsx` (50 / 150 / 10)
-- `onZoomIn`: `setZoom(z => Math.min(z + ZOOM_STEP, ZOOM_MAX))`
-- `onZoomOut`: `setZoom(z => Math.max(z - ZOOM_STEP, ZOOM_MIN))`
+> ⚠️ There is currently no zoom control, print button, or download/email CTA on this page — `Toolbar.tsx` and `DownloadSection.tsx` were deleted as dead code (unused, not imported by `page.tsx`). If that functionality is wanted back, it needs to be rebuilt and re-composed into `page.tsx`, not just restored from this doc.
 
 #### PageHeader.tsx ✅
 - Centered "Resume." title — period in `colors.text.secondary`
 - Subtitle "The one pager" — `fonts.sans` regular, `fontSizes.sm` desktop / `fontSizes.xs` mobile
-
-#### Toolbar.tsx ✅
-- **Left — File info**: PDF icon (`/icons/pdf.svg`) + filename + `1 page · 1.25 MB · A4` metadata
-- **Right — Controls** (desktop only, `display: none` on mobile):
-  - `ControlsBox`: `surface.tertiary` bg, `radii.md`, zoom minus/label/plus + print icon
-  - Zoom buttons disabled at `ZOOM_MIN` (50) and `ZOOM_MAX` (150)
-  - Print: injects a hidden `position: fixed; top: -100px` iframe, loads `/resume.pdf`, calls `contentWindow.print()` — no new tab
-- Exports `ZOOM_MIN`, `ZOOM_MAX`, `ZOOM_STEP` constants for page.tsx
-- Icons from `/icons/`: `pdf.svg`, `minus.svg`, `add.svg`, `print.svg` — `<img>` tags, not inline SVGs
-- Max-width: 880px
 
 #### ResumeCanvas.tsx ✅
 - Thin `next/dynamic` wrapper — imports `ResumeCanvasClient` with `ssr: false`
@@ -560,12 +480,8 @@ PageSections (pt: 140px desktop / 6rem tablet / 40px mobile)
 - All react-pdf code lives here — only ever loaded client-side
 - **Worker:** `pdfjs.GlobalWorkerOptions.workerSrc = \`https://unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs\`` — set at module level (safe because this file is never server-evaluated)
 - Import `'react-pdf/dist/Page/TextLayer.css'` for text selection layer
-- **Zoom approach — CSS transform only (never re-renders on zoom):**
-  - `Page` always renders at `CARD_W = 820px` fixed width
-  - `PdfCard` gets `transform: scale(zoom / 100)` + `transform-origin: top center`
-  - `Canvas` height = `CANVAS_PADDING_V * 2 + CARD_H * (zoom / 100)` (explicit — `transform` is visual-only, DOM layout unchanged)
-- **Mobile:** `mobileWidth = window.innerWidth - 80` via resize listener; `Page` renders at mobile width; `PdfCard transform: none`
-- `loading={<></>}` on both `Document` and `Page` — suppresses flash
+- **No zoom** — renders two fixed-width `Page` instances side by side in the DOM (`DesktopPage` at `CARD_W = 820px`, `MobilePage` at `MOBILE_W = 300px`), toggled via `display: none` in `mq.mobile` rather than a resize listener or CSS transform
+- `loading={<></>}` on `Document` and both `Page`s — suppresses flash
 - `onError` on `Document` logs to console for diagnosis
 - PDF asset: `public/resume.pdf` — place manually
 
@@ -574,13 +490,6 @@ react-pdf uses `DOMMatrix` internally which does not exist in Node.js. The two-f
 - `ResumeCanvas.tsx` → `next/dynamic(..., { ssr: false })` — Next.js never evaluates the module graph below this point during SSR/build
 - `ResumeCanvasClient.tsx` → all react-pdf imports, safe at module scope
 - `page.tsx` → `export const dynamic = 'force-dynamic'` — belt-and-suspenders against static prerendering
-
-#### DownloadSection.tsx ✅
-- Dark `surface.inverse` card, max-width 1168px
-- Left: "TAKE IT WITH YOU" label + "Download the Resume." heading (Resume in `text.highlight`) + last updated date
-- Right: Download button (`<a href="/resume.pdf" download>`) + Email Enric (`mailto:`)
-- Mobile: stacks vertically, `gap: spacing[6]`
-- Button mobile: `padding: 12px 16px`, text `14px / 18px`, icon pill `16×16px`
 
 ---
 
@@ -694,7 +603,6 @@ PageSections (pt: 140px desktop / 6rem tablet / 40px mobile, gap: 40px)
 | About (professional) | `248:1175` | `284:834` |
 | About (personal) | `328:908` | — |
 | About — Image Banner | `248:1186` | — |
-| About — Travel map canvas | `328:996` | — |
 | Resume (full frame) | `282:772` | `306:1320` |
 | Resume — Page Header | `282:775` | `306:1323` |
 | Resume — Toolbar | `282:779` | `306:1599` |
@@ -737,66 +645,50 @@ PageSections (pt: 140px desktop / 6rem tablet / 40px mobile, gap: 40px)
 ## Asset Paths
 
 ### Professional About
+Matches `public/about/professional/` on disk as of this writing:
 ```
-public/about/
-├── professional/
-│   ├── header.webp                # Header banner photo (professional mode) — used by HeaderImage.tsx
-│   ├── seals/
-│   │   ├── awwwards.webp
-│   │   ├── ust.webp
-│   │   ├── figma.webp
-│   │   └── ksum.webp
-│   ├── timeline/
-│   │   ├── card-01-young-jury.png … card-12-beach-hack.png  # 12 timeline event photos (PNG, from Figma)
-│   └── journey/
-│       ├── ust-icon.svg
-│       ├── fundesigns-icon.svg
-│       ├── freelance-icon.svg     # 28×28 design-tools scissors icon (for Freelance entry)
-│       ├── bullet-shimmer.svg
-│       ├── bullet-dot.svg
-│       └── bullet-container.svg
-├── icons/
-│   ├── icon-1.svg … icon-6.svg   # 6 floating icons (professional mode, ProfileImage.tsx)
-└── profile-group.png              # 431×470 RGBA — composited circle photo (professional)
+public/about/professional/
+├── header.webp                # Header banner photo (professional mode) — used by HeaderImage.tsx
+├── seals/
+│   ├── awwwards.webp
+│   ├── ust.webp
+│   ├── figma.webp
+│   └── ksum.webp
+└── journey/
+    ├── ust-icon.svg
+    ├── fundesigns-icon.svg
+    └── freelance-icon.svg     # 28×28 design-tools scissors icon (for Freelance entry)
 ```
+**Timeline images: stored in Supabase Storage, not in `public/` — no local assets needed.** There is no `public/about/timeline/` folder; `ProfessionalTimeline.tsx` renders `event.photo_url` straight from the `timeline_events` table, which holds full Supabase Storage URLs for all 12 events. See the `ProfessionalTimeline.tsx` section above for the `CROP_MAP` staleness note.
+
+> `components/about/professional/ProfileImage.tsx` was removed at some point (only `HeaderImage.tsx`, `Journey.tsx`, `MyTools.tsx`, `ProfessionalTimeline.tsx` remain in this folder) — it and its assets (`icons/icon-1.svg…icon-6.svg`, `bullet-shimmer.svg`, `bullet-dot.svg`, `bullet-container.svg`, `profile-group.png`) are gone and no longer documented. The composition tree above already reflects this (no `ProfileImage`/`ProfileImageWrapper` step).
 
 ### Personal About
+Matches `public/about/personal/` on disk as of this writing:
 ```
 public/about/personal/
 ├── header.webp                # Header banner photo (personal mode) — used by HeaderImage.tsx
-├── personal-image.webp        # Personal mode profile banner photo (ProfileImage.tsx)
-├── checkmark.svg              # To Do List widget checkmark
-├── icons/
-│   ├── icon-1.png … icon-6.png   # 6 floating icons (personal mode)
+├── podcast-logo.webp          # Chumma Oru Podcast logo — directly under personal/, no podcast/ subfolder
 ├── travel/
-│   ├── Map.svg                # World map SVG (2536×2474)
-│   ├── pin.svg                # Map pin dot
-│   ├── arrow.svg              # Travel with me button arrow
-│   ├── separator.svg          # Stats card separator
-│   ├── {country}-flag.svg     # Flag icons: qatar, singapore, malaysia, vietnam, oman
-│   └── {country}-1.webp       # Album photos: qatar, singapore, malaysia, vietnam, oman
-├── cards/
-│   ├── american-express-membership-rewards.webp
-│   ├── hdfc-marriott-bonvoy.webp
-│   ├── phonepe-sbi-select-black.webp
-│   ├── idfc-first-select.webp
-│   ├── hdfc-millenia.webp
-│   ├── hdfc-swiggy.webp
-│   ├── flipkart-axis.webp
-│   └── icici-amazon-pay.webp
-├── desk/
-│   ├── desk-bg.png            # Desk background photo
-│   ├── apple-icon.svg         # Apple logo for gear list
-│   ├── watch-screen.png       # Apple Watch screen overlay
-│   └── iphone-screen.png      # iPhone screen overlay
-└── podcast/
-    ├── podcast-logo.webp      # Chumma Oru Podcast logo
-    ├── apple-podcasts.webp    # Platform icon
-    ├── spotify.webp           # Platform icon
-    ├── youtube.webp           # Platform icon
-    ├── arrow-watch.svg        # CTA arrow
-    └── arrow-article.svg      # Article link arrow
+│   ├── india.svg
+│   ├── qatar.svg
+│   ├── singapore.svg
+│   ├── malaysia.svg
+│   ├── vietnam.svg
+│   └── oman.svg                # 6 rotated stamp SVGs — see TravelSection.tsx below (map/pins/flags/albums removed)
+└── cards/
+    ├── american-express-membership-rewards.webp
+    ├── hdfc-marriott-bonvoy.webp
+    ├── phonepe-sbi-select-black.webp
+    ├── idfc-first-select.webp
+    ├── hdfc-millenia.webp
+    ├── hdfc-swiggy.webp
+    ├── flipkart-axis.webp
+    └── icici-amazon-pay.webp
 ```
+> `personal-image.webp`, `checkmark.svg`, `icons/icon-1.png…icon-6.png`, and an entire `desk/` folder (`desk-bg.png`, `apple-icon.svg`, `watch-screen.png`, `iphone-screen.png`) were previously documented here but don't exist anywhere in `public/`. Verified: `PersonalAboutDescription.tsx` is fully text (no image assets — its checklist tick is a CSS-masked `/icons/tick.svg`), and `WorkDeskSection.tsx` is now a text-only gear list (no desk photo; its Apple icon is a CSS-masked `/icons/apple.svg`) — see both sections above, now corrected.
+>
+> Podcast platform icons (`apple-podcasts.webp`, `spotify.webp`, `youtube.webp`) actually live at **`public/app-icons/`**, not under `public/about/personal/podcast/` (that subfolder doesn't exist) — see `PodcastSection.tsx`.
 
 ### Contact
 ```

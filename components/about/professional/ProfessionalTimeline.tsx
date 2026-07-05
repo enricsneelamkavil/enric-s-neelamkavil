@@ -11,8 +11,6 @@ import SectionHeader from '@/components/shared/SectionHeader'
 
 const CARD_PHOTO_H_DESKTOP = 169   // px
 const CARD_PHOTO_H_MOBILE  = 128   // px
-const PORTRAIT_W_DESKTOP   = 127   // px — Young Jury narrow portrait
-const PORTRAIT_W_MOBILE    = 96    // px
 const NAV_ICON_SIZE        = 18    // px desktop
 const NAV_ICON_SIZE_MOBILE = 16    // px mobile
 const NAV_RADIUS_MOBILE    = 8     // px — below theme scale
@@ -23,76 +21,13 @@ const SCROLL_STEP          = 600   // px per nav click
 const IMG_ARROW_LEFT  = '/icons/arrow-left.svg'
 const IMG_ARROW_RIGHT = '/icons/arrow-right.svg'
 
-// ─── Photo crop types ─────────────────────────────────────────────────────────
-
-type CropSimple = { kind: 'simple' }
-type CropPortrait = { kind: 'portrait' }
-type CropPositioned = { kind: 'positioned'; h: string; left: string; top: string; w: string }
-type Crop = CropSimple | CropPortrait | CropPositioned
-
-// Per-photo crop data keyed by photo_url — pure CSS implementation detail.
-// Default (no entry) = simple object-bottom cover.
-// Add an entry here whenever a new event's photo needs portrait or positioned cropping.
-const CROP_MAP: Record<string, Crop> = {
-  '/about/timeline/card-01-young-jury.png': { kind: 'portrait' },
-  '/about/timeline/card-02-graduation.png': {
-    kind: 'positioned', h: '207.51%', left: '-0.08%', top: '-50.51%', w: '100.08%',
-  },
-  '/about/timeline/card-05-designers-award.png': {
-    kind: 'positioned', h: '129.03%', left: '-6.1%', top: '-11.93%', w: '123.88%',
-  },
-  '/about/timeline/card-08-code-design-week.png': {
-    kind: 'positioned', h: '336.59%', left: '-25.71%', top: '-141.55%', w: '160.58%',
-  },
-  '/about/timeline/card-10-mulearn.png': {
-    kind: 'positioned', h: '173.76%', left: '-45.33%', top: '-17.99%', w: '167.23%',
-  },
-}
-
-const getCrop = (photoUrl: string | null): Crop =>
-  (photoUrl && CROP_MAP[photoUrl]) ? CROP_MAP[photoUrl] : { kind: 'simple' }
-
 // ─── Sub-components ───────────────────────────────────────────────────────────
 
-const CardPhoto = ({ photoUrl, crop }: { photoUrl: string; crop: Crop }) => {
-  if (crop.kind === 'positioned') {
-    return (
-      <PhotoWrap>
-        <div style={{
-          position: 'absolute', inset: 0, overflow: 'hidden',
-          borderRadius: 'inherit', pointerEvents: 'none',
-        }}>
-          <img
-            alt=""
-            src={photoUrl}
-            style={{
-              position: 'absolute',
-              height: crop.h, left: crop.left, top: crop.top, width: crop.w,
-              maxWidth: 'none',
-            }}
-          />
-        </div>
-      </PhotoWrap>
-    )
-  }
-
-  const isPortrait = crop.kind === 'portrait'
-  return (
-    <PhotoWrap $narrow={isPortrait}>
-      <img
-        alt=""
-        src={photoUrl}
-        style={{
-          position: 'absolute', inset: 0,
-          width: '100%', height: '100%',
-          objectFit: 'cover',
-          objectPosition: isPortrait ? 'center' : 'bottom',
-          maxWidth: 'none', borderRadius: 'inherit', pointerEvents: 'none',
-        }}
-      />
-    </PhotoWrap>
-  )
-}
+const CardPhoto = ({ photoUrl }: { photoUrl: string }) => (
+  <PhotoWrap>
+    <PhotoImg alt="" src={photoUrl} />
+  </PhotoWrap>
+)
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -144,28 +79,25 @@ const ProfessionalTimeline = ({ events }: Props) => {
 
       <ScrollWrapper ref={scrollRef}>
         <ScrollTrack>
-          {events.map((event) => {
-            const crop = getCrop(event.photo_url)
-            return (
-              <EventCard key={event.id}>
-                {event.image_position === 'above' && event.photo_url && (
-                  <CardPhoto photoUrl={event.photo_url} crop={crop} />
+          {events.map((event) => (
+            <EventCard key={event.id}>
+              {event.image_position === 'above' && event.photo_url && (
+                <CardPhoto photoUrl={event.photo_url} />
+              )}
+              <ContentBlock>
+                <HeaderBlock>
+                  <EventTitle>{event.title}</EventTitle>
+                  <EventSub>{event.subtitle}</EventSub>
+                </HeaderBlock>
+                {event.description && (
+                  <EventDesc>{event.description}</EventDesc>
                 )}
-                <ContentBlock>
-                  <HeaderBlock>
-                    <EventTitle>{event.title}</EventTitle>
-                    <EventSub>{event.subtitle}</EventSub>
-                  </HeaderBlock>
-                  {event.description && (
-                    <EventDesc>{event.description}</EventDesc>
-                  )}
-                </ContentBlock>
-                {event.image_position === 'below' && event.photo_url && (
-                  <CardPhoto photoUrl={event.photo_url} crop={crop} />
-                )}
-              </EventCard>
-            )
-          })}
+              </ContentBlock>
+              {event.image_position === 'below' && event.photo_url && (
+                <CardPhoto photoUrl={event.photo_url} />
+              )}
+            </EventCard>
+          ))}
         </ScrollTrack>
       </ScrollWrapper>
 
@@ -320,18 +252,29 @@ const EventCard = styled.div`
   }
 `
 
-const PhotoWrap = styled.div<{ $narrow?: boolean }>`
+const PhotoWrap = styled.div`
   position: relative;
   flex-shrink: 0;
   overflow: hidden;
   border-radius: ${({ theme }) => theme.radii.xl};
   height: ${CARD_PHOTO_H_DESKTOP}px;
-  width: ${({ $narrow }) => ($narrow ? `${PORTRAIT_W_DESKTOP}px` : '100%')};
+  width: 100%;
 
   ${mq.mobile} {
     height: ${CARD_PHOTO_H_MOBILE}px;
-    width: ${({ $narrow }) => ($narrow ? `${PORTRAIT_W_MOBILE}px` : '100%')};
   }
+`
+
+const PhotoImg = styled.img`
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  border-radius: inherit;
+  pointer-events: none;
+  object-fit: cover;
+  object-position: center;
 `
 
 const ContentBlock = styled.div`
