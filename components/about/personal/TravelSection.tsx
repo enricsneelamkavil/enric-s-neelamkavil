@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useRef, useState, useEffect } from 'react'
+import Image from 'next/image'
 import styled from 'styled-components'
 import { mq } from '@/styles/theme'
 import SectionLabel from '@/components/shared/SectionLabel'
@@ -8,14 +9,18 @@ import SectionHeader from '@/components/shared/SectionHeader'
 
 // ─── Data ────────────────────────────────────────────────────────────────────
 
-const STAMPS = [
-  { key: 'india',     src: '/about/personal/travel/india.svg',     rotation: -5 },
-  { key: 'qatar',     src: '/about/personal/travel/qatar.svg',     rotation:  5 },
-  { key: 'singapore', src: '/about/personal/travel/singapore.svg', rotation: -5 },
-  { key: 'malaysia',  src: '/about/personal/travel/malaysia.svg',  rotation:  5 },
-  { key: 'vietnam',   src: '/about/personal/travel/vietnam.svg',   rotation: -5 },
-  { key: 'oman',      src: '/about/personal/travel/oman.svg',      rotation:  5 },
-]
+const STAMP_FRAME = '/about/personal/travel/stamp-frame-1.svg'
+
+const ALBUMS = [
+  { key: 'oman', name: 'OMAN', photo: '/about/personal/travel/oman.webp', w: 768, h: 1024, location: 'MUSCAT', date: 'DEC 2025' },
+  { key: 'vietnam', name: 'VIETNAM', photo: '/about/personal/travel/vietnam.webp', w: 1980, h: 3520, location: 'HANOI', date: 'OCT 2025' },
+  { key: 'malaysia', name: 'MALAYSIA', photo: '/about/personal/travel/malaysia.webp', w: 768, h: 1024, location: 'KUALA LUMPUR', date: 'NOV 2024' },
+  { key: 'singapore', name: 'SINGAPORE', photo: '/about/personal/travel/singapore.webp', w: 768, h: 1024, location: 'SINGAPORE', date: 'JUL 2024' },
+  { key: 'qatar', name: 'QATAR', photo: '/about/personal/travel/qatar.webp', w: 762, h: 1024, location: 'DOHA', date: 'APR 2018' },
+  { key: 'india', name: 'INDIA', photo: '/about/personal/travel/india.webp', w: 768, h: 1024, location: 'THRISSUR', date: 'HOME' },
+] as const
+
+const CTA_COPY = "Completely self planned, Rush itineraries, lots of walking, and customised experiences. Send me a text if you'd like to join me when I plan the next, prolly Sri Lanka or Thailand!"
 
 const STAT_TARGETS = [6, 55, 2]
 
@@ -67,20 +72,40 @@ const TravelSection = () => {
         <SectionHeader before="Places I've " muted="been to" after="." />
       </TitleBlock>
 
-      {/* Stamp seals */}
-      <StampsContainer>
-        {STAMPS.map(({ key, src, rotation }) => (
-          <StampWrapper key={key} $rotation={rotation}>
-            <StampImg src={src} alt={key} />
-          </StampWrapper>
+      {/* Travel albums */}
+      <AlbumsRow>
+        {ALBUMS.map(({ key, name, photo, w, h, location, date }) => (
+          <AlbumCard key={key}>
+            <FrameImg src={STAMP_FRAME} alt="" aria-hidden />
+            <AlbumContent>
+              <PhotoWrap>
+                <PhotoImg src={photo} alt={name} width={w} height={h} />
+              </PhotoWrap>
+              <AlbumTitle>
+                <AlbumName>{name}</AlbumName>
+                <AlbumSubtitle>
+                  <span>{location}</span>
+                  <StarIcon aria-hidden="true" />
+                  <span>{date}</span>
+                </AlbumSubtitle>
+              </AlbumTitle>
+            </AlbumContent>
+          </AlbumCard>
         ))}
-      </StampsContainer>
+      </AlbumsRow>
 
       {/* Stats + CTA */}
       <StatsArea ref={statsRef}>
 
-        {/* Desktop: stats left + CTA right */}
+        {/* Desktop: CTA left + stats right */}
         <DesktopStatsRow>
+          <CTABlock>
+            <CTAText>{CTA_COPY}</CTAText>
+            <CTAButton href="mailto:enricsneelamkavil@gmail.com">
+              <CTAButtonLabel>Travel with me</CTAButtonLabel>
+              <CTAIcon src="/icons/external.svg" alt="" aria-hidden width={18} height={18} />
+            </CTAButton>
+          </CTABlock>
           <StatsGroup>
             {STAT_TARGETS.map((_, i) => (
               <React.Fragment key={i}>
@@ -100,16 +125,6 @@ const TravelSection = () => {
               </React.Fragment>
             ))}
           </StatsGroup>
-          <CTABlock>
-            <CTAText>
-              Self planned, Rush itineraries, lots of walking, and best value for money.
-              Send me an email if you&apos;d like to hear when I plan the next.
-            </CTAText>
-            <CTAButton href="mailto:enricsneelamkavil@gmail.com">
-              <CTAButtonLabel>Travel with me</CTAButtonLabel>
-              <CTAIcon src="/icons/external.svg" alt="" aria-hidden width={18} height={18} />
-            </CTAButton>
-          </CTABlock>
         </DesktopStatsRow>
 
         {/* Mobile: stats row */}
@@ -129,10 +144,7 @@ const TravelSection = () => {
 
         {/* Mobile: CTA below stats */}
         <MobileCTABlock>
-          <CTAText>
-            Self planned, Rush itineraries, lots of walking, and best value for money.
-            Send me an email if you&apos;d like to hear when I plan the next.
-          </CTAText>
+          <CTAText>{CTA_COPY}</CTAText>
           <CTAButton href="mailto:enricsneelamkavil@gmail.com" $mobile>
             <CTAButtonLabel $mobile>Travel with me</CTAButtonLabel>
             <CTAIcon src="/icons/external.svg" alt="" aria-hidden width={16} height={16} />
@@ -176,34 +188,102 @@ const MobileLabelWrap = styled.div`
   ${mq.tabletDown} { display: block; }
 `
 
-// ── Stamps ───────────────────────────────────────────────────────────────────
+// ── Travel albums ─────────────────────────────────────────────────────────────
 
-const StampsContainer = styled.div`
+const AlbumsRow = styled.div`
+  display: flex;
+  align-items: flex-start;
+  flex-wrap: nowrap;
+  gap: 16px;
+  width: 100%;
+  overflow: visible;
+`
+
+const AlbumCard = styled.div`
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  padding: 16px;
+`
+
+const FrameImg = styled.img`
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+`
+
+const AlbumContent = styled.div`
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[2]};
+  width: 100%;
+`
+
+const PhotoWrap = styled.div`
+  width: 100%;
+`
+
+const PhotoImg = styled(Image)`
+  display: block;
+  width: 100%;
+  height: auto;
+  margin: 0 auto;
+  object-fit: cover;
+  object-position: center;
+  pointer-events: none;
+`
+
+const AlbumTitle = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+`
+
+const AlbumName = styled.p`
+  margin: 0;
+  width: 100%;
+  font-family: ${({ theme }) => theme.fonts.notch};
+  font-weight: ${({ theme }) => theme.fontWeights.bold};
+  font-size: ${({ theme }) => theme.fontSizes.md};
+  line-height: ${({ theme }) => theme.lineHeights.relaxed};
+  color: ${({ theme }) => theme.colors.text.primary};
+  text-transform: uppercase;
+  text-align: center;
+  white-space: nowrap;
+`
+
+const AlbumSubtitle = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-wrap: wrap;
-  gap: 24px;
-  background: ${({ theme }) => theme.colors.surface.tertiary};
-  border-radius: ${({ theme }) => theme.radii.xl};
-  padding: 40px;
+  gap: ${({ theme }) => theme.spacing[1]};
   width: 100%;
+  font-family: ${({ theme }) => theme.fonts.notch};
+  font-weight: ${({ theme }) => theme.fontWeights.regular};
+  font-size: ${({ theme }) => theme.fontSizes.xs};
+  line-height: ${({ theme }) => theme.lineHeights.tight};
+  text-transform: uppercase;
+  text-align: center;
+  white-space: nowrap;
 
-  ${mq.tabletDown} {
-    padding: 32px 16px;
-    gap: 16px;
-  }
+  span:first-child { color: ${({ theme }) => theme.colors.text.secondary}; }
+  span:last-child { color: ${({ theme }) => theme.colors.text.tertiary}; }
 `
 
-const StampWrapper = styled.div<{ $rotation: number }>`
-  transform: rotate(${({ $rotation }) => $rotation}deg);
+const StarIcon = styled.span`
+  display: inline-block;
+  width: 10px;
+  height: 10px;
   flex-shrink: 0;
-`
-
-const StampImg = styled.img`
-  display: block;
-  max-width: 100%;
-  height: auto;
+  background-color: ${({ theme }) => theme.colors.text.highlight};
+  -webkit-mask: url(/icons/star.svg) no-repeat center / contain;
+  mask: url(/icons/star.svg) no-repeat center / contain;
 `
 
 // ── Stats + CTA ───────────────────────────────────────────────────────────────

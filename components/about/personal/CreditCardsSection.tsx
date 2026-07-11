@@ -45,6 +45,23 @@ const CreditCardsSection = () => {
   const pointerStartY = useRef(0)
   const latestDragY = useRef(0)
 
+  // ── Desktop click-to-cycle (queue/conveyor pattern) ───────────────────────
+  // Cards stay in FIXED DOM order (their "home" slot = their CARDS index) so
+  // the flex/overlap box model never changes. `cardOrder[0]` is whichever
+  // card index currently occupies the front (leftmost) slot; only that card
+  // is clickable. Each card's *visual* slot is `cardOrder.indexOf(homeIndex)`,
+  // and the gap between its home slot and current slot is expressed as a
+  // translateX offset — since the DOM node itself never moves, animating
+  // that transform is a plain CSS transition, no manual FLIP/JS tweening.
+
+  const [cardOrder, setCardOrder] = useState<number[]>(CARDS.map((_, i) => i))
+
+  const handleFrontCardClick = () => {
+    setCardOrder(prev => [...prev.slice(1), prev[0]])
+  }
+
+  const slotFor = (homeIndex: number) => cardOrder.indexOf(homeIndex)
+
   // ── Mobile swipe handlers (top card only) ────────────────────────────────
 
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
@@ -104,11 +121,22 @@ const CreditCardsSection = () => {
       {/* ── Desktop: horizontal overlap stack + CTA column ──────────────── */}
       <CardInfoContainer>
         <CardStack>
-          {CARDS.map(({ key, src, alt }, i) => (
-            <DesktopCard key={key} $zIndex={TOTAL - i} $last={i === TOTAL - 1}>
-              <Image src={src} alt={alt} draggable={false} fill sizes="(max-width: 768px) 0px, 20vw" />
-            </DesktopCard>
-          ))}
+          {CARDS.map(({ key, src, alt }, i) => {
+            const slot = slotFor(i)
+            const isFront = slot === 0
+            return (
+              <DesktopCard
+                key={key}
+                $zIndex={TOTAL - slot}
+                $last={i === TOTAL - 1}
+                $offset={slot - i}
+                $clickable={isFront}
+                onClick={isFront ? handleFrontCardClick : undefined}
+              >
+                <Image src={src} alt={alt} draggable={false} fill sizes="(max-width: 768px) 0px, 20vw" />
+              </DesktopCard>
+            )
+          })}
         </CardStack>
 
         <CTAColumn>
@@ -203,7 +231,7 @@ const CardStack = styled.div`
   position: relative;
 `
 
-interface DesktopCardProps { $zIndex: number; $last: boolean }
+interface DesktopCardProps { $zIndex: number; $last: boolean; $offset: number; $clickable: boolean }
 
 const DesktopCard = styled.div<DesktopCardProps>`
   flex: 1 0 0;
@@ -215,6 +243,9 @@ const DesktopCard = styled.div<DesktopCardProps>`
   position: relative;
   z-index: ${({ $zIndex }) => $zIndex};
   margin-right: ${({ $last }) => ($last ? '0' : `-${CARD_OVERLAP}px`)};
+  cursor: ${({ $clickable }) => ($clickable ? 'pointer' : 'default')};
+  transform: translateX(calc(${({ $offset }) => $offset} * (100% - ${CARD_OVERLAP}px)));
+  transition: transform 0.4s cubic-bezier(0.65, 0, 0.35, 1);
 
   img {
     position: absolute;

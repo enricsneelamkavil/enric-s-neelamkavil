@@ -19,12 +19,32 @@ const SendIcon = () => (
   </svg>
 )
 
+// ─── Types ──────────────────────────────────────────────────────────────────
+
+interface ChatMessage {
+  role: 'user' | 'assistant'
+  content: string
+}
+
+// ─── Typing indicator ───────────────────────────────────────────────────────
+
+const TypingDots = () => (
+  <DotsWrapper aria-label="Thinking">
+    <Dot $delay={0} />
+    <Dot $delay={0.15} />
+    <Dot $delay={0.3} />
+  </DotsWrapper>
+)
+
 // ─── Component ────────────────────────────────────────────────────────────────
 
 const PersonalAgent = () => {
   const pathname = usePathname()
   const inputRef = useRef<HTMLInputElement>(null)
   const [message, setMessage] = useState('')
+  const [messages, setMessages] = useState<ChatMessage[]>([])
+  const [isStreaming, setIsStreaming] = useState(false)
+  const [forceVisible, setForceVisible] = useState(false)
   const [scrollVisible, setScrollVisible] = useState(pathname !== '/')
   const [footerVisible, setFooterVisible] = useState(false)
 
@@ -59,11 +79,12 @@ const PersonalAgent = () => {
     return () => observer.disconnect()
   }, [])
 
-  // ⌘K / Ctrl+K → focus the input
+  // ⌘K / Ctrl+K → reveal the agent bar and focus the input
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault()
+        setForceVisible(true)
         inputRef.current?.focus()
       }
     }
@@ -71,17 +92,65 @@ const PersonalAgent = () => {
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [])
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const query = message.trim()
-    if (!query) return
+    if (!query || isStreaming) return
     setMessage('')
-    // TODO: wire to /api/agent (Anthropic SDK)
+
+    const userMessage: ChatMessage = { role: 'user', content: query }
+    const history = [...messages, userMessage]
+    setMessages([...history, { role: 'assistant', content: '' }])
+    setIsStreaming(true)
+
+    try {
+      const res = await fetch('/api/agent', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: history }),
+      })
+
+      if (!res.ok) throw new Error('Request failed')
+
+      const data = await res.json()
+      const content = data.content
+
+      setMessages(prev => {
+        const updated = [...prev]
+        updated[updated.length - 1] = { role: 'assistant', content }
+        return updated
+      })
+    } catch (err) {
+      console.error('[agent] request failed:', err)
+      setMessages(prev => {
+        const updated = [...prev]
+        updated[updated.length - 1] = {
+          role: 'assistant',
+          content: "Sorry, something went wrong on my end. Try again in a moment.",
+        }
+        return updated
+      })
+    } finally {
+      setIsStreaming(false)
+    }
   }
 
-  const isVisible = scrollVisible && !footerVisible
+  const isVisible = (scrollVisible && !footerVisible) || forceVisible
 
   return (
     <Wrapper $visible={isVisible} role="search" aria-label="Ask Enric">
+      {messages.length > 0 && (
+        <ConversationPanel role="log" aria-live="polite">
+          {messages.map((m, i) => {
+            const isLast = i === messages.length - 1
+            const showTyping = m.role === 'assistant' && !m.content && isStreaming && isLast
+            return (
+              <MessageBubble key={i} $role={m.role}>
+                {showTyping ? <TypingDots /> : m.content}
+              </MessageBubble>
+            )
+          })}
+        </ConversationPanel>
+      )}
       <BarContainer>
         <Bar>
           <InputArea>
@@ -116,7 +185,71 @@ const PersonalAgent = () => {
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
 const Wrapper = styled.div<{ $visible: boolean }>`
-  display: none; /* Hidden everywhere as requested, except trigger in mobile menu */
+  display: ${({ $visible }) => ($visible ? 'flex' : 'none')};
+  flex-direction: column;
+  align-items: center;
+  position: fixed;
+  bottom: ${({ theme }) => theme.spacing[8]};
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+
+  ${mq.mobile} {
+    bottom: ${({ theme }) => theme.spacing[6]};
+  }
+`
+
+const ConversationPanel = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: ${({ theme }) => theme.spacing[2]};
+  width: min(44rem, calc(100vw - ${({ theme }) => theme.spacing[6]} * 2));
+  max-height: 22rem;
+  overflow-y: auto;
+  margin-bottom: ${({ theme }) => theme.spacing[3]};
+  padding: ${({ theme }) => theme.spacing[4]};
+  background-color: ${({ theme }) => theme.colors.surface.primary};
+  border: 1px solid ${({ theme }) => theme.colors.border.tertiary};
+  border-radius: ${({ theme }) => theme.radii.xl};
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+`
+
+const MessageBubble = styled.div<{ $role: 'user' | 'assistant' }>`
+  align-self: ${({ $role }) => ($role === 'user' ? 'flex-end' : 'flex-start')};
+  max-width: 85%;
+  padding: ${({ theme }) => theme.spacing[2]} ${({ theme }) => theme.spacing[3]};
+  border-radius: ${({ theme }) => theme.radii.lg};
+  background-color: ${({ theme, $role }) =>
+    $role === 'user' ? theme.colors.surface.inverse : theme.colors.surface.tertiary};
+  color: ${({ theme, $role }) =>
+    $role === 'user' ? theme.colors.text.inverse : theme.colors.text.primary};
+  font-family: ${({ theme }) => theme.fonts.sans};
+  font-weight: ${({ theme }) => theme.fontWeights.light};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  line-height: ${({ theme }) => theme.lineHeights.normal};
+  white-space: pre-wrap;
+  word-break: break-word;
+`
+
+const dotPulse = keyframes`
+  0%, 80%, 100% { opacity: 0.3; transform: scale(0.8); }
+  40% { opacity: 1; transform: scale(1); }
+`
+
+const DotsWrapper = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 0;
+`
+
+const Dot = styled.span<{ $delay: number }>`
+  width: 6px;
+  height: 6px;
+  border-radius: ${({ theme }) => theme.radii.full};
+  background-color: ${({ theme }) => theme.colors.text.tertiary};
+  animation: ${dotPulse} 1.2s ease-in-out infinite;
+  animation-delay: ${({ $delay }) => $delay}s;
 `
 
 const spin = keyframes`

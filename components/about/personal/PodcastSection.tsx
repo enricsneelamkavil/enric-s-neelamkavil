@@ -7,11 +7,9 @@ import SectionLabel from '@/components/shared/SectionLabel'
 import SectionHeader from '@/components/shared/SectionHeader'
 
 // ─── Layout constants (Figma-derived) ────────────────────────────────────────
-const LOGO_SIZE = 120
-const PLATFORM_SIZE_DESKTOP = 32
-const PLATFORM_SIZE_MOBILE = 40
-const PLATFORM_RADIUS_DESKTOP = 8
-const PLATFORM_RADIUS_MOBILE = 12
+const LOGO_SIZE = 160
+const PLATFORM_SIZE = 48
+const PLATFORM_RADIUS = 12
 
 // ─── Data ────────────────────────────────────────────────────────────────────
 const PLATFORMS = [
@@ -66,7 +64,7 @@ const PodcastSection = () => (
                 rel="noopener noreferrer"
                 aria-label={name}
               >
-                <Image src={src} alt={name} draggable={false} fill sizes="40px" />
+                <Image src={src} alt={name} draggable={false} fill sizes="48px" />
               </PlatformLink>
             ))}
           </PlatformsRow>
@@ -171,9 +169,9 @@ const PlatformsRow = styled.div`
 const PlatformLink = styled.a`
   position: relative;
   display: block;
-  width: ${PLATFORM_SIZE_DESKTOP}px;
-  height: ${PLATFORM_SIZE_DESKTOP}px;
-  border-radius: ${PLATFORM_RADIUS_DESKTOP}px;
+  width: ${PLATFORM_SIZE}px;
+  height: ${PLATFORM_SIZE}px;
+  border-radius: ${PLATFORM_RADIUS}px;
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.15);
   overflow: hidden;
   flex-shrink: 0;
@@ -184,12 +182,6 @@ const PlatformLink = styled.a`
     height: 100%;
     object-fit: cover;
     pointer-events: none;
-  }
-
-  ${mq.mobile} {
-    width: ${PLATFORM_SIZE_MOBILE}px;
-    height: ${PLATFORM_SIZE_MOBILE}px;
-    border-radius: ${PLATFORM_RADIUS_MOBILE}px;
   }
 `
 

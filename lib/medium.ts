@@ -45,7 +45,7 @@ export async function fetchMediumArticles(): Promise<MediumArticle[]> {
   if (!res.ok) throw new Error(`rss2json error: ${res.status}`)
   const data: RssResponse = await res.json()
   if (data.status !== 'ok') throw new Error('Feed not ok')
-  return data.items.slice(0, 3).map(item => ({
+  return data.items.slice(0, 6).map(item => ({
     title: item.title,
     url: item.link,
     thumbnail: extractThumbnail(item),

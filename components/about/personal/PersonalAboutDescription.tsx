@@ -14,13 +14,19 @@ const getISTDay = () =>
     .toUpperCase()
 
 // ─── Task data ───────────────────────────────────────────────────────────────
+// 'always'  — permanently checked, regardless of hover
+// 'hover'   — checks only while the widget is hovered (desktop); always
+//             shown checked on mobile, since there's no hover state there
+// 'never'   — always unchecked
 
-const TASKS = [
-  { label: 'Plan Sri Lanka', completedOnHover: false },
-  { label: 'Start drafting first book', completedOnHover: false },
-  { label: 'Redesign Portfolio', completedOnHover: true },
-  { label: 'Next medium article', completedOnHover: false },
-  { label: 'Shoot podcast episode', completedOnHover: false },
+type TaskState = 'always' | 'hover' | 'never'
+
+const TASKS: { label: string; state: TaskState }[] = [
+  { label: 'Plan Sri Lanka', state: 'hover' },
+  { label: 'Start drafting first book', state: 'never' },
+  { label: 'Redesign Portfolio', state: 'hover' },
+  { label: 'Write next medium article', state: 'never' },
+  { label: 'Shoot podcast episode', state: 'never' },
 ]
 
 // ─── Component ───────────────────────────────────────────────────────────────
@@ -68,14 +74,14 @@ const PersonalAboutDescription = () => {
         <CardBody>
           <CardTitle>To do List</CardTitle>
           <TaskGroup>
-            {TASKS.map(({ label, completedOnHover }) => (
+            {TASKS.map(({ label, state }) => (
               <Task key={label}>
-                <CheckBox $completedOnHover={completedOnHover} $hovered={widgetHovered}>
-                  {completedOnHover && (
-                    <CheckIcon aria-hidden="true" $hovered={widgetHovered} />
+                <CheckBox $state={state} $hovered={widgetHovered}>
+                  {state !== 'never' && (
+                    <CheckIcon aria-hidden="true" $state={state} $hovered={widgetHovered} />
                   )}
                 </CheckBox>
-                <TaskLabel $completedOnHover={completedOnHover} $hovered={widgetHovered}>
+                <TaskLabel $state={state} $hovered={widgetHovered}>
                   {label}
                 </TaskLabel>
               </Task>
@@ -221,7 +227,7 @@ const Task = styled.div`
   gap: ${({ theme }) => theme.spacing[2]};
 `
 
-const CheckBox = styled.div<{ $completedOnHover: boolean; $hovered: boolean }>`
+const CheckBox = styled.div<{ $state: TaskState; $hovered: boolean }>`
   width: 16px;
   height: 16px;
   flex-shrink: 0;
@@ -231,9 +237,15 @@ const CheckBox = styled.div<{ $completedOnHover: boolean; $hovered: boolean }>`
   justify-content: center;
   transition: background 0.15s ease, border 0.15s ease;
 
-  ${({ $completedOnHover, $hovered, theme }) => {
-    if (!$completedOnHover) {
+  ${({ $state, $hovered, theme }) => {
+    if ($state === 'never') {
       return `border: 1px solid ${theme.colors.border.tertiary};`;
+    }
+    if ($state === 'always') {
+      return `
+        border: none;
+        background: ${theme.colors.surface.inverse};
+      `;
     }
     return `
       border: ${$hovered ? 'none' : `1px solid ${theme.colors.border.tertiary}`};
@@ -247,14 +259,14 @@ const CheckBox = styled.div<{ $completedOnHover: boolean; $hovered: boolean }>`
   }}
 `
 
-const CheckIcon = styled.span<{ $hovered: boolean }>`
+const CheckIcon = styled.span<{ $state: TaskState; $hovered: boolean }>`
   display: inline-block;
   width: 12px;
   height: 12px;
   background-color: ${({ theme }) => theme.colors.text.inverse};
   -webkit-mask: url(/icons/tick.svg) no-repeat center / contain;
   mask: url(/icons/tick.svg) no-repeat center / contain;
-  opacity: ${({ $hovered }) => ($hovered ? 1 : 0)};
+  opacity: ${({ $state, $hovered }) => ($state === 'always' || $hovered ? 1 : 0)};
   transition: opacity 0.15s ease;
 
   ${mq.mobile} {
@@ -262,16 +274,17 @@ const CheckIcon = styled.span<{ $hovered: boolean }>`
   }
 `
 
-const TaskLabel = styled.span<{ $completedOnHover: boolean; $hovered: boolean }>`
+const TaskLabel = styled.span<{ $state: TaskState; $hovered: boolean }>`
   font-family: ${({ theme }) => theme.fonts.sans};
   font-weight: ${({ theme }) => theme.fontWeights.light};
   font-size: ${({ theme }) => theme.fontSizes.sm};
   line-height: ${({ theme }) => theme.lineHeights.normal};
   color: ${({ theme }) => theme.colors.text.tertiary};
   white-space: nowrap;
-  
-  ${({ $completedOnHover, $hovered }) => {
-    if (!$completedOnHover) return 'text-decoration: none;';
+
+  ${({ $state, $hovered }) => {
+    if ($state === 'never') return 'text-decoration: none;';
+    if ($state === 'always') return 'text-decoration: line-through;';
     return `
       text-decoration: ${$hovered ? 'line-through' : 'none'};
       ${mq.mobile} {

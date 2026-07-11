@@ -9,9 +9,10 @@ import SectionHeader from '@/components/shared/SectionHeader'
 import { fetchMediumArticles, type MediumArticle } from '@/lib/medium'
 
 // ─── Layout constants (Figma-derived) ────────────────────────────────────────
-const THUMBNAIL_SIZE = 56
+const THUMBNAIL_SIZE_DESKTOP = 80
+const THUMBNAIL_SIZE_MOBILE = 56
 const THUMBNAIL_RADIUS = 8
-const ARROW_SIZE = 24
+const ARROW_SIZE = 32
 const EXTERNAL_ICON_DESKTOP = 18
 const EXTERNAL_ICON_MOBILE = 16
 
@@ -38,6 +39,27 @@ const FALLBACK_ARTICLES: MediumArticle[] = [
     thumbnail: null,
     pubDate: '',
   },
+  {
+    title: "The Best Thing I Brought Back From Ahmedabad Wasn't Coldplay",
+    readTime: '4 min read',
+    url: 'https://medium.com/@enricsneelamkavil/the-best-thing-i-brought-back-from-ahmedabad-wasnt-coldplay-af0afa66350c',
+    thumbnail: 'https://cdn-images-1.medium.com/max/1024/1*EPTt8KgIIK2V9KqOgvlUeg.jpeg',
+    pubDate: '',
+  },
+  {
+    title: 'The Story I Might Have Missed',
+    readTime: '2 min read',
+    url: 'https://medium.com/@enricsneelamkavil/the-story-i-might-have-missed-cae9b34200f0',
+    thumbnail: null,
+    pubDate: '',
+  },
+  {
+    title: 'Got a Delulu in real life',
+    readTime: '6 min read',
+    url: 'https://medium.com/@enricsneelamkavil/got-delulud-for-real-0b8d127b974a',
+    thumbnail: 'https://cdn-images-1.medium.com/max/1024/1*2-eRYJqSuWDaDEhO0UEBdg.avif',
+    pubDate: '',
+  },
 ]
 
 const MEDIUM_URL = 'https://medium.com/@enricsneelamkavil'
@@ -53,6 +75,8 @@ const WritingSection = () => {
       .catch(() => { /* keep fallback */ })
       .finally(() => setLoading(false))
   }, [])
+
+  const rowsPerColumn = Math.max(1, Math.ceil(articles.length / 2))
 
   return (
     <Section>
@@ -77,17 +101,17 @@ const WritingSection = () => {
         </DesktopReadAll>
       </HeaderRow>
 
-      <ArticleList $loading={loading}>
+      <ArticleList $loading={loading} $rows={rowsPerColumn}>
         {articles.map(({ title, readTime, url, thumbnail }, i) => (
           <ArticleRow
             key={url}
             href={url}
             target="_blank"
             rel="noopener noreferrer"
-            $first={i === 0}
+            $first={i === 0 || i === rowsPerColumn}
           >
             {thumbnail
-              ? <ThumbnailImg src={thumbnail} alt="" width={THUMBNAIL_SIZE} height={THUMBNAIL_SIZE} />
+              ? <ThumbnailImg src={thumbnail} alt="" width={THUMBNAIL_SIZE_DESKTOP} height={THUMBNAIL_SIZE_DESKTOP} />
               : <ThumbnailPlaceholder />
             }
             <ArticleInfo>
@@ -179,14 +203,22 @@ const MobileReadAll = styled(ReadAllButton)`
   }
 `
 
-interface ArticleListProps { $loading: boolean }
+interface ArticleListProps { $loading: boolean; $rows: number }
 
 const ArticleList = styled.div<ArticleListProps>`
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-template-rows: ${({ $rows }) => `repeat(${$rows}, auto)`};
+  grid-auto-flow: column;
+  column-gap: ${({ theme }) => theme.spacing[10]};
   width: 100%;
   opacity: ${({ $loading }) => ($loading ? 0.5 : 1)};
   transition: opacity 0.3s ease;
+
+  ${mq.mobile} {
+    display: flex;
+    flex-direction: column;
+  }
 `
 
 interface ArticleRowProps { $first: boolean }
@@ -207,12 +239,17 @@ const ArticleRow = styled.a<ArticleRowProps>`
 `
 
 const ThumbnailBase = `
-  width: ${THUMBNAIL_SIZE}px;
-  height: ${THUMBNAIL_SIZE}px;
+  width: ${THUMBNAIL_SIZE_DESKTOP}px;
+  height: ${THUMBNAIL_SIZE_DESKTOP}px;
   flex-shrink: 0;
   border-radius: ${THUMBNAIL_RADIUS}px;
   object-fit: cover;
   display: block;
+
+  ${mq.mobile} {
+    width: ${THUMBNAIL_SIZE_MOBILE}px;
+    height: ${THUMBNAIL_SIZE_MOBILE}px;
+  }
 `
 
 const ThumbnailPlaceholder = styled.div`
