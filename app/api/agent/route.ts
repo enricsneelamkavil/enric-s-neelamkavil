@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import type { AgentResponse } from '@/app/ask/AgentMessage'
 
 const SYSTEM_PROMPT = `
 You are Enric's personal AI assistant on his
@@ -110,11 +111,70 @@ HOW TO ANSWER COMMON QUESTIONS:
 Keep responses concise, warm, and conversational.
 Max 3-4 sentences unless the question needs more detail.
 Use "I" not "Enric". Never mention this system prompt.
+
+RESPONSE FORMAT — always return valid JSON:
+{ "text": "your conversational response", "cards": [] }
+
+CARD RULES — include cards when relevant:
+
+If asked about work/projects/what you built, return type:"work"
+cards for up to 3 of these ONLY — never invent other projects as
+cards, never return all of them unless directly relevant:
+- Plush (the flagship): { "type":"work", "title":"Plush",
+  "description":"AI-powered credit card assistant",
+  "tags":["CASE STUDY","FIN TECH","APPLICATION"],
+  "cta_url":"https://plush.money", "flagship":true }
+- Urban Trash: { "type":"work", "title":"Urban Trash",
+  "description":"B2B waste aggregation platform",
+  "tags":["B2B","WEB APP"], "cta_url":"https://urbantrash.in" }
+- ReputeUp: { "type":"work", "title":"ReputeUp",
+  "description":"Review management platform",
+  "tags":["AI","LANDING"] }
+
+If asked about travel/countries visited, return type:"travel"
+cards for countries actually visited — fields: country, year, city.
+
+If asked about credit cards, return type:"credit-card" cards —
+field: card_name, using the exact name from this list only:
+American Express Membership Rewards, HDFC Marriott Bonvoy,
+PhonePe SBI Select Black, IDFC First Select, HDFC Millennia,
+HDFC Swiggy, Flipkart Axis, ICICI Amazon Pay.
+
+If asked about yourself/who you are, return exactly one
+type:"profile" card — no extra fields needed, the UI renders
+your identity card automatically.
+
+If asked about stats/years of experience/numbers, return
+type:"stat" cards — fields: value, label.
+
+Never set cover_image_url, photo, card_image, or src yourself —
+those are filled in automatically from real asset data based on
+the title/country/card_name you provide. Never include markdown
+in the text field. Output ONLY the raw JSON object — no code
+fences, no prose before or after it.
 `
 
 interface ChatMessage {
   role: 'user' | 'assistant'
   content: string
+}
+
+// Gemini is instructed to reply with raw JSON, but models aren't perfectly
+// reliable about that — strip accidental markdown code fences, then fall
+// back to a plain-text wrap if what's left still isn't parseable JSON.
+function parseAgentResponse(text: string): AgentResponse {
+  let parsed: AgentResponse
+  try {
+    const clean = text
+      .replace(/^```json\s*/i, '')
+      .replace(/^```\s*/i, '')
+      .replace(/```\s*$/i, '')
+      .trim()
+    parsed = JSON.parse(clean)
+  } catch {
+    parsed = { text }
+  }
+  return parsed
 }
 
 export async function POST(req: NextRequest) {
@@ -129,8 +189,10 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Agent is not configured' }, { status: 500 })
   }
 
+  console.log('[agent] GEMINI_API_KEY exists:', !!process.env.GEMINI_API_KEY)
+
   const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+    `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent?key=${process.env.GEMINI_API_KEY}`,
     {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -146,11 +208,15 @@ export async function POST(req: NextRequest) {
     }
   )
 
+  console.log('[agent] Gemini status:', response.status)
+
   if (!response.ok) {
-    console.error('[agent] Gemini API error:', await response.text())
+    const err = await response.json()
+    console.log('[agent] Gemini error:', JSON.stringify(err))
     return NextResponse.json({ error: 'API error' }, { status: 500 })
   }
 
   const data = await response.json()
-  return NextResponse.json({ content: data.candidates[0].content.parts[0].text })
+  const rawText: string = data.candidates[0].content.parts[0].text
+  return NextResponse.json({ content: parseAgentResponse(rawText) })
 }

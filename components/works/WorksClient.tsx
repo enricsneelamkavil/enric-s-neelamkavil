@@ -7,6 +7,7 @@ import PageHeader from '@/components/shared/PageHeader'
 import FilterRow from './FilterRow'
 import FeaturedCard from './FeaturedCard'
 import WorksGrid from './WorksGrid'
+import ProcessSection from './ProcessSection'
 import type { Project } from '@/types/project'
 
 interface Props {
@@ -71,6 +72,8 @@ const WorksClient = ({ projects }: Props) => {
             : 'No projects in this category.'}
         </EmptyState>
       )}
+
+      <ProcessSection />
     </PageSections>
   )
 }

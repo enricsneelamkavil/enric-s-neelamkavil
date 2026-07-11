@@ -95,7 +95,7 @@ const Navbar = () => {
         <AgentTriggerButton
           type="button"
           aria-label="Ask Enric AI"
-          onClick={() => { }}
+          onClick={() => window.dispatchEvent(new Event('open-personal-agent'))}
         >
           <AgentIconSpan aria-hidden="true" />
         </AgentTriggerButton>
