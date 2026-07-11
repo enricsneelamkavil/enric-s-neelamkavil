@@ -197,6 +197,18 @@ const AlbumsRow = styled.div`
   gap: 16px;
   width: 100%;
   overflow: visible;
+
+  ${mq.mobile} {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    padding-bottom: 4px;
+
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
 `
 
 const AlbumCard = styled.div`
@@ -204,6 +216,13 @@ const AlbumCard = styled.div`
   flex: 1 1 0;
   min-width: 0;
   padding: 16px;
+
+  ${mq.mobile} {
+    flex: none;
+    flex-shrink: 0;
+    width: auto;
+    scroll-snap-align: start;
+  }
 `
 
 const FrameImg = styled.img`
@@ -226,6 +245,15 @@ const AlbumContent = styled.div`
 
 const PhotoWrap = styled.div`
   width: 100%;
+
+  /* Cards go from equal-width columns to a natural-width scroll strip on
+     mobile — a shared height (with width driven by each photo's own aspect
+     ratio) is what makes "natural size" cards actually legible instead of
+     rendering at full native photo resolution. */
+  ${mq.mobile} {
+    width: auto;
+    height: 220px;
+  }
 `
 
 const PhotoImg = styled(Image)`
@@ -236,6 +264,11 @@ const PhotoImg = styled(Image)`
   object-fit: cover;
   object-position: center;
   pointer-events: none;
+
+  ${mq.mobile} {
+    width: auto;
+    height: 100%;
+  }
 `
 
 const AlbumTitle = styled.div`
