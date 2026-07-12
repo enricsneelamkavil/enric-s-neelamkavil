@@ -41,6 +41,11 @@ export interface AgentResponse {
 interface Props {
   role: 'user' | 'agent'
   content: AgentResponse
+  /** Skip the typewriter and show the full text immediately — for messages
+   * that have already finished animating once (e.g. after a remount). */
+  instant?: boolean
+  /** Fired once the typewriter reaches the end of the text. */
+  onTypingComplete?: () => void
 }
 
 const TYPE_SPEED_MS = 12
@@ -91,7 +96,7 @@ const getISTTime = () =>
     hour12: true,
   })
 
-const useTypewriter = (text: string, enabled: boolean) => {
+const useTypewriter = (text: string, enabled: boolean, onComplete?: () => void) => {
   const [shown, setShown] = useState(() => (enabled ? '' : text))
 
   useEffect(() => {
@@ -100,9 +105,13 @@ const useTypewriter = (text: string, enabled: boolean) => {
     const id = setInterval(() => {
       i += 1
       setShown(text.slice(0, i))
-      if (i >= text.length) clearInterval(id)
+      if (i >= text.length) {
+        clearInterval(id)
+        onComplete?.()
+      }
     }, TYPE_SPEED_MS)
     return () => clearInterval(id)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [text, enabled])
 
   return shown
@@ -207,10 +216,10 @@ const ImageCardItem = ({ card }: { card: AgentCard }) => (
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-const AgentMessage = ({ role, content }: Props) => {
+const AgentMessage = ({ role, content, instant, onTypingComplete }: Props) => {
   const isAgent = role === 'agent'
   const text = content.text ?? ''
-  const displayedText = useTypewriter(text, isAgent)
+  const displayedText = useTypewriter(text, isAgent && !instant, onTypingComplete)
 
   if (!isAgent) {
     return (
