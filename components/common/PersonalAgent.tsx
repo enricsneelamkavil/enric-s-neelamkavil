@@ -1,649 +1,421 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import { usePathname } from 'next/navigation'
+import { useCallback, useEffect, useRef, useState } from 'react'
+import { useChat } from '@ai-sdk/react'
+import { DefaultChatTransport } from 'ai'
 import styled, { keyframes } from 'styled-components'
 import { mq } from '@/styles/theme'
-import AgentMessage, { type AgentResponse } from '@/app/ask/AgentMessage'
-import ThinkingIndicator from '@/app/ask/ThinkingIndicator'
-
-// ─── Types ──────────────────────────────────────────────────────────────────
-
-type Stage = 'closed' | 'input' | 'chat'
-type ChatSize = 'active' | 'expanded'
-
-interface UIMessage {
-  role: 'user' | 'agent'
-  content: AgentResponse
-}
+import AgentMessage, { uiMessageToAgentResponse } from './AgentMessage'
+import ThinkingIndicator from './ThinkingIndicator'
 
 // ─── Data ───────────────────────────────────────────────────────────────────
-// Figma's quick-prompt cards are nav-style (title + description), not
-// conversational questions — copied verbatim from the "Agent" section.
 
 const QUICK_PROMPTS = [
-  { title: 'My Work', description: 'Projects & Experiments' },
-  { title: 'Experience', description: 'Career Journey' },
-  { title: 'Skills', description: 'Expertise & Tools' },
-  { title: 'About Me', description: 'Background & Interests' },
-  { title: 'Contact Me', description: 'Get in Touch' },
-  { title: 'Resume', description: 'Download PDF' },
+  'Why should I hire you?',
+  'Show me your work',
+  'Where have you traveled?',
+  'Tell me about Plush',
+  'Obsessed with credit cards?',
+  "What's your design process?",
+  'Tell me something personal',
+  'How do you work in teams?',
 ]
 
-// Figma layout constants (pixel-exact, from the "Agent" section frames)
-const CLOSED_WIDTH = '170px' // approx. natural width of the "Ask Enric" pill
-const INPUT_BAR_WIDTH = 'min(720px, calc(100vw - 48px))'
-const CARD_ACTIVE_WIDTH = 'min(1064px, calc(100vw - 48px))'
-const CARD_ACTIVE_HEIGHT = 'min(696px, 75vh)'
-const CARD_EXPANDED_WIDTH = 'min(1256px, calc(100vw - 48px))'
-const CARD_EXPANDED_HEIGHT = 'min(888px, 85vh)'
+// Figma-derived-equivalent layout constants — no Figma frame exists for
+// this panel, these are the spec's literal values.
 const TRIGGER_BOTTOM = 32
-const INPUT_BAR_HEIGHT = 48
-const CARD_GAP = 24
-const CARD_BOTTOM = `${TRIGGER_BOTTOM + INPUT_BAR_HEIGHT + CARD_GAP}px` // 104px
-const WIDTH_TRANSITION_MS = 400
-const CHAT_REVEAL_DELAY_MS = 75 // chat card appears a beat after thinking starts
+const SLIDE_TRANSITION_MS = 400
+const DRAG_CLOSE_THRESHOLD = 100 // px dragged down before the panel closes
+const TRIGGER_FONT_SIZE = '0.875rem' // 14px
+const HEADER_TITLE_FONT_SIZE = '0.9375rem' // 15px
+const EMPTY_TITLE_FONT_SIZE = '1.125rem' // 18px
+const EMPTY_SUBTITLE_FONT_SIZE = '0.875rem' // 14px
+const INPUT_FONT_SIZE = '0.875rem' // 14px
 
-// Figma's brand gradient (pink → red → yellow) — same 3 stops as the shared
-// PageHeader agent icon gradient, reused here for the animated border.
-const GRADIENT_STOPS = '#EC6AA8, #E8342A, #FFCC00, #EC6AA8'
-
-// ─── Component ────────────────────────────────────────────────────────────────
+// ─── Component ──────────────────────────────────────────────────────────────
 
 const PersonalAgent = () => {
-  const pathname = usePathname()
-  const [stage, setStage] = useState<Stage>('closed')
-  const [chatSize, setChatSize] = useState<ChatSize>('active')
-  const [messages, setMessages] = useState<UIMessage[]>([])
+  const [isOpen, setIsOpen] = useState(false)
   const [input, setInput] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
+  const [isDragging, setIsDragging] = useState(false)
+  const [dragOffset, setDragOffset] = useState(0)
 
   const inputRef = useRef<HTMLInputElement>(null)
   const conversationRef = useRef<HTMLDivElement>(null)
-  // Scroll position captured the moment the bare input bar opens — used to
-  // detect the user scrolling the page away from it (see effect below).
-  const openScrollY = useRef(0)
-  // Tracks the previous stage so auto-focus only waits out the width
-  // transition when actually leaving 'closed' — input↔chat has no width
-  // change on the bar, so it can focus immediately.
-  const prevStageRef = useRef<Stage>('closed')
-  // Message indices whose typewriter animation has already finished once —
-  // survives ChatCard unmounting (minimize→reopen) since it lives up here,
-  // not inside AgentMessage's own local state. Plain state (not a ref) since
-  // it's read during render.
-  const [typedIndices, setTypedIndices] = useState<Set<number>>(new Set())
+  const dragStartY = useRef<number | null>(null)
 
-  // Fully closing (not minimizing) starts the next session fresh — chat↔input
-  // (minimize/expand) is the only transition that preserves the conversation.
-  const resetConversation = () => {
+  const { messages, sendMessage, status, setMessages } = useChat({
+    transport: new DefaultChatTransport({ api: '/api/agent' }),
+    onFinish: () => {
+      conversationRef.current?.scrollTo({ top: conversationRef.current.scrollHeight, behavior: 'smooth' })
+    },
+    onError: err => {
+      console.error('[agent] request failed:', err)
+      setMessages(prev => [
+        ...prev,
+        {
+          id: crypto.randomUUID(),
+          role: 'assistant',
+          parts: [{ type: 'text', text: 'Sorry, something went wrong on my end. Try again in a moment.' }],
+        },
+      ])
+    },
+  })
+
+  const isBusy = status === 'submitted' || status === 'streaming'
+
+  const resetConversation = useCallback(() => {
     setMessages([])
     setInput('')
-    setIsLoading(false)
-    setTypedIndices(new Set())
-  }
+  }, [setMessages])
 
-  // ⌘K / Ctrl+K → open the input bar first (matching a fresh trigger click);
-  // jumps straight to the chat card if a conversation is already in progress.
-  // ESC steps back one level at a time: expanded → active → input → closed.
+  const handleOpen = useCallback(() => setIsOpen(true), [])
+
+  // Closing always clears the conversation — a fresh start next time, per spec.
+  const handleClose = useCallback(() => {
+    setIsOpen(false)
+    setDragOffset(0)
+    resetConversation()
+  }, [resetConversation])
+
+  // ⌘K / Ctrl+K opens the panel from anywhere; ESC closes it.
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
         e.preventDefault()
-        setStage(s => (s === 'closed' ? (messages.length > 0 ? 'chat' : 'input') : s))
+        handleOpen()
         return
       }
-      if (e.key === 'Escape') {
-        setStage(s => {
-          if (s === 'chat') {
-            if (chatSize === 'expanded') {
-              setChatSize('active')
-              return s
-            }
-            return 'input'
-          }
-          if (s === 'input') {
-            resetConversation()
-            return 'closed'
-          }
-          return s
-        })
+      if (e.key === 'Escape' && isOpen) {
+        handleClose()
       }
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [chatSize, messages.length])
+  }, [isOpen, handleOpen, handleClose])
 
-  // Mobile Navbar trigger button dispatches this to open the agent
+  // Mobile Navbar's agent icon button dispatches this to open the panel.
   useEffect(() => {
-    const onOpenRequest = () => setStage(messages.length > 0 ? 'chat' : 'input')
-    window.addEventListener('open-personal-agent', onOpenRequest)
-    return () => window.removeEventListener('open-personal-agent', onOpenRequest)
-  }, [messages.length])
+    window.addEventListener('open-personal-agent', handleOpen)
+    return () => window.removeEventListener('open-personal-agent', handleOpen)
+  }, [handleOpen])
 
-  // Auto-focus the input once it's showing — wait out the pill→bar width
-  // transition first so focus doesn't land mid-morph; input↔chat has no
-  // width change on the bar itself, so those focus immediately.
+  // Auto-focus the input once the slide-up transition finishes.
   useEffect(() => {
-    const wasClosed = prevStageRef.current === 'closed'
-    prevStageRef.current = stage
-    if (stage === 'closed') return
-    if (wasClosed) {
-      const id = setTimeout(() => inputRef.current?.focus(), WIDTH_TRANSITION_MS)
-      return () => clearTimeout(id)
-    }
-    inputRef.current?.focus()
-  }, [stage])
+    if (!isOpen) return
+    const id = setTimeout(() => inputRef.current?.focus(), SLIDE_TRANSITION_MS)
+    return () => clearTimeout(id)
+  }, [isOpen])
 
-  // Scrolling the page away while just the bare bar is open (no chat, no
-  // conversation to protect) reads as "never mind" — close back to the pill.
-  // Once the chat card is open, scrolling is just the user reading the page;
-  // only the explicit minimize/close controls should collapse it then.
+  // Lock background scroll while the panel is open.
   useEffect(() => {
-    if (stage !== 'input') return
-    openScrollY.current = window.scrollY
-
-    const onScroll = () => {
-      if (Math.abs(window.scrollY - openScrollY.current) > 50) {
-        resetConversation()
-        setStage('closed')
-      }
-    }
-    window.addEventListener('scroll', onScroll, { passive: true })
-    return () => window.removeEventListener('scroll', onScroll)
-  }, [stage])
-
-  // Lock background scroll only for the full chat card — the bare input bar
-  // must leave the page scrollable, otherwise the scroll-to-close listener
-  // above could never detect a scroll in the first place.
-  useEffect(() => {
-    if (stage !== 'chat') return
+    if (!isOpen) return
     const prevOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     return () => {
       document.body.style.overflow = prevOverflow
     }
-  }, [stage])
+  }, [isOpen])
 
-  // Keep the conversation scrolled to the latest message
+  // Keep the conversation scrolled to the latest message.
   useEffect(() => {
     conversationRef.current?.scrollTo({ top: conversationRef.current.scrollHeight, behavior: 'smooth' })
-  }, [messages, isLoading])
+  }, [messages, status])
 
-  const sendMessage = async (raw: string) => {
+  const submitMessage = (raw: string) => {
     const query = raw.trim()
-    if (!query || isLoading) return
+    if (!query || isBusy) return
     setInput('')
+    sendMessage({ text: query })
+  }
 
-    const userMsg: UIMessage = { role: 'user', content: { text: query } }
-    const history = [...messages, userMsg]
-    const historyForApi = history.map(m => ({
-      role: m.role === 'user' ? ('user' as const) : ('assistant' as const),
-      content: m.content.text ?? '',
-    }))
+  // Drag-to-dismiss on the handle — follows the pointer 1:1 while dragging
+  // (transition disabled), then either finishes the close or snaps back.
+  const handleDragStart = (e: React.PointerEvent) => {
+    dragStartY.current = e.clientY
+    setIsDragging(true)
+    e.currentTarget.setPointerCapture(e.pointerId)
+  }
 
-    setMessages(history)
-    setIsLoading(true)
-    // Input bar shows first; the chat card slides up from it a beat after
-    // thinking has already started, not simultaneously with the send.
-    setTimeout(() => setStage('chat'), CHAT_REVEAL_DELAY_MS)
+  const handleDragMove = (e: React.PointerEvent) => {
+    if (dragStartY.current === null) return
+    setDragOffset(Math.max(0, e.clientY - dragStartY.current))
+  }
 
-    try {
-      const res = await fetch('/api/agent', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages: historyForApi }),
-      })
-      if (!res.ok) throw new Error('Request failed')
-
-      const data = await res.json()
-      const agentContent: AgentResponse = data.content
-      setMessages(prev => [...prev, { role: 'agent', content: agentContent }])
-    } catch (err) {
-      console.error('[agent] request failed:', err)
-      setMessages(prev => [
-        ...prev,
-        { role: 'agent', content: { text: 'Sorry, something went wrong on my end. Try again in a moment.' } },
-      ])
-    } finally {
-      setIsLoading(false)
+  const handleDragEnd = () => {
+    if (dragStartY.current === null) return
+    dragStartY.current = null
+    setIsDragging(false)
+    if (dragOffset > DRAG_CLOSE_THRESHOLD) {
+      handleClose()
+    } else {
+      setDragOffset(0)
     }
   }
 
-  // /ask is its own dedicated full-page chat experience — a second inline
-  // trigger/overlay on top of it would just collide with its input bar.
-  if (pathname === '/ask') return null
-
-  const isClosed = stage === 'closed'
-
   return (
     <>
-      {stage === 'chat' && (
-        <ChatCard role="dialog" aria-modal="true" aria-label="Chat with Enric" $size={chatSize}>
-          <Header>
-            <HeaderIcon aria-hidden="true" />
-            <HeaderTitleBlock>
-              <HeaderTitle>Chat with Enric</HeaderTitle>
-              <HeaderStatus>
-                {chatSize === 'active' && <HeaderStatusIcon aria-hidden="true" />}
-                {chatSize === 'active' ? 'Best expanded' : "You're in the expanded experience"}
-              </HeaderStatus>
-            </HeaderTitleBlock>
-            <HeaderButtons>
-              {chatSize === 'active' ? (
-                <HeaderIconButton type="button" onClick={() => setChatSize('expanded')} aria-label="Expand">
-                  <ExpandIcon aria-hidden="true" />
-                </HeaderIconButton>
-              ) : (
-                <HeaderIconButton type="button" onClick={() => setChatSize('active')} aria-label="Shrink">
-                  <ShrinkIcon aria-hidden="true" />
-                </HeaderIconButton>
-              )}
-              <HeaderIconButton type="button" onClick={() => setStage('input')} aria-label="Minimize">
-                <MinusIcon aria-hidden="true" />
-              </HeaderIconButton>
-            </HeaderButtons>
-          </Header>
+      <Backdrop $open={isOpen} onClick={handleClose} aria-hidden={!isOpen} />
 
-          <Divider />
-
-          <ConversationArea ref={conversationRef} role="log" aria-live="polite">
-            {messages.map((m, i) => (
-              <MessageEntrance key={i}>
-                <AgentMessage
-                  role={m.role}
-                  content={m.content}
-                  instant={typedIndices.has(i)}
-                  onTypingComplete={() => setTypedIndices(prev => (prev.has(i) ? prev : new Set(prev).add(i)))}
-                />
-              </MessageEntrance>
-            ))}
-            <ThinkingIndicator visible={isLoading} />
-          </ConversationArea>
-
-          {!isLoading && (
-            <>
-              <Divider />
-              <QuickPromptsRow>
-                {QUICK_PROMPTS.map(prompt => (
-                  <PromptCard key={prompt.title} type="button" onClick={() => sendMessage(prompt.title)}>
-                    <PromptTitle>{prompt.title}</PromptTitle>
-                    <PromptDescription>{prompt.description}</PromptDescription>
-                  </PromptCard>
-                ))}
-              </QuickPromptsRow>
-            </>
-          )}
-        </ChatCard>
-      )}
-
-      {/* Single persistent element for both the closed pill and the open
-          input bar — only its width/content morph, so the transition is a
-          true seamless expand instead of one component swapping for another. */}
-      <Shell
-        role={isClosed ? 'button' : undefined}
-        tabIndex={isClosed ? 0 : undefined}
-        onClick={isClosed ? () => setStage(messages.length > 0 ? 'chat' : 'input') : undefined}
-        onKeyDown={
-          isClosed
-            ? e => {
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault()
-                  setStage(messages.length > 0 ? 'chat' : 'input')
-                }
-              }
-            : undefined
-        }
-        aria-label="Ask Enric"
-        $open={!isClosed}
+      <Panel
+        role="dialog"
+        aria-modal="true"
+        aria-label="Chat with Enric"
+        aria-hidden={!isOpen}
+        $open={isOpen}
+        $dragOffset={dragOffset}
+        $dragging={isDragging}
       >
-        <ShellInner $open={!isClosed}>
-          {isClosed ? (
-            <TriggerContent>
-              <TriggerIcon aria-hidden="true" />
-              <TriggerLabel>Ask Enric</TriggerLabel>
-            </TriggerContent>
-          ) : (
-            <InputContent>
-              <ChatInputRow>
-                <CursorGlyph aria-hidden="true">›_</CursorGlyph>
-                <PlaceholderInput
-                  ref={inputRef}
-                  value={input}
-                  onChange={e => setInput(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && sendMessage(input)}
-                  placeholder="Ask Enric…"
-                  aria-label="Ask Enric"
-                />
-              </ChatInputRow>
-              <SendButtonContainer>
-                <CmdKHint aria-hidden="true">⌘ K</CmdKHint>
-                <SendButton
-                  type="button"
-                  onClick={() => sendMessage(input)}
-                  disabled={!input.trim() || isLoading}
-                  aria-label="Send"
-                >
-                  <SendIcon aria-hidden="true" />
-                </SendButton>
-              </SendButtonContainer>
-            </InputContent>
+        <DragHandleArea
+          onPointerDown={handleDragStart}
+          onPointerMove={handleDragMove}
+          onPointerUp={handleDragEnd}
+          onPointerCancel={handleDragEnd}
+        >
+          <DragHandle />
+        </DragHandleArea>
+
+        <Header>
+          <HeaderLeft>
+            <HeaderIcon aria-hidden="true" />
+            <HeaderTitle>Ask Enric</HeaderTitle>
+          </HeaderLeft>
+          <CloseButton type="button" onClick={handleClose} aria-label="Close">
+            <CloseIconSvg width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden="true">
+              <path d="M1 1L13 13M13 1L1 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+            </CloseIconSvg>
+          </CloseButton>
+        </Header>
+
+        <ConversationArea ref={conversationRef} role="log" aria-live="polite">
+          {messages.length === 0 && (
+            <EmptyState>
+              <EmptyIcon aria-hidden="true" />
+              <EmptyTitle>Hey! Ask me anything about Enric</EmptyTitle>
+              <EmptySubtitle>His work, travels, skills — or just say hi.</EmptySubtitle>
+            </EmptyState>
           )}
-        </ShellInner>
-      </Shell>
+
+          {messages.map(m => (
+            <MessageEntrance key={m.id}>
+              <AgentMessage role={m.role === 'user' ? 'user' : 'agent'} content={uiMessageToAgentResponse(m)} />
+            </MessageEntrance>
+          ))}
+          <ThinkingIndicator visible={status === 'submitted'} />
+        </ConversationArea>
+
+        <QuickPromptsRow>
+          {QUICK_PROMPTS.map(prompt => (
+            <PromptChip key={prompt} type="button" onClick={() => sendMessage({ text: prompt })}>
+              {prompt}
+            </PromptChip>
+          ))}
+        </QuickPromptsRow>
+
+        <InputBar>
+          <InputPill>
+            <TextInput
+              ref={inputRef}
+              value={input}
+              onChange={e => setInput(e.target.value)}
+              onKeyDown={e => e.key === 'Enter' && submitMessage(input)}
+              placeholder=">_ ask me anything..."
+              aria-label="Ask me anything about Enric"
+            />
+            <SendButton
+              type="button"
+              onClick={() => submitMessage(input)}
+              disabled={!input.trim() || isBusy}
+              $active={!!input.trim()}
+              aria-label="Send"
+            >
+              <SendIcon aria-hidden="true" />
+            </SendButton>
+          </InputPill>
+        </InputBar>
+      </Panel>
+
+      {!isOpen && (
+        <Trigger type="button" onClick={handleOpen} aria-label="Ask Enric">
+          <TriggerIcon aria-hidden="true" />
+          <TriggerLabel>Ask Enric</TriggerLabel>
+        </Trigger>
+      )}
     </>
   )
 }
 
-// ─── Styles ───────────────────────────────────────────────────────────────────
+// ─── Styles ─────────────────────────────────────────────────────────────────
 
-// ── Animated gradient border (Figma annotation: "colors run around the
-// border slowly giving the agent a lively feeling") — a rotating oversized
-// conic-gradient clipped to the pill shape, with solid content on top. ──────
+// ── Trigger ──────────────────────────────────────────────────────────────
 
-const hueFlow = keyframes`
-  from { filter: hue-rotate(0deg); }
-  to   { filter: hue-rotate(360deg); }
+const triggerPulse = keyframes`
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
 `
 
-const fadeIn = keyframes`
-  from { opacity: 0; }
-  to   { opacity: 1; }
-`
-
-// ── Shell — single persistent element for closed/input/chat ──────────────
-// Only width/content morph here; the pill never unmounts into a separate
-// input-bar component, so the width transition is a true seamless expand.
-
-const Shell = styled.div<{ $open: boolean }>`
+const Trigger = styled.button`
   position: fixed;
   bottom: ${TRIGGER_BOTTOM}px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 999;
-  display: block;
-  padding: 2px;
-  width: ${({ $open }) => ($open ? INPUT_BAR_WIDTH : CLOSED_WIDTH)};
-  border-radius: ${({ theme }) => theme.radii.lg};
-  background: conic-gradient(${GRADIENT_STOPS});
-  animation: ${hueFlow} 3s linear infinite;
-  cursor: ${({ $open }) => ($open ? 'default' : 'pointer')};
-  transition: width ${WIDTH_TRANSITION_MS}ms cubic-bezier(0.4, 0, 0.2, 1), border-radius 0.4s ease;
-
-  ${mq.mobile} {
-    width: ${({ $open }) => ($open ? 'calc(100vw - 48px)' : CLOSED_WIDTH)};
-  }
-`
-
-const ShellInner = styled.div<{ $open: boolean }>`
-  display: flex;
-  align-items: center;
-  width: 100%;
-  overflow: hidden;
-  padding: ${({ $open }) => ($open ? '8px 8px 8px 12px' : '12px 24px')};
-  background-color: ${({ theme, $open }) => ($open ? theme.colors.surface.primary : theme.colors.surface.inverse)};
-  border-radius: 10px;
-  transition: background-color 0.3s ease, padding 0.3s ease;
-`
-
-const TriggerContent = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  width: 100%;
+  gap: ${({ theme }) => theme.spacing[2]};
+  height: 48px;
+  padding: 12px 24px;
+  border: none;
+  border-radius: ${({ theme }) => theme.radii.full};
+  background-color: ${({ theme }) => theme.colors.surface.inverse};
+  cursor: pointer;
   white-space: nowrap;
+
+  /* Temporarily hidden site-wide — see PersonalAgent panel below. */
+  display: none;
 `
 
 const TriggerIcon = styled.span`
   display: block;
   flex-shrink: 0;
-  width: 18px;
-  height: 18px;
+  width: 20px;
+  height: 20px;
   background-color: ${({ theme }) => theme.colors.text.inverse};
   -webkit-mask: url(/icons/agent.svg) no-repeat center / contain;
   mask: url(/icons/agent.svg) no-repeat center / contain;
+  animation: ${triggerPulse} 2.4s ease-in-out infinite;
 `
 
 const TriggerLabel = styled.span`
   font-family: ${({ theme }) => theme.fonts.sans};
   font-weight: ${({ theme }) => theme.fontWeights.regular};
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-  line-height: ${({ theme }) => theme.lineHeights.normal};
+  font-size: ${TRIGGER_FONT_SIZE};
   color: ${({ theme }) => theme.colors.text.inverse};
-  white-space: nowrap;
 `
 
-// Fades in only after the width transition finishes, per the animation-delay.
-const InputContent = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  width: 100%;
-  opacity: 0;
-  animation: ${fadeIn} 0.2s ease ${WIDTH_TRANSITION_MS}ms both;
-`
+// ── Backdrop ─────────────────────────────────────────────────────────────
 
-const ChatInputRow = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex: 1 0 0;
-  min-width: 0;
-`
-
-const CursorGlyph = styled.span`
-  flex-shrink: 0;
-  font-family: ${({ theme }) => theme.fonts.sans};
-  font-weight: ${({ theme }) => theme.fontWeights.light};
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-  line-height: ${({ theme }) => theme.lineHeights.normal};
-  color: ${({ theme }) => theme.colors.text.tertiary};
-  user-select: none;
-`
-
-const PlaceholderInput = styled.input`
-  flex: 1 0 0;
-  min-width: 0;
-  border: none;
-  outline: none;
-  background: transparent;
-  font-family: ${({ theme }) => theme.fonts.sans};
-  font-weight: ${({ theme }) => theme.fontWeights.light};
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-  line-height: ${({ theme }) => theme.lineHeights.normal};
-  color: ${({ theme }) => theme.colors.text.primary};
-
-  &::placeholder {
-    color: ${({ theme }) => theme.colors.text.tertiary};
-  }
-`
-
-const SendButtonContainer = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-shrink: 0;
-`
-
-const CmdKHint = styled.span`
-  font-family: ${({ theme }) => theme.fonts.sans};
-  font-weight: ${({ theme }) => theme.fontWeights.light};
-  font-size: ${({ theme }) => theme.fontSizes.xs};
-  line-height: ${({ theme }) => theme.lineHeights.tight};
-  color: ${({ theme }) => theme.colors.text.secondary};
-  white-space: nowrap;
-
-  ${mq.mobile} {
-    display: none;
-  }
-`
-
-const SendButton = styled.button`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  width: 32px;
-  height: 32px;
-  padding: 8px;
-  border: none;
-  border-radius: ${({ theme }) => theme.radii.md};
-  /* text.highlight (#E8342A) at 10% opacity — matches Figma exactly */
-  background-color: rgba(232, 52, 42, 0.1);
-  cursor: pointer;
-  transition: opacity 0.15s ease;
-
-  &:disabled {
-    opacity: 0.4;
-    cursor: default;
-  }
-`
-
-const SendIcon = styled.span`
-  display: block;
-  width: 16px;
-  height: 16px;
-  background-color: ${({ theme }) => theme.colors.text.highlight};
-  -webkit-mask: url(/icons/arrow-right.svg) no-repeat center / contain;
-  mask: url(/icons/arrow-right.svg) no-repeat center / contain;
-`
-
-// ── Chat card (chat stage) ────────────────────────────────────────────────
-
-const chatCardEnter = keyframes`
-  from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-  to   { opacity: 1; transform: translateX(-50%) translateY(0); }
-`
-
-const ChatCard = styled.div<{ $size: ChatSize }>`
+const Backdrop = styled.div<{ $open: boolean }>`
   position: fixed;
-  bottom: ${CARD_BOTTOM};
-  left: 50%;
-  transform: translateX(-50%);
+  inset: 0;
+  z-index: 998;
+  background-color: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(4px);
+  opacity: ${({ $open }) => ($open ? 1 : 0)};
+  pointer-events: ${({ $open }) => ($open ? 'auto' : 'none')};
+  transition: opacity 0.3s ease;
+
+  /* Temporarily hidden site-wide — see Trigger/Panel above. */
+  display: none;
+`
+
+// ── Panel ────────────────────────────────────────────────────────────────
+
+const Panel = styled.div<{ $open: boolean; $dragOffset: number; $dragging: boolean }>`
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
   z-index: 999;
   display: flex;
   flex-direction: column;
-  width: ${({ $size }) => ($size === 'expanded' ? CARD_EXPANDED_WIDTH : CARD_ACTIVE_WIDTH)};
-  height: ${({ $size }) => ($size === 'expanded' ? CARD_EXPANDED_HEIGHT : CARD_ACTIVE_HEIGHT)};
-  background-color: ${({ theme }) => theme.colors.surface.primary};
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  height: 70vh;
+  background-color: ${({ theme }) => theme.colors.background.primary};
   border: 1px solid ${({ theme }) => theme.colors.border.tertiary};
-  border-radius: ${({ theme }) => theme.radii.xl};
+  border-bottom: none;
+  border-radius: ${({ theme }) => theme.radii['3xl']} ${({ theme }) => theme.radii['3xl']} 0 0;
+  box-shadow: 0 -8px 48px rgba(0, 0, 0, 0.12);
+  transform: translateY(${({ $open, $dragOffset }) => ($open ? `${$dragOffset}px` : '100%')});
+  transition: ${({ $dragging }) => ($dragging ? 'none' : `transform ${SLIDE_TRANSITION_MS}ms cubic-bezier(0.4, 0, 0.2, 1)`)};
+  pointer-events: ${({ $open }) => ($open ? 'auto' : 'none')};
   overflow: hidden;
-  box-shadow: 0 8px 48px rgba(0, 0, 0, 0.12);
-  animation: ${chatCardEnter} 0.3s ease both;
-  transition: width 0.3s ease, height 0.3s ease;
 
   ${mq.mobile} {
-    width: calc(100vw - 48px);
+    height: 90vh;
+  }
+
+  /* Temporarily hidden site-wide — see Trigger above. */
+  display: none;
+`
+
+const DragHandleArea = styled.div`
+  flex-shrink: 0;
+  display: flex;
+  justify-content: center;
+  padding-top: 12px;
+  padding-bottom: 8px;
+  cursor: grab;
+  touch-action: none;
+
+  &:active {
+    cursor: grabbing;
   }
 `
 
+const DragHandle = styled.div`
+  width: 32px;
+  height: 4px;
+  border-radius: ${({ theme }) => theme.radii.full};
+  background-color: ${({ theme }) => theme.colors.border.tertiary};
+`
+
+// ── Header ───────────────────────────────────────────────────────────────
+
 const Header = styled.div`
+  flex-shrink: 0;
+  height: 52px;
   display: flex;
   align-items: center;
-  gap: 12px;
-  flex-shrink: 0;
-  padding: 24px 24px 16px;
+  justify-content: space-between;
+  padding: 0 20px;
+  border-bottom: 1px solid ${({ theme }) => theme.colors.border.tertiary};
+`
+
+const HeaderLeft = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[2]};
 `
 
 const HeaderIcon = styled.span`
   display: block;
   flex-shrink: 0;
-  width: 32px;
-  height: 32px;
+  width: 20px;
+  height: 20px;
   background-color: ${({ theme }) => theme.colors.text.highlight};
   -webkit-mask: url(/icons/agent.svg) no-repeat center / contain;
   mask: url(/icons/agent.svg) no-repeat center / contain;
 `
 
-const HeaderTitleBlock = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  flex: 1 0 0;
-  min-width: 0;
-`
-
 const HeaderTitle = styled.span`
-  font-family: ${({ theme }) => theme.fonts.sans};
-  font-weight: ${({ theme }) => theme.fontWeights.regular};
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-  line-height: ${({ theme }) => theme.lineHeights.tight};
+  font-family: ${({ theme }) => theme.fonts.notch};
+  font-weight: ${({ theme }) => theme.fontWeights.medium};
+  font-size: ${HEADER_TITLE_FONT_SIZE};
   color: ${({ theme }) => theme.colors.text.primary};
 `
 
-const HeaderStatus = styled.span`
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  font-family: ${({ theme }) => theme.fonts.sans};
-  font-weight: ${({ theme }) => theme.fontWeights.light};
-  font-size: ${({ theme }) => theme.fontSizes.xs};
-  line-height: ${({ theme }) => theme.lineHeights.tight};
-  color: ${({ theme }) => theme.colors.text.tertiary};
-`
-
-const HeaderStatusIcon = styled.span`
-  display: block;
-  flex-shrink: 0;
-  width: 12px;
-  height: 12px;
-  background-color: ${({ theme }) => theme.colors.text.tertiary};
-  -webkit-mask: url(/icons/expand.svg) no-repeat center / contain;
-  mask: url(/icons/expand.svg) no-repeat center / contain;
-`
-
-const HeaderButtons = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  flex-shrink: 0;
-`
-
-const HeaderIconButton = styled.button`
+const CloseButton = styled.button`
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-shrink: 0;
   width: 32px;
   height: 32px;
-  padding: 8px;
+  border: none;
+  border-radius: ${({ theme }) => theme.radii.full};
   background-color: ${({ theme }) => theme.colors.surface.tertiary};
-  border: 1px solid ${({ theme }) => theme.colors.border.tertiary};
-  border-radius: ${({ theme }) => theme.radii.md};
   cursor: pointer;
 `
 
-const iconButtonMask = (icon: string) => `
-  display: block;
-  width: 16px;
-  height: 16px;
-  background-color: currentColor;
-  -webkit-mask: url(${icon}) no-repeat center / contain;
-  mask: url(${icon}) no-repeat center / contain;
-`
-
-const ExpandIcon = styled.span`
-  ${iconButtonMask('/icons/expand.svg')}
+const CloseIconSvg = styled.svg`
   color: ${({ theme }) => theme.colors.text.secondary};
 `
 
-const ShrinkIcon = styled.span`
-  ${iconButtonMask('/icons/shrink.svg')}
-  color: ${({ theme }) => theme.colors.text.secondary};
-`
-
-const MinusIcon = styled.span`
-  ${iconButtonMask('/icons/minus.svg')}
-  color: ${({ theme }) => theme.colors.text.secondary};
-`
-
-const Divider = styled.div`
-  flex-shrink: 0;
-  height: 1px;
-  background-color: ${({ theme }) => theme.colors.border.tertiary};
-`
-
-// ── Conversation ──────────────────────────────────────────────────────────
+// ── Conversation ─────────────────────────────────────────────────────────
 
 const ConversationArea = styled.div`
   flex: 1;
@@ -651,8 +423,52 @@ const ConversationArea = styled.div`
   overflow-y: auto;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 20px 24px;
+  gap: ${({ theme }) => theme.spacing[4]};
+  padding: 20px 20px 0;
+`
+
+const emptyPulse = keyframes`
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.6; transform: scale(1.05); }
+`
+
+const EmptyState = styled.div`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: ${({ theme }) => theme.spacing[3]};
+  text-align: center;
+  padding-bottom: 20px;
+`
+
+const EmptyIcon = styled.span`
+  display: block;
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  background-color: ${({ theme }) => theme.colors.text.highlight};
+  -webkit-mask: url(/icons/agent.svg) no-repeat center / contain;
+  mask: url(/icons/agent.svg) no-repeat center / contain;
+  animation: ${emptyPulse} 2.4s ease-in-out infinite;
+`
+
+const EmptyTitle = styled.p`
+  margin: 0;
+  font-family: ${({ theme }) => theme.fonts.notch};
+  font-weight: ${({ theme }) => theme.fontWeights.medium};
+  font-size: ${EMPTY_TITLE_FONT_SIZE};
+  color: ${({ theme }) => theme.colors.text.primary};
+`
+
+const EmptySubtitle = styled.p`
+  margin: 0;
+  max-width: 280px;
+  font-family: ${({ theme }) => theme.fonts.sans};
+  font-size: ${EMPTY_SUBTITLE_FONT_SIZE};
+  line-height: ${({ theme }) => theme.lineHeights.normal};
+  color: ${({ theme }) => theme.colors.text.secondary};
 `
 
 const messageEnter = keyframes`
@@ -664,33 +480,32 @@ const MessageEntrance = styled.div`
   animation: ${messageEnter} 0.35s ease both;
 `
 
-// ── Quick prompts ─────────────────────────────────────────────────────────
+// ── Quick prompts ────────────────────────────────────────────────────────
 
 const QuickPromptsRow = styled.div`
+  flex-shrink: 0;
   display: flex;
   flex-wrap: nowrap;
-  gap: 16px;
-  flex-shrink: 0;
+  gap: ${({ theme }) => theme.spacing[2]};
   overflow-x: auto;
-  padding: 16px 24px;
+  padding: 10px 16px;
+  border-top: 1px solid ${({ theme }) => theme.colors.border.tertiary};
 
   &::-webkit-scrollbar {
     display: none;
   }
 `
 
-const PromptCard = styled.button`
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
+const PromptChip = styled.button`
   flex-shrink: 0;
-  width: 160px;
-  padding: 12px 16px;
-  background: transparent;
-  backdrop-filter: blur(6px);
   border: 1px solid ${({ theme }) => theme.colors.border.tertiary};
-  border-radius: ${({ theme }) => theme.radii.lg};
-  text-align: left;
+  border-radius: ${({ theme }) => theme.radii.full};
+  padding: 6px 14px;
+  background: transparent;
+  font-family: ${({ theme }) => theme.fonts.sans};
+  font-size: ${({ theme }) => theme.fontSizes.xs};
+  color: ${({ theme }) => theme.colors.text.secondary};
+  white-space: nowrap;
   cursor: pointer;
   transition: background-color 0.15s ease;
 
@@ -699,20 +514,63 @@ const PromptCard = styled.button`
   }
 `
 
-const PromptTitle = styled.span`
-  font-family: ${({ theme }) => theme.fonts.sans};
-  font-weight: ${({ theme }) => theme.fontWeights.regular};
-  font-size: ${({ theme }) => theme.fontSizes.xs};
-  line-height: ${({ theme }) => theme.lineHeights.tight};
-  color: ${({ theme }) => theme.colors.text.primary};
+// ── Input bar ────────────────────────────────────────────────────────────
+
+const InputBar = styled.div`
+  flex-shrink: 0;
+  padding: 12px 16px;
+  border-top: 1px solid ${({ theme }) => theme.colors.border.tertiary};
 `
 
-const PromptDescription = styled.span`
+const InputPill = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing[2]};
+  border: 1px solid ${({ theme }) => theme.colors.border.tertiary};
+  border-radius: ${({ theme }) => theme.radii.full};
+  padding: 6px 6px 6px 16px;
+`
+
+const TextInput = styled.input`
+  flex: 1;
+  min-width: 0;
+  border: none;
+  outline: none;
+  background: transparent;
   font-family: ${({ theme }) => theme.fonts.sans};
-  font-weight: ${({ theme }) => theme.fontWeights.light};
-  font-size: ${({ theme }) => theme.fontSizes.xs};
-  line-height: ${({ theme }) => theme.lineHeights.tight};
-  color: ${({ theme }) => theme.colors.text.tertiary};
+  font-size: ${INPUT_FONT_SIZE};
+  color: ${({ theme }) => theme.colors.text.primary};
+
+  &::placeholder {
+    color: ${({ theme }) => theme.colors.text.tertiary};
+  }
+`
+
+const SendButton = styled.button<{ $active: boolean }>`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  border: none;
+  border-radius: ${({ theme }) => theme.radii.full};
+  background-color: ${({ theme, $active }) => ($active ? theme.colors.surface.inverse : theme.colors.surface.tertiary)};
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+
+  &:disabled {
+    cursor: default;
+  }
+`
+
+const SendIcon = styled.span`
+  display: block;
+  width: 14px;
+  height: 14px;
+  background-color: ${({ theme }) => theme.colors.text.inverse};
+  -webkit-mask: url(/icons/arrow-right.svg) no-repeat center / contain;
+  mask: url(/icons/arrow-right.svg) no-repeat center / contain;
 `
 
 export default PersonalAgent

@@ -1,5 +1,6 @@
-// Data constants for enriching agent-generated cards in AgentMessage.tsx.
-// Kept in sync with the source-of-truth components they mirror:
+// Data constants for enriching agent-generated cards in AgentMessage.tsx,
+// used by the PersonalAgent chat panel. Kept in sync with the
+// source-of-truth components they mirror:
 // - WORKS         → components/home/MyWorks.tsx
 // - TRAVEL_PHOTOS → components/about/personal/TravelSection.tsx
 // - CREDIT_CARDS  → components/about/personal/CreditCardsSection.tsx

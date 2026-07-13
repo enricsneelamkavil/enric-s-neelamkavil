@@ -1,6 +1,5 @@
 'use client'
 
-import { usePathname } from 'next/navigation'
 import styled, { ThemeProvider } from 'styled-components'
 import theme, { mq } from '@/styles/theme'
 import Navbar from '@/components/common/Navbar'
@@ -12,17 +11,12 @@ interface Props {
 }
 
 const Layout = ({ children }: Props) => {
-  // /ask is a full-screen chat experience with its own fixed header (back
-  // link + title) and fixed input bar — the site Navbar/Footer would
-  // otherwise stack behind or overlap those.
-  const isAskPage = usePathname() === '/ask'
-
   return (
     <ThemeProvider theme={theme}>
       <PageWrapper>
-        {!isAskPage && <Navbar />}
+        <Navbar />
         <Main>{children}</Main>
-        {!isAskPage && <Footer />}
+        <Footer />
         <PersonalAgent />
       </PageWrapper>
     </ThemeProvider>

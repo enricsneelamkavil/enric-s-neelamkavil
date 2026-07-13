@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Image from 'next/image'
+import { isToolUIPart, type UIMessage } from 'ai'
 import styled, { keyframes } from 'styled-components'
 import { mq } from '@/styles/theme'
 import { WORKS, TRAVEL_PHOTOS, CREDIT_CARDS, PROFILE } from './agentData'
@@ -41,17 +42,30 @@ export interface AgentResponse {
 interface Props {
   role: 'user' | 'agent'
   content: AgentResponse
-  /** Skip the typewriter and show the full text immediately — for messages
-   * that have already finished animating once (e.g. after a remount). */
-  instant?: boolean
-  /** Fired once the typewriter reaches the end of the text. */
-  onTypingComplete?: () => void
 }
 
-const TYPE_SPEED_MS = 12
+// Converts a Vercel AI SDK UIMessage (parts-based) into the plain
+// { text, cards } shape this component already renders. Text parts are
+// concatenated in order; tool-result parts (state 'output-available') are
+// flattened into the cards array, in call order. Real token streaming
+// replaces the fake typewriter this used to need — the text is just
+// rendered as-is, growing naturally as the SDK streams it in.
+export function uiMessageToAgentResponse(message: UIMessage): AgentResponse {
+  const text = message.parts
+    .filter((p): p is Extract<typeof p, { type: 'text' }> => p.type === 'text')
+    .map(p => p.text)
+    .join('')
 
-// Figma-derived-equivalent layout constants for this page (no Figma frame
-// exists for /ask — these are the spec's literal values).
+  const cards = message.parts
+    .filter(isToolUIPart)
+    .filter((p): p is typeof p & { state: 'output-available' } => p.state === 'output-available')
+    .flatMap(p => (Array.isArray(p.output) ? p.output : [p.output])) as AgentCard[]
+
+  return { text: text || undefined, cards: cards.length > 0 ? cards : undefined }
+}
+
+// Figma-derived-equivalent layout constants for these cards (no Figma frame
+// exists for the agent chat panel — these are the spec's literal values).
 const WORK_IMAGE_HEIGHT = '200px'
 const WORK_TITLE_SIZE = '1.25rem' // 20px
 const WORK_DESC_SIZE = '0.875rem' // 14px
@@ -95,27 +109,6 @@ const getISTTime = () =>
     minute: '2-digit',
     hour12: true,
   })
-
-const useTypewriter = (text: string, enabled: boolean, onComplete?: () => void) => {
-  const [shown, setShown] = useState(() => (enabled ? '' : text))
-
-  useEffect(() => {
-    if (!enabled || !text) return
-    let i = 0
-    const id = setInterval(() => {
-      i += 1
-      setShown(text.slice(0, i))
-      if (i >= text.length) {
-        clearInterval(id)
-        onComplete?.()
-      }
-    }, TYPE_SPEED_MS)
-    return () => clearInterval(id)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [text, enabled])
-
-  return shown
-}
 
 // ─── Per-type card items ────────────────────────────────────────────────────
 
@@ -216,10 +209,9 @@ const ImageCardItem = ({ card }: { card: AgentCard }) => (
 
 // ─── Component ──────────────────────────────────────────────────────────────
 
-const AgentMessage = ({ role, content, instant, onTypingComplete }: Props) => {
+const AgentMessage = ({ role, content }: Props) => {
   const isAgent = role === 'agent'
   const text = content.text ?? ''
-  const displayedText = useTypewriter(text, isAgent && !instant, onTypingComplete)
 
   if (!isAgent) {
     return (
@@ -236,7 +228,7 @@ const AgentMessage = ({ role, content, instant, onTypingComplete }: Props) => {
 
   return (
     <AgentRow>
-      {text && <AgentText>{displayedText}</AgentText>}
+      {text && <AgentText>{text}</AgentText>}
       {groups.map(({ type, items }) => {
         if (type === 'work') {
           return (

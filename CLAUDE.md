@@ -24,14 +24,18 @@ portfolio/                        # project root
 │   ├── contact/page.tsx          # Contact ✅ Done — 'use client', two-column sticky layout
 │   ├── api/
 │   │   ├── visitor/route.ts      # POST — dedupes by IP+day, increments visitor counter
-│   │   └── contact/route.ts      # POST — Resend email to enricsneelamkavil@gmail.com
-│   └── layout.tsx                # Global layout (Navbar + Footer + PersonalAgent)
+│   │   ├── contact/route.ts      # POST — Resend email to enricsneelamkavil@gmail.com
+│   │   └── agent/route.ts        # POST — streamText + tool calling (Vercel AI SDK + Gemini); powers PersonalAgent chat panel
+│   └── layout.tsx                # Global layout (Navbar + Footer + PersonalAgent) — same on every route, no per-page exceptions
 ├── components/
 │   ├── common/
 │   │   ├── Navbar.tsx            ✅ Done — desktop glass pill + mobile bottom pill
 │   │   ├── Footer.tsx            ✅ Done — visitor counter wired to /api/visitor
 │   │   ├── Button.tsx            ✅ Done
-│   │   ├── PersonalAgent.tsx     ✅ Done (hidden globally via display:none — interaction TBD)
+│   │   ├── PersonalAgent.tsx     ✅ Done — slide-up chat panel (trigger pill + backdrop + drag-to-dismiss)
+│   │   ├── AgentMessage.tsx      ✅ Done — renders user bubbles + agent text/cards; moved here from deleted app/ask/
+│   │   ├── ThinkingIndicator.tsx ✅ Done — animated "thinking..." row shown while status === 'submitted'
+│   │   ├── agentData.ts          ✅ Done — WORKS/TRAVEL_PHOTOS/CREDIT_CARDS/PROFILE constants for enriching agent tool-call cards
 │   │   └── Layout.tsx            ✅ Done — ThemeProvider + PageWrapper + Main
 │   ├── home/
 │   │   ├── Landing.tsx           ✅ Done
@@ -104,6 +108,9 @@ portfolio/                        # project root
 - `components/common/Footer.tsx` ✅
 - `components/common/Button.tsx` ✅
 - `components/common/PersonalAgent.tsx` ✅
+- `components/common/AgentMessage.tsx` ✅
+- `components/common/ThinkingIndicator.tsx` ✅
+- `components/common/agentData.ts` ✅
 - `components/common/Layout.tsx` ✅
 - `components/shared/SectionLabel.tsx` ✅
 - `components/shared/SectionHeader.tsx` ✅
@@ -169,15 +176,55 @@ export const mq = {
 ## Navbar — Mobile Bottom Pill
 - **Desktop**: 5 nav links (Home, About, Work, Resume, Contact) — glass pill, fixed top-center
 - **Mobile**: 4 nav links (Home, About, Work, Contact) — **Resume omitted** — solid bottom pill
-- Mobile pill ends with: vertical separator + agent icon button (placeholder, `onClick={() => {}}`)
+- Mobile pill ends with: vertical separator + agent icon button — `onClick` dispatches `window.dispatchEvent(new Event('open-personal-agent'))`, which `PersonalAgent.tsx` listens for to open its chat panel
 - Agent icon: `/icons/agent.svg` — stored as `AGENT_ICON` constant in Navbar.tsx
-- PersonalAgent is fully hidden (`display: none`) everywhere — mobile interaction TBD
 
-## PersonalAgent
-- Currently `display: none` everywhere (Wrapper has `display: none` as the only rule)
-- ⌘K / Ctrl+K shortcut wired but has no visible effect while hidden
-- Mobile agent trigger button exists in Navbar but is a no-op placeholder
-- Interaction design not yet defined — do not implement until specified
+## Personal Agent (Chat) ✅ Done
+Site-wide AI chat, powered by Google Gemini via the Vercel AI SDK. There is no dedicated `/ask` page — a full-page version existed briefly during development and was deleted once the slide-up panel below replaced it as the only chat surface.
+
+**Files:**
+- `app/api/agent/route.ts` — POST handler; `streamText()` + tool calling
+- `components/common/PersonalAgent.tsx` — trigger pill + slide-up panel, owns all chat UI state
+- `components/common/AgentMessage.tsx` — renders one message (user bubble, or agent text + cards); exports the `uiMessageToAgentResponse()` adapter
+- `components/common/ThinkingIndicator.tsx` — animated "thinking..." row with rotating copy
+- `components/common/agentData.ts` — `WORKS` / `TRAVEL_PHOTOS` / `CREDIT_CARDS` / `PROFILE` constants used to enrich tool-call output into full cards
+
+**Dependencies:** `ai`, `@ai-sdk/google`, `@ai-sdk/react`, `zod` — installed via `npm install ai @ai-sdk/google @ai-sdk/react zod`
+
+**Model:** `google('gemini-flash-lite-latest')` via `createGoogleGenerativeAI({ apiKey: process.env.GEMINI_API_KEY })` — deliberately **not** `gemini-2.5-flash`; that model's free tier caps at 20 requests/day and exhausts quickly. `GEMINI_API_KEY` is a separate env var from the SDK's default `GOOGLE_GENERATIVE_AI_API_KEY` lookup, passed explicitly.
+
+#### app/api/agent/route.ts
+- `streamText({ model, system: SYSTEM_PROMPT, messages: await convertToModelMessages(messages), stopWhen: stepCountIs(3), tools })` → `result.toUIMessageStreamResponse()`
+- `SYSTEM_PROMPT` — first-person, portfolio-only guardrail (refuses off-topic requests) plus full bio/projects/travel/credit-cards/personal sections; explicitly instructs the model to call tools instead of describing things in text
+- 5 tools, each returning an array of card objects consumed by `AgentMessage.tsx`:
+  - `getWorks({ filter })` — `'featured'` returns the Plush flagship card, otherwise `WORKS.slice(0, 3)`
+  - `getTravel()` — maps `TRAVEL_PHOTOS` to `{ type: 'travel', country, photo, city, year }` via hardcoded `TRAVEL_CITY`/`TRAVEL_YEAR` lookup objects
+  - `getCreditCards()` — maps `CREDIT_CARDS` to `{ type: 'credit-card', card_name, card_image }`
+  - `getProfile()` — returns `[{ type: 'profile' }]` only; the actual profile content is fixed client-side data from `agentData.ts`'s `PROFILE`, not model-generated
+  - `getStats()` — 5 hardcoded stat objects (years experience, projects delivered, awards, countries visited, credit cards)
+- Tool schemas use `inputSchema` (Zod) — this SDK version's field name, not the older `parameters`
+
+#### PersonalAgent.tsx — slide-up panel
+- **Trigger**: fixed pill, `bottom: 32px` centered, `surface.inverse` bg, pulsing agent icon + "Ask Enric" label — unmounted (not just hidden) while the panel is open
+- **Panel**: always mounted; open/closed purely via `transform: translateY()` + `pointer-events` (not conditional rendering) — this is what lets both the slide-in on open AND the drag-to-dismiss gesture animate smoothly with no mount-timing edge cases
+  - `position: fixed; bottom: 0`, `max-width: 640px` centered, `height: 70vh` desktop / `90vh` mobile, `border-radius: 24px 24px 0 0` (`theme.radii['3xl']`)
+  - Backdrop: fixed inset-0, `rgba(0,0,0,0.3)` + `blur(4px)`, click-to-close
+  - Structure top→bottom: drag handle → header (agent icon + "Ask Enric" + × close) → scrollable conversation (empty state when no messages) → quick prompts (always visible, 8 conversational prompts) → input bar (pill input + circular send button)
+- **Drag-to-dismiss**: native Pointer Events on the drag handle (`setPointerCapture`); the CSS transition is disabled mid-drag so the panel tracks the pointer 1:1 (`translateY(${dragOffsetPx}px)`), then re-enabled on release to either finish closing (`dragOffset > 100px`) or snap back
+- **Close** (× button, backdrop click, drag > 100px, ESC) always clears the conversation (`setMessages([])`) — the next open starts fresh
+- **Open triggers**: clicking the pill, ⌘K/Ctrl+K from anywhere, or the mobile Navbar agent icon (`open-personal-agent` window event)
+- Body scroll is locked (`document.body.style.overflow = 'hidden'`) only while the panel is open
+- Uses `useChat` from `@ai-sdk/react` + `DefaultChatTransport({ api: '/api/agent' })` — **not** `ai/react` (that subpath doesn't exist in the installed SDK version), and **not** the `input`/`handleSubmit`/`isLoading`/`append` shape from older docs; this version's `useChat` returns `{ messages, sendMessage, status, setMessages, ... }` with `status: 'submitted' | 'streaming' | 'ready' | 'error'`
+- Quick-prompt chips call `sendMessage({ text: prompt })` directly (no busy-state guard); the input bar's own `submitMessage()` wrapper guards against empty/busy submission
+
+#### AgentMessage.tsx
+- `uiMessageToAgentResponse(message: UIMessage): AgentResponse` — adapts the SDK's parts-based `UIMessage` (`type: 'text'` / `type: 'tool-${name}'` with `state`/`output` fields) into the plain `{ text?, cards? }` shape this component renders; uses `isToolUIPart()` from `'ai'` to detect tool-result parts
+- Card types: `work`, `travel`, `profile`, `credit-card`, `stat`, `image` (generic fallback) — grouped and rendered in `CARD_TYPE_ORDER`
+- `enrichCard()` fills in image paths/details the model can't know exactly, by matching tool output against `agentData.ts`'s real data (e.g. work title → cover image + CTA URL)
+- No typewriter effect — real SDK token streaming provides progressive text reveal natively; a prior character-by-character typewriter hook was removed as redundant once real streaming replaced the old non-streaming JSON response
+
+#### ⚠️ Removed: app/ask/
+A dedicated full-page `/ask` chat route (its own `page.tsx` + copies of `AgentMessage.tsx`/`ThinkingIndicator.tsx`/`agentData.ts`) existed briefly during this feature's development and has been **deleted entirely** — the slide-up panel above is the only chat surface now. `Layout.tsx` no longer has an `isAskPage` special case; Navbar/Footer/PersonalAgent render unconditionally on every route.
 
 ## Design Tokens
 - All tokens in `styles/theme.ts` ✅ — colors, fonts, font sizes, line heights, spacing, radii, breakpoints
@@ -857,6 +904,7 @@ NEXT_PUBLIC_SUPABASE_URL=https://rdkhdnbzhuwvthxagzdz.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=sb_publishable_630z8GqkaL53xi1EXO_1HQ_VZ-t3EoZ
 SUPABASE_SERVICE_ROLE_KEY=...   # Supabase service role (secret) key — server-only, never NEXT_PUBLIC_. Used by lib/supabaseAdmin.ts (getSupabaseAdmin()) for the visitor counter. Add to Vercel env vars before deploying.
 RESEND_API_KEY=re_...          # Resend API key — add to Vercel env vars before deploying
+GEMINI_API_KEY=...             # Google Gemini API key — server-only, used by app/api/agent/route.ts (createGoogleGenerativeAI). Add to Vercel env vars before deploying.
 ```
 
 ## Landing — Company Logo Marquee
@@ -880,5 +928,5 @@ RESEND_API_KEY=re_...          # Resend API key — add to Vercel env vars befor
 ### Global
 - [x] ~~Wire MyWorks to Supabase (`projects` table) when Works page is ready~~ ✅ Done — Works page connected
 - [x] ~~Wire ProfessionalTimeline to Supabase~~ ✅ Done — `timeline_events` table; run CREATE TABLE + INSERT SQL above in Supabase SQL editor
-- [ ] Define and implement PersonalAgent mobile interaction
-- [ ] Wire PersonalAgent to `/api/agent` (Anthropic SDK)
+- [x] ~~Define and implement PersonalAgent mobile interaction~~ ✅ Done — mobile Navbar agent icon dispatches `open-personal-agent` to open the slide-up panel
+- [x] ~~Wire PersonalAgent to `/api/agent`~~ ✅ Done — Vercel AI SDK (`streamText` + tool calling) + Google Gemini, not Anthropic — see "Personal Agent (Chat)" section above

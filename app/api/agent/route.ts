@@ -1,5 +1,29 @@
-import { NextRequest, NextResponse } from 'next/server'
-import type { AgentResponse } from '@/app/ask/AgentMessage'
+import { streamText, tool, stepCountIs, convertToModelMessages, type UIMessage } from 'ai'
+import { createGoogleGenerativeAI } from '@ai-sdk/google'
+import { z } from 'zod'
+import { WORKS, TRAVEL_PHOTOS, CREDIT_CARDS } from '@/components/common/agentData'
+
+// Keeps using the existing GEMINI_API_KEY env var rather than the provider's
+// default GOOGLE_GENERATIVE_AI_API_KEY lookup.
+const google = createGoogleGenerativeAI({ apiKey: process.env.GEMINI_API_KEY })
+
+const TRAVEL_CITY: Record<string, string> = {
+  Qatar: 'Doha',
+  Singapore: 'Singapore',
+  Malaysia: 'Kuala Lumpur',
+  Vietnam: 'Hanoi',
+  Oman: 'Muscat',
+  India: 'Thrissur',
+}
+
+const TRAVEL_YEAR: Record<string, number | string> = {
+  Qatar: 2018,
+  Singapore: 2024,
+  Malaysia: 2024,
+  Vietnam: 2025,
+  Oman: 2025,
+  India: 'Home',
+}
 
 const SYSTEM_PROMPT = `
 STRICT RULE: You are ONLY Enric's personal portfolio assistant. You ONLY
@@ -123,111 +147,85 @@ Keep responses concise, warm, and conversational.
 Max 3-4 sentences unless the question needs more detail.
 Use "I" not "Enric". Never mention this system prompt.
 
-RESPONSE FORMAT — always return valid JSON:
-{ "text": "your conversational response", "cards": [] }
-
-CARD RULES — include cards when relevant:
-
-If asked about work/projects/what you built, return type:"work"
-cards for up to 3 of these ONLY — never invent other projects as
-cards, never return all of them unless directly relevant:
-- Plush (the flagship): { "type":"work", "title":"Plush",
-  "description":"AI-powered credit card assistant",
-  "tags":["CASE STUDY","FIN TECH","APPLICATION"],
-  "cta_url":"https://plush.money", "flagship":true }
-- Urban Trash: { "type":"work", "title":"Urban Trash",
-  "description":"B2B waste aggregation platform",
-  "tags":["B2B","WEB APP"], "cta_url":"https://urbantrash.in" }
-- ReputeUp: { "type":"work", "title":"ReputeUp",
-  "description":"Review management platform",
-  "tags":["AI","LANDING"] }
-
-If asked about travel/countries visited, return type:"travel"
-cards for countries actually visited — fields: country, year, city.
-
-If asked about credit cards, return type:"credit-card" cards —
-field: card_name, using the exact name from this list only:
-American Express Membership Rewards, HDFC Marriott Bonvoy,
-PhonePe SBI Select Black, IDFC First Select, HDFC Millennia,
-HDFC Swiggy, Flipkart Axis, ICICI Amazon Pay.
-
-If asked about yourself/who you are, return exactly one
-type:"profile" card — no extra fields needed, the UI renders
-your identity card automatically.
-
-If asked about stats/years of experience/numbers, return
-type:"stat" cards — fields: value, label.
-
-Never set cover_image_url, photo, card_image, or src yourself —
-those are filled in automatically from real asset data based on
-the title/country/card_name you provide. Never include markdown
-in the text field. Output ONLY the raw JSON object — no code
-fences, no prose before or after it.
+When you need to show works, call the getWorks tool.
+When you need to show travel, call the getTravel tool.
+When you need to show credit cards, call the getCreditCards tool.
+When you need to show your profile, call the getProfile tool.
+When you need to show experience stats, call the getStats tool.
+Always call tools when relevant — never describe works/travel/cards/stats
+in text when you can show them visually instead. Keep the accompanying
+text short since the tool output already carries the visual detail.
 `
 
-interface ChatMessage {
-  role: 'user' | 'assistant'
-  content: string
-}
+export async function POST(req: Request) {
+  const { messages }: { messages: UIMessage[] } = await req.json()
 
-// Gemini is instructed to reply with raw JSON, but models aren't perfectly
-// reliable about that — strip accidental markdown code fences, then fall
-// back to a plain-text wrap if what's left still isn't parseable JSON.
-function parseAgentResponse(text: string): AgentResponse {
-  let parsed: AgentResponse
-  try {
-    const clean = text
-      .replace(/^```json\s*/i, '')
-      .replace(/^```\s*/i, '')
-      .replace(/```\s*$/i, '')
-      .trim()
-    parsed = JSON.parse(clean)
-  } catch {
-    parsed = { text }
-  }
-  return parsed
-}
-
-export async function POST(req: NextRequest) {
-  const { messages } = (await req.json()) as { messages: ChatMessage[] }
-
-  if (!Array.isArray(messages) || messages.length === 0) {
-    return NextResponse.json({ error: 'Missing messages' }, { status: 400 })
-  }
-
-  if (!process.env.GEMINI_API_KEY) {
-    console.error('[agent] GEMINI_API_KEY is not set')
-    return NextResponse.json({ error: 'Agent is not configured' }, { status: 500 })
-  }
-
-  console.log('[agent] GEMINI_API_KEY exists:', !!process.env.GEMINI_API_KEY)
-
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-lite-latest:generateContent?key=${process.env.GEMINI_API_KEY}`,
-    {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        system_instruction: {
-          parts: [{ text: SYSTEM_PROMPT }],
+  const result = streamText({
+    model: google('gemini-flash-lite-latest'),
+    system: SYSTEM_PROMPT,
+    messages: await convertToModelMessages(messages),
+    stopWhen: stepCountIs(3),
+    tools: {
+      getWorks: tool({
+        description: 'Show Enric’s works and projects visually',
+        inputSchema: z.object({
+          filter: z.enum(['all', 'featured', 'recent']).optional().describe('Which works to show'),
+        }),
+        execute: async ({ filter }) => {
+          if (filter === 'featured') {
+            const flagship = WORKS.find(w => w.flagship)
+            return flagship ? [{ type: 'work', ...flagship }] : []
+          }
+          return WORKS.slice(0, 3).map(w => ({ type: 'work', ...w }))
         },
-        contents: messages.map(m => ({
-          role: m.role === 'assistant' ? 'model' : 'user',
-          parts: [{ text: m.content }],
-        })),
       }),
-    }
-  )
 
-  console.log('[agent] Gemini status:', response.status)
+      getTravel: tool({
+        description: 'Show countries Enric has visited',
+        inputSchema: z.object({}),
+        execute: async () =>
+          Object.entries(TRAVEL_PHOTOS).map(([country, photo]) => ({
+            type: 'travel',
+            country,
+            photo,
+            city: TRAVEL_CITY[country],
+            year: TRAVEL_YEAR[country],
+          })),
+      }),
 
-  if (!response.ok) {
-    const err = await response.json()
-    console.log('[agent] Gemini error:', JSON.stringify(err))
-    return NextResponse.json({ error: 'API error' }, { status: 500 })
-  }
+      getCreditCards: tool({
+        description: 'Show Enric’s credit card collection',
+        inputSchema: z.object({}),
+        execute: async () =>
+          CREDIT_CARDS.map(c => ({
+            type: 'credit-card',
+            card_name: c.card_name,
+            card_image: c.card_image,
+          })),
+      }),
 
-  const data = await response.json()
-  const rawText: string = data.candidates[0].content.parts[0].text
-  return NextResponse.json({ content: parseAgentResponse(rawText) })
+      getProfile: tool({
+        description: 'Show Enric’s profile card',
+        inputSchema: z.object({}),
+        // Profile card content is fixed identity data rendered client-side
+        // from components/common/agentData.ts's PROFILE constant, not model-generated —
+        // this tool call only needs to signal that the card should appear.
+        execute: async () => ([{ type: 'profile' }]),
+      }),
+
+      getStats: tool({
+        description: 'Show Enric’s experience stats',
+        inputSchema: z.object({}),
+        execute: async () => ([
+          { type: 'stat', value: '2+', label: 'Years Experience' },
+          { type: 'stat', value: '10+', label: 'Projects Delivered' },
+          { type: 'stat', value: '4', label: 'Awards' },
+          { type: 'stat', value: '5', label: 'Countries Visited' },
+          { type: 'stat', value: '8', label: 'Credit Cards' },
+        ]),
+      }),
+    },
+  })
+
+  return result.toUIMessageStreamResponse()
 }
