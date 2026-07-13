@@ -1,54 +1,15 @@
-import styled from 'styled-components'
-import { mq } from '@/styles/theme'
+import SharedPageHeader from '@/components/shared/PageHeader'
 
+// Figma's Contact header now matches the shared label+icon pattern used on
+// About/Works/Resume exactly (including its 48px/56px desktop title sizing)
+// — reuses that component directly instead of a bespoke one-off.
 const PageHeader = () => (
-  <Section>
-    <PageTitle>
-      Contact Me<Period>.</Period>
-    </PageTitle>
-    <PageSubtitle>{`Let's talk`}</PageSubtitle>
-  </Section>
+  <SharedPageHeader
+    label="CONTACT"
+    titleBefore=""
+    titleMuted="let's make "
+    titleAfter="wonders"
+  />
 )
-
-const Section = styled.div`
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  text-align: center;
-  width: 100%;
-`
-
-const PageTitle = styled.h1`
-  margin: 0;
-  font-family: ${({ theme }) => theme.fonts.notch};
-  font-weight: ${({ theme }) => theme.fontWeights.medium};
-  font-size: ${({ theme }) => theme.fontSizes['3xl']};
-  line-height: ${({ theme }) => theme.lineHeights['3xl']};
-  letter-spacing: ${({ theme }) => theme.letterSpacings.tightest};
-  color: ${({ theme }) => theme.colors.text.primary};
-
-  ${mq.mobile} {
-    font-size: ${({ theme }) => theme.fontSizes.lg};
-    line-height: ${({ theme }) => theme.lineHeights.loose};
-  }
-`
-
-const Period = styled.span`
-  color: ${({ theme }) => theme.colors.text.secondary};
-`
-
-const PageSubtitle = styled.p`
-  margin: 0;
-  font-family: ${({ theme }) => theme.fonts.sans};
-  font-weight: ${({ theme }) => theme.fontWeights.regular};
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-  line-height: ${({ theme }) => theme.lineHeights.normal};
-  color: ${({ theme }) => theme.colors.text.secondary};
-
-  ${mq.mobile} {
-    font-size: ${({ theme }) => theme.fontSizes.xs};
-    line-height: ${({ theme }) => theme.lineHeights.tight};
-  }
-`
 
 export default PageHeader

@@ -8,13 +8,9 @@ import SectionHeader from '@/components/shared/SectionHeader'
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
-// Figma-derived values below the theme token scale
-const WORD_COUNTER_SIZE = '0.625rem'      // 10px
-const WORD_COUNTER_LINE = '0.75rem'       // 12px
-
 const CHIPS = [
-  'WEBSITE', 'DASHBOARD', 'APPLICATION', 'UX AUDIT',
-  'DESIGN SYSTEM', 'TALK SESSION', 'SOMETHING ELSE',
+  'WEBSITE', 'APPLICATION', 'UX AUDIT', 'DESIGN SYSTEM',
+  'TALK SESSION', 'BRAND IDENTITY', 'SOMETHING ELSE',
 ]
 
 const BUDGET_OPTIONS = [
@@ -69,9 +65,6 @@ const EnquiryForm = () => {
       (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
         setForm(f => ({ ...f, [field]: e.target.value }))
 
-  const wordCount =
-    form.brief.trim() === '' ? 0 : form.brief.trim().split(/\s+/).length
-
   const isValid =
     form.name.trim() !== '' &&
     /\S+@\S+\.\S+/.test(form.email) &&
@@ -107,28 +100,6 @@ const EnquiryForm = () => {
     }
   }
 
-  if (status === 'sent') {
-    return (
-      <Card>
-        <DoneIconWrap>
-          <svg width="25" height="18" viewBox="0 0 25 18" fill="none">
-            <path
-              d="M2 9L9.5 16L23 2"
-              stroke="white"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-        </DoneIconWrap>
-        <DoneTextBlock>
-          <DoneHeading>Thanks - message sent.</DoneHeading>
-          <DoneSub>{`I'll get back to you in under 24h on weekdays. In the meantime, there's a podcast you might like →`}</DoneSub>
-        </DoneTextBlock>
-      </Card>
-    )
-  }
-
   return (
     <Card>
       <TitleBlock>
@@ -138,25 +109,7 @@ const EnquiryForm = () => {
 
       <Form onSubmit={handleSubmit} noValidate>
 
-        {/* ── Chip group ────────────────────────────────────────────────── */}
-        <ChipGroup>
-          <ChipQuestion>WHAT ARE YOU HERE FOR?</ChipQuestion>
-          <ChipRow>
-            {CHIPS.map(chip => (
-              <Chip
-                key={chip}
-                type="button"
-                $selected={chip === selectedChip}
-                onClick={() => setSelectedChip(chip)}
-                aria-pressed={chip === selectedChip}
-              >
-                {chip}
-              </Chip>
-            ))}
-          </ChipRow>
-        </ChipGroup>
-
-        {/* ── Name + Email ──────────────────────────────────────────────── */}
+        {/* ── Name + Email + Budget + When ──────────────────────────────── */}
         <FieldRow>
           <FieldGroup>
             <FieldLabel htmlFor="contact-name">YOUR NAME</FieldLabel>
@@ -180,10 +133,6 @@ const EnquiryForm = () => {
               autoComplete="email"
             />
           </FieldGroup>
-        </FieldRow>
-
-        {/* ── Budget + When ─────────────────────────────────────────────── */}
-        <FieldRow>
           <FieldGroup>
             <FieldLabel htmlFor="contact-budget">BUDGET</FieldLabel>
             <SelectWrap>
@@ -234,36 +183,50 @@ const EnquiryForm = () => {
               value={form.brief}
               onChange={setField('brief')}
             />
-            <WordIndicator>
-              <WordCount>{wordCount}</WordCount>
-              <WordSuffix>{` words. Keep it loose – I'll ask follow-ups.`}</WordSuffix>
-            </WordIndicator>
           </BriefContainer>
         </FieldGroup>
+
+        {/* ── Chip group ────────────────────────────────────────────────── */}
+        <ChipGroup>
+          <ChipQuestion>WHAT ARE YOU HERE FOR?</ChipQuestion>
+          <ChipRow>
+            {CHIPS.map(chip => (
+              <Chip
+                key={chip}
+                type="button"
+                $selected={chip === selectedChip}
+                onClick={() => setSelectedChip(chip)}
+                aria-pressed={chip === selectedChip}
+              >
+                {chip}
+              </Chip>
+            ))}
+          </ChipRow>
+        </ChipGroup>
 
         {/* ── Submit ────────────────────────────────────────────────────── */}
         <ResponseRow>
           <SendButton
             type="submit"
-            disabled={!isValid || status === 'sending'}
+            disabled={!isValid || status === 'sending' || status === 'sent'}
           >
-            <span>
-              {status === 'sending' ? 'Sending…' : 'Send it'}
-            </span>
-            <ArrowPill>
-              <svg width="10" height="10" viewBox="0 0 10 10" fill="none">
+            {status === 'sending' ? 'Sending…' : status === 'sent' ? 'Message sent' : 'Send it'}
+            {status === 'sent' && (
+              <svg width="12" height="10" viewBox="0 0 12 10" fill="none" aria-hidden="true">
                 <path
-                  d="M2 8L8 2M8 2H3M8 2V7"
+                  d="M1 5L4.5 8.5L11 1"
                   stroke="currentColor"
                   strokeWidth="1.5"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
               </svg>
-            </ArrowPill>
+            )}
           </SendButton>
           {status === 'error' ? (
             <ErrorNotice>Something went wrong — try again or email me directly.</ErrorNotice>
+          ) : status === 'sent' ? (
+            <SentNotice>{`Thanks! I'll get back to you in under 24h on weekdays.`}</SentNotice>
           ) : (
             <ResponseNotice>
               Reply in &lt; 24h on weekdays · I read everything
@@ -283,49 +246,6 @@ const Card = styled.div`
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing[10]};
   width: 100%;
-`
-
-// ── Done state ────────────────────────────────────────────────────────────────
-
-const DoneIconWrap = styled.div`
-  width: 80px;
-  height: 80px;
-  flex-shrink: 0;
-  border-radius: ${({ theme }) => theme.radii['3xl']};
-  background: ${({ theme }) => theme.colors.surface.highlight};
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`
-
-const DoneTextBlock = styled.div`
-  display: flex;
-  flex-direction: column;
-  gap: ${({ theme }) => theme.spacing[2]};
-  width: 100%;
-`
-
-const DoneHeading = styled.p`
-  margin: 0;
-  font-family: ${({ theme }) => theme.fonts.notch};
-  font-weight: ${({ theme }) => theme.fontWeights.regular};
-  font-size: ${({ theme }) => theme.fontSizes.lg};
-  line-height: ${({ theme }) => theme.lineHeights.loose};
-  color: ${({ theme }) => theme.colors.text.primary};
-
-  ${mq.mobile} {
-    font-size: ${({ theme }) => theme.fontSizes.md};
-    line-height: 2.25rem;
-  }
-`
-
-const DoneSub = styled.p`
-  margin: 0;
-  font-family: ${({ theme }) => theme.fonts.sans};
-  font-weight: ${({ theme }) => theme.fontWeights.regular};
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-  line-height: ${({ theme }) => theme.lineHeights.normal};
-  color: ${({ theme }) => theme.colors.text.tertiary};
 `
 
 const TitleBlock = styled.div`
@@ -368,13 +288,14 @@ const Chip = styled.button<{ $selected: boolean }>`
   border: 1px solid ${({ $selected, theme }) =>
     $selected ? 'transparent' : theme.colors.border.tertiary};
   background: ${({ $selected, theme }) =>
-    $selected ? theme.colors.surface.inverse : theme.colors.surface.tertiary};
-  border-radius: ${({ theme }) => theme.radii.md};
-  padding: 8px 12px;
+    $selected ? theme.colors.surface.inverse : 'transparent'};
+  border-radius: ${({ theme }) => theme.radii.sm};
+  padding: 8px 16px;
   font-family: ${({ theme }) => theme.fonts.sans};
-  font-weight: ${({ theme }) => theme.fontWeights.light};
+  font-weight: ${({ theme }) => theme.fontWeights.regular};
   font-size: ${({ theme }) => theme.fontSizes.xs};
   line-height: ${({ theme }) => theme.lineHeights.tight};
+  text-transform: uppercase;
   color: ${({ $selected, theme }) =>
     $selected ? theme.colors.text.inverse : theme.colors.text.secondary};
   cursor: pointer;
@@ -519,29 +440,6 @@ const BriefTextarea = styled.textarea`
   }
 `
 
-const WordIndicator = styled.div`
-  display: flex;
-  gap: 2px;
-  align-items: flex-start;
-  flex-shrink: 0;
-`
-
-const WordCount = styled.span`
-  font-family: ${({ theme }) => theme.fonts.sans};
-  font-size: ${WORD_COUNTER_SIZE};
-  line-height: ${WORD_COUNTER_LINE};
-  color: ${({ theme }) => theme.colors.text.secondary};
-  opacity: 0.5;
-`
-
-const WordSuffix = styled.span`
-  font-family: ${({ theme }) => theme.fonts.sans};
-  font-size: ${WORD_COUNTER_SIZE};
-  line-height: ${WORD_COUNTER_LINE};
-  color: ${({ theme }) => theme.colors.text.secondary};
-  opacity: 0.5;
-`
-
 // ── Submit row ────────────────────────────────────────────────────────────────
 
 const ResponseRow = styled.div`
@@ -580,24 +478,6 @@ const SendButton = styled.button`
   }
 `
 
-const ArrowPill = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 18px;
-  height: 18px;
-  background: ${({ theme }) => theme.colors.icon.inverse};
-  border-radius: 9px;
-  flex-shrink: 0;
-  color: ${({ theme }) => theme.colors.surface.inverse};
-
-  ${mq.mobile} {
-    width: 16px;
-    height: 16px;
-    border-radius: 8px;
-  }
-`
-
 const ResponseNotice = styled.p`
   margin: 0;
   font-family: ${({ theme }) => theme.fonts.sans};
@@ -606,6 +486,16 @@ const ResponseNotice = styled.p`
   line-height: ${({ theme }) => theme.lineHeights.tight};
   color: ${({ theme }) => theme.colors.text.secondary};
   opacity: 0.5;
+`
+
+// "Color highlight" per Figma's annotation on this text node after submit.
+const SentNotice = styled.p`
+  margin: 0;
+  font-family: ${({ theme }) => theme.fonts.sans};
+  font-weight: ${({ theme }) => theme.fontWeights.light};
+  font-size: ${({ theme }) => theme.fontSizes.xs};
+  line-height: ${({ theme }) => theme.lineHeights.tight};
+  color: ${({ theme }) => theme.colors.text.highlight};
 `
 
 const ErrorNotice = styled.p`

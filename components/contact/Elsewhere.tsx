@@ -1,6 +1,8 @@
 import Image from 'next/image'
 import styled from 'styled-components'
 import { mq } from '@/styles/theme'
+import SectionLabel from '@/components/shared/SectionLabel'
+import SectionHeader from '@/components/shared/SectionHeader'
 
 // ─── Data ─────────────────────────────────────────────────────────────────────
 
@@ -27,8 +29,6 @@ const PLATFORMS: Platform[][] = [
       icon: '/app-icons/instagram.webp',
       href: 'https://www.instagram.com/enricsneelamkavil/',
     },
-  ],
-  [
     {
       name: 'Behance',
       handle: 'enricsneelamkavil',
@@ -55,8 +55,6 @@ const PLATFORMS: Platform[][] = [
       icon: '/app-icons/facebook.webp',
       href: 'https://facebook.com/enricsneelamkavil',
     },
-  ],
-  [
     {
       name: 'Medium',
       handle: '@enricsneelamkavil',
@@ -77,7 +75,8 @@ const PLATFORMS: Platform[][] = [
 const Elsewhere = () => (
   <Wrapper>
     <TitleBlock>
-      <Heading>Find me on the <Muted>internet</Muted>.</Heading>
+      <SectionLabel>STALK ME? NAH</SectionLabel>
+      <SectionHeader before="Find me on the " muted="internet" after="." />
     </TitleBlock>
 
     <Grid>
@@ -117,19 +116,6 @@ const Wrapper = styled.div`
   ${mq.mobile} {
     gap: ${({ theme }) => theme.spacing[10]};
   }
-`
-
-const Heading = styled.h2`
-  margin: 0;
-  font-family: ${({ theme }) => theme.fonts.notch};
-  font-weight: ${({ theme }) => theme.fontWeights.regular};
-  font-size: ${({ theme }) => theme.fontSizes.md};
-  line-height: ${({ theme }) => theme.lineHeights.relaxed};
-  color: ${({ theme }) => theme.colors.text.primary};
-`
-
-const Muted = styled.span`
-  color: ${({ theme }) => theme.colors.text.secondary};
 `
 
 const TitleBlock = styled.div`
@@ -182,13 +168,15 @@ const PlatformCard = styled.a`
   }
 `
 
+// No border-radius/clip here — Figma applies none either. Each platform's
+// icon asset already carries its own native shape (Dribbble and Facebook are
+// circular, others rounded-square); a uniform CSS radius would incorrectly
+// squarify the circular ones.
 const IconWrap = styled.div`
   position: relative;
   width: 40px;
   height: 40px;
   flex-shrink: 0;
-  border-radius: ${({ theme }) => theme.radii.md};
-  overflow: hidden;
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.15);
 
   img {
