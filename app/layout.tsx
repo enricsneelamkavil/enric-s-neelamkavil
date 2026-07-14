@@ -6,6 +6,7 @@ import {
 import { GlimmProvider } from 'glimm/react'
 import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Analytics } from '@vercel/analytics/next'
+import { GoogleAnalytics } from '@next/third-parties/google'
 import StyledComponentsRegistry from '@/styles/StyledComponentsRegistry'
 import Layout from '@/components/common/Layout'
 import './globals.css'
@@ -67,6 +68,7 @@ export default function RootLayout({
         </GlimmProvider>
         <SpeedInsights />
         <Analytics />
+        <GoogleAnalytics gaId="G-TWK0PPM2FC" />
       </body>
     </html>
   )

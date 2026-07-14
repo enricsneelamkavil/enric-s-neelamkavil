@@ -17,7 +17,7 @@ const Layout = ({ children }: Props) => {
         <Navbar />
         <Main>{children}</Main>
         <Footer />
-        <PersonalAgent />
+        {process.env.NODE_ENV !== 'production' && <PersonalAgent />}
       </PageWrapper>
     </ThemeProvider>
   )
