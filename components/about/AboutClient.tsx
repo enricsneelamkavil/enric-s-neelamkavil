@@ -21,6 +21,7 @@ import AwardShelf from '@/components/about/common/AwardShelf'
 // ── Personal ──────────────────────────────────────────────────────────────────
 import PersonalAboutDescription from '@/components/about/personal/PersonalAboutDescription'
 import TravelSection from '@/components/about/personal/TravelSection'
+import DeskSection from '@/components/about/personal/DeskSection'
 import PodcastSection from '@/components/about/personal/PodcastSection'
 import WritingSection from '@/components/about/personal/WritingSection'
 import CreditCardsSection from '@/components/about/personal/CreditCardsSection'
@@ -84,6 +85,7 @@ export default function AboutClient({ timelineEvents }: Props) {
         <ModeGroup $active={mode === 'personal'} aria-hidden={mode !== 'personal'}>
           <PersonalAboutDescription />
           <TravelSection />
+          <DeskSection />
           <PodcastSection />
           <WritingSection />
           <CreditCardsSection />
@@ -139,7 +141,8 @@ const IntroBlock = styled.div`
 const ModeContent = styled.div<{ $snapping: boolean }>`
   position: relative;
   width: 100%;
-  overflow: clip;
+  overflow-x: visible;
+  overflow-y: clip;
   transform: scale(${({ $snapping }) => ($snapping ? 0.98 : 1)});
   transition: transform 0.15s ease;
 `

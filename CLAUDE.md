@@ -26,7 +26,7 @@ portfolio/                        # project root
 │   │   ├── visitor/route.ts      # POST — dedupes by IP+day, increments visitor counter
 │   │   ├── contact/route.ts      # POST — Resend email to enricsneelamkavil@gmail.com
 │   │   └── agent/route.ts        # POST — streamText + tool calling (Vercel AI SDK + Gemini); powers PersonalAgent chat panel
-│   └── layout.tsx                # Global layout (Navbar + Footer + PersonalAgent) — same on every route, no per-page exceptions
+│   └── layout.tsx                # Global layout (Navbar + Footer + PersonalAgent) — same on every route, no per-page exceptions; PersonalAgent itself is dev-only (see note below)
 ├── components/
 │   ├── common/
 │   │   ├── Navbar.tsx            ✅ Done — desktop glass pill + mobile bottom pill
@@ -182,6 +182,8 @@ export const mq = {
 ## Personal Agent (Chat) ✅ Done
 Site-wide AI chat, powered by Google Gemini via the Vercel AI SDK. There is no dedicated `/ask` page — a full-page version existed briefly during development and was deleted once the slide-up panel below replaced it as the only chat surface.
 
+⚠️ **Dev-only.** `components/common/Layout.tsx` gates `<PersonalAgent />` behind `process.env.NODE_ENV !== 'production'` — it renders in local dev but is stripped from production builds entirely. Navbar and Footer are unaffected (still render everywhere). If the agent needs to ship to production, remove that gate in `Layout.tsx`.
+
 **Files:**
 - `app/api/agent/route.ts` — POST handler; `streamText()` + tool calling
 - `components/common/PersonalAgent.tsx` — trigger pill + slide-up panel, owns all chat UI state
@@ -224,7 +226,7 @@ Site-wide AI chat, powered by Google Gemini via the Vercel AI SDK. There is no d
 - No typewriter effect — real SDK token streaming provides progressive text reveal natively; a prior character-by-character typewriter hook was removed as redundant once real streaming replaced the old non-streaming JSON response
 
 #### ⚠️ Removed: app/ask/
-A dedicated full-page `/ask` chat route (its own `page.tsx` + copies of `AgentMessage.tsx`/`ThinkingIndicator.tsx`/`agentData.ts`) existed briefly during this feature's development and has been **deleted entirely** — the slide-up panel above is the only chat surface now. `Layout.tsx` no longer has an `isAskPage` special case; Navbar/Footer/PersonalAgent render unconditionally on every route.
+A dedicated full-page `/ask` chat route (its own `page.tsx` + copies of `AgentMessage.tsx`/`ThinkingIndicator.tsx`/`agentData.ts`) existed briefly during this feature's development and has been **deleted entirely** — the slide-up panel above is the only chat surface now. `Layout.tsx` no longer has an `isAskPage` special case; Navbar/Footer render unconditionally on every route (PersonalAgent additionally has its own dev-only gate — see note above).
 
 ## Design Tokens
 - All tokens in `styles/theme.ts` ✅ — colors, fonts, font sizes, line heights, spacing, radii, breakpoints
