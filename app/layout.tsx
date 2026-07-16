@@ -38,7 +38,15 @@ export const metadata: Metadata = {
   description:
     'Portfolio of Enric S Neelamkavil — product designer with award-winning branding expertise, building at the intersection of culture, craft, and technology.',
   icons: {
-    icon: '/favicon.svg',
+    icon: [
+      { url: '/favicon.ico', sizes: '32x32', type: 'image/x-icon' },
+      { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
+      { url: '/icon-512.png', sizes: '512x512', type: 'image/png' },
+      { url: '/favicon-light.svg', type: 'image/svg+xml', media: '(prefers-color-scheme: light)' },
+      { url: '/favicon-dark.svg', type: 'image/svg+xml', media: '(prefers-color-scheme: dark)' },
+    ],
+    apple: '/apple-icon.png',
+    shortcut: '/favicon.ico',
   },
   verification: {
     other: {
@@ -60,6 +68,11 @@ export default function RootLayout({
 
   return (
     <html lang="en" className={fontClasses}>
+      <head>
+        <meta name="apple-mobile-web-app-title" content="Enric's Portfolio" />
+        <meta name="application-name" content="Enric's Portfolio" />
+        <link rel="mask-icon" href="/favicon-dark.svg" color="#E8342A" />
+      </head>
       <body>
         <GlimmProvider palette="prism" sweepMs={1000} outroMs={650}>
           <StyledComponentsRegistry>
