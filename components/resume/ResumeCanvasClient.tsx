@@ -14,12 +14,19 @@ pdfjs.GlobalWorkerOptions.workerSrc = `https://unpkg.com/pdfjs-dist@${pdfjs.vers
 // ─── Figma layout constants ───────────────────────────────────────────────────
 // Desktop PDF card: 820×1160px — node 410:2119
 // Mobile  PDF card: 300×424px  — node 411:1661
+// Loading skeleton: node 744:1670 "Shimmer / Loader" — desktop-authored only;
+// mobile is the same layout scaled down by MOBILE_SCALE (no separate mobile spec in Figma).
 
 const PDF_PATH    = '/resume.pdf'
 const CARD_W      = 820   // desktop render width (fixed)
 const MOBILE_W    = 300   // mobile render width (fixed)
+const MOBILE_SCALE = MOBILE_W / CARD_W
 const RED_GLOW_DESKTOP = '0 0 250px 26px rgba(232, 52, 42, 0.15)'
 const RED_GLOW_MOBILE  = '0 0 50px 5px rgba(232, 52, 42, 0.15)'
+
+// Number of entry "groups" (subtitle + 2 detail lines) per resume section —
+// mirrors the real content: Education, Achievements, Experience, Contributions, Volunteering
+const SECTION_GROUP_COUNTS = [1, 3, 2, 2, 2]
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -28,7 +35,37 @@ const ResumeCanvasClient = () => {
 
   return (
     <Canvas>
-      <Placeholder $loaded={loaded} aria-hidden="true" />
+      <Skeleton $loaded={loaded} aria-hidden="true">
+        <HeaderRow>
+          <TitleCol>
+            <Bar $w={394} $h={32} />
+            <SubtitleRow>
+              <Bar $w={219} $h={16} />
+              <Bar $w={167} $h={16} />
+            </SubtitleRow>
+          </TitleCol>
+          <MenuCol>
+            <Bar $w={162} $h={10} />
+            <Bar $w={162} $h={10} />
+            <Bar $w={162} $h={10} />
+          </MenuCol>
+        </HeaderRow>
+
+        {SECTION_GROUP_COUNTS.map((groupCount, i) => (
+          <SectionBlock key={i}>
+            <Bar $w={102} $h={24} />
+            {Array.from({ length: groupCount }).map((_, gi) => (
+              <Group key={gi}>
+                <Bar $w={243} $h={16} />
+                <Details>
+                  <Bar $w={476} $h={10} />
+                  <Bar $w={181} $h={10} />
+                </Details>
+              </Group>
+            ))}
+          </SectionBlock>
+        ))}
+      </Skeleton>
       <ContentLayer $loaded={loaded}>
         <Document
           file={PDF_PATH}
@@ -46,7 +83,7 @@ const ResumeCanvasClient = () => {
 
 // ─── Styles ───────────────────────────────────────────────────────────────────
 
-// Fixed-aspect box reserves the card's final footprint up front — Placeholder and
+// Fixed-aspect box reserves the card's final footprint up front — Skeleton and
 // ContentLayer are absolutely stacked inside it, so nothing jumps when the PDF loads.
 const Canvas = styled.div`
   position: relative;
@@ -64,19 +101,95 @@ const Canvas = styled.div`
   }
 `
 
-const pulse = keyframes`
-  0%, 100% { opacity: 0.6; }
-  50% { opacity: 1; }
+const shimmer = keyframes`
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
 `
 
-const Placeholder = styled.div<{ $loaded: boolean }>`
+// 820px-wide, top-left anchored — scaled down bodily via transform on mobile
+// (MOBILE_SCALE = 300/820) rather than re-authoring every bar at a second size.
+const Skeleton = styled.div<{ $loaded: boolean }>`
   position: absolute;
-  inset: 0;
-  background: ${({ theme }) => theme.colors.surface.tertiary};
-  animation: ${pulse} 1.8s ease-in-out infinite;
+  top: 0;
+  left: 0;
+  width: ${CARD_W}px;
+  transform-origin: top left;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  padding: 42px 62px;
+  background: white;
+  border-radius: 12px;
   opacity: ${({ $loaded }) => ($loaded ? 0 : 1)};
   transition: opacity 0.4s ease;
   pointer-events: none;
+
+  ${mq.mobile} {
+    transform: scale(${MOBILE_SCALE});
+  }
+`
+
+const Bar = styled.div<{ $w: number; $h: number }>`
+  flex-shrink: 0;
+  width: ${({ $w }) => $w}px;
+  height: ${({ $h }) => $h}px;
+  border-radius: 4px;
+  background: linear-gradient(
+    90deg,
+    rgba(232, 52, 42, 0.08) 0%,
+    rgba(232, 52, 42, 0.15) 50%,
+    rgba(232, 52, 42, 0.08) 100%
+  );
+  background-size: 200% 100%;
+  animation: ${shimmer} 2s ease-in-out infinite;
+`
+
+const HeaderRow = styled.div`
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  width: 100%;
+`
+
+const TitleCol = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 394px;
+`
+
+const SubtitleRow = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 8px;
+`
+
+const MenuCol = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 162px;
+`
+
+const SectionBlock = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+`
+
+const Group = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+`
+
+const Details = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 100%;
 `
 
 const ContentLayer = styled.div<{ $loaded: boolean }>`
