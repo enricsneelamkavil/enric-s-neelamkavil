@@ -35,19 +35,7 @@ interface FormData {
 
 type Status = 'idle' | 'sending' | 'sent' | 'error'
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
-const ChevronSvg = () => (
-  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-    <path
-      d="M3.5 5.25L7 8.75L10.5 5.25"
-      stroke="currentColor"
-      strokeWidth="1.2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    />
-  </svg>
-)
+const isValidEmail = (value: string) => /\S+@\S+\.\S+/.test(value)
 
 // ─── Component ────────────────────────────────────────────────────────────────
 
@@ -59,16 +47,26 @@ const EnquiryForm = () => {
   })
   const [selectedChip, setSelectedChip] = useState<string>('')
   const [status, setStatus] = useState<Status>('idle')
+  const [emailError, setEmailError] = useState(false)
 
   const setField =
     (field: keyof FormData) =>
       (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) =>
         setForm(f => ({ ...f, [field]: e.target.value }))
 
+  const handleEmailChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm(f => ({ ...f, email: e.target.value }))
+    if (emailError) setEmailError(false)
+  }
+
+  const handleEmailBlur = () => {
+    setEmailError(form.email.trim() !== '' && !isValidEmail(form.email))
+  }
+
   const isValid =
     form.name.trim() !== '' &&
-    /\S+@\S+\.\S+/.test(form.email) &&
-    (form.budget !== '' || form.when !== '')
+    form.email.trim() !== '' &&
+    form.budget !== ''
 
   const EMPTY_FORM: FormData = {
     name: '', email: '',
@@ -79,6 +77,11 @@ const EnquiryForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!isValid || status === 'sending' || status === 'sent') return
+
+    if (!isValidEmail(form.email)) {
+      setEmailError(true)
+      return
+    }
 
     setStatus('sending')
 
@@ -93,6 +96,7 @@ const EnquiryForm = () => {
 
       setForm(EMPTY_FORM)
       setSelectedChip('')
+      setEmailError(false)
       setStatus('sent')
       setTimeout(() => setStatus('idle'), 5000)
     } catch {
@@ -112,7 +116,7 @@ const EnquiryForm = () => {
         {/* ── Name + Email + Budget + When ──────────────────────────────── */}
         <FieldRow>
           <FieldGroup>
-            <FieldLabel htmlFor="contact-name">YOUR NAME</FieldLabel>
+            <FieldLabel htmlFor="contact-name">YOUR NAME <RequiredMark>*</RequiredMark></FieldLabel>
             <TextInput
               id="contact-name"
               type="text"
@@ -123,18 +127,19 @@ const EnquiryForm = () => {
             />
           </FieldGroup>
           <FieldGroup>
-            <FieldLabel htmlFor="contact-email">EMAIL</FieldLabel>
+            <FieldLabel htmlFor="contact-email">EMAIL <RequiredMark>*</RequiredMark></FieldLabel>
             <TextInput
               id="contact-email"
               type="email"
               placeholder="you@company.com"
               value={form.email}
-              onChange={setField('email')}
+              onChange={handleEmailChange}
+              onBlur={handleEmailBlur}
               autoComplete="email"
             />
           </FieldGroup>
           <FieldGroup>
-            <FieldLabel htmlFor="contact-budget">BUDGET</FieldLabel>
+            <FieldLabel htmlFor="contact-budget">BUDGET <RequiredMark>*</RequiredMark></FieldLabel>
             <SelectWrap>
               <StyledSelect
                 id="contact-budget"
@@ -142,14 +147,12 @@ const EnquiryForm = () => {
                 onChange={setField('budget')}
                 $empty={form.budget === ''}
               >
-                <option value="" disabled>$15k–$40k</option>
+                <option value="" disabled hidden>Select Budget</option>
                 {BUDGET_OPTIONS.map(o => (
                   <option key={o} value={o}>{o}</option>
                 ))}
               </StyledSelect>
-              <ChevronWrap>
-                <ChevronSvg />
-              </ChevronWrap>
+              <ChevronIcon src="/icons/cheveron-down.svg" width={16} height={16} alt="" aria-hidden />
             </SelectWrap>
           </FieldGroup>
           <FieldGroup>
@@ -161,14 +164,12 @@ const EnquiryForm = () => {
                 onChange={setField('when')}
                 $empty={form.when === ''}
               >
-                <option value="" disabled>In 1–2 months</option>
+                <option value="" disabled hidden>Select Timeline</option>
                 {WHEN_OPTIONS.map(o => (
                   <option key={o} value={o}>{o}</option>
                 ))}
               </StyledSelect>
-              <ChevronWrap>
-                <ChevronSvg />
-              </ChevronWrap>
+              <ChevronIcon src="/icons/cheveron-down.svg" width={16} height={16} alt="" aria-hidden />
             </SelectWrap>
           </FieldGroup>
         </FieldRow>
@@ -228,9 +229,11 @@ const EnquiryForm = () => {
           ) : status === 'sent' ? (
             <SentNotice>{`Thanks! I'll get back to you in under 24h on weekdays.`}</SentNotice>
           ) : (
-            <ResponseNotice>
-              Reply in &lt; 24h on weekdays · I read everything
-            </ResponseNotice>
+            <Notice $error={emailError}>
+              {emailError
+                ? "Hmm, that email doesn't look right — double check it?"
+                : <>Reply in &lt; 24h on weekdays · I read everything</>}
+            </Notice>
           )}
         </ResponseRow>
 
@@ -337,6 +340,11 @@ const FieldLabel = styled.label`
   text-transform: uppercase;
 `
 
+const RequiredMark = styled.span`
+  color: ${({ theme }) => theme.colors.text.highlight};
+  margin-left: 2px;
+`
+
 // ── Text input ────────────────────────────────────────────────────────────────
 
 const TextInput = styled.input`
@@ -384,28 +392,25 @@ const StyledSelect = styled.select<{ $empty: boolean }>`
   font-size: ${({ theme }) => theme.fontSizes.xs};
   line-height: ${({ theme }) => theme.lineHeights.tight};
   color: ${({ $empty, theme }) =>
-    $empty ? theme.colors.text.secondary : theme.colors.text.primary};
-  opacity: ${({ $empty }) => ($empty ? 0.5 : 1)};
+    $empty ? theme.colors.text.tertiary : theme.colors.text.primary};
   background: ${({ theme }) => theme.colors.surface.primary};
   cursor: pointer;
   outline: none;
 
   &:focus {
     border-color: ${({ theme }) => theme.colors.text.secondary};
-    opacity: 1;
   }
 `
 
-const ChevronWrap = styled.div`
+const ChevronIcon = styled.img`
   position: absolute;
   right: 12px;
   top: 50%;
   transform: translateY(-50%);
   pointer-events: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: ${({ theme }) => theme.colors.text.tertiary};
+  width: 16px;
+  height: 16px;
+  filter: brightness(0) saturate(100%) invert(67%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(95%) contrast(87%);
 `
 
 // ── Brief textarea ────────────────────────────────────────────────────────────
@@ -478,14 +483,16 @@ const SendButton = styled.button`
   }
 `
 
-const ResponseNotice = styled.p`
+const Notice = styled.p<{ $error: boolean }>`
   margin: 0;
   font-family: ${({ theme }) => theme.fonts.sans};
   font-weight: ${({ theme }) => theme.fontWeights.light};
   font-size: ${({ theme }) => theme.fontSizes.xs};
   line-height: ${({ theme }) => theme.lineHeights.tight};
-  color: ${({ theme }) => theme.colors.text.secondary};
-  opacity: 0.5;
+  color: ${({ $error, theme }) =>
+    $error ? theme.colors.text.highlight : theme.colors.text.secondary};
+  opacity: ${({ $error }) => ($error ? 1 : 0.5)};
+  transition: color 0.15s ease, opacity 0.15s ease;
 `
 
 // "Color highlight" per Figma's annotation on this text node after submit.

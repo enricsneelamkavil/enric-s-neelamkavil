@@ -47,7 +47,7 @@ const MapSection = () => (
             alt=""
             fill
             sizes="(max-width: 768px) 17px, 40px"
-            quality={90}
+            quality={100}
             draggable={false}
           />
         </Avatar>

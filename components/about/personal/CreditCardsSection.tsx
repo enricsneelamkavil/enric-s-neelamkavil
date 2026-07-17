@@ -25,14 +25,14 @@ interface CardDef { key: string; src: string; alt: string }
 // Canonical order — also the mobile stack's top-to-back order (confirmed
 // against Figma's mobile frame, unchanged from before this rebuild).
 const CARDS: CardDef[] = [
-  { key: 'amex',     src: '/about/personal/cards/american-express-membership-rewards.webp', alt: 'American Express Membership Rewards' },
-  { key: 'marriott', src: '/about/personal/cards/hdfc-marriott-bonvoy.webp',               alt: 'HDFC Marriott Bonvoy'               },
-  { key: 'phonepe',  src: '/about/personal/cards/phonepe-sbi-select-black.webp',           alt: 'PhonePe SBI Select Black'           },
-  { key: 'idfc',     src: '/about/personal/cards/idfc-first-select.webp',                  alt: 'IDFC First Select'                  },
-  { key: 'millenia', src: '/about/personal/cards/hdfc-millenia.webp',                      alt: 'HDFC Millennia'                     },
-  { key: 'swiggy',   src: '/about/personal/cards/hdfc-swiggy.webp',                        alt: 'HDFC Swiggy'                        },
-  { key: 'flipkart', src: '/about/personal/cards/flipkart-axis.webp',                      alt: 'Flipkart Axis'                      },
-  { key: 'icici',    src: '/about/personal/cards/icici-amazon-pay.webp',                   alt: 'ICICI Amazon Pay'                   },
+  { key: 'amex', src: '/about/personal/cards/american-express-membership-rewards.webp', alt: 'American Express Membership Rewards' },
+  { key: 'marriott', src: '/about/personal/cards/hdfc-marriott-bonvoy.webp', alt: 'HDFC Marriott Bonvoy' },
+  { key: 'phonepe', src: '/about/personal/cards/phonepe-sbi-select-black.webp', alt: 'PhonePe SBI Select Black' },
+  { key: 'idfc', src: '/about/personal/cards/idfc-first-select.webp', alt: 'IDFC First Select' },
+  { key: 'millenia', src: '/about/personal/cards/hdfc-millenia.webp', alt: 'HDFC Millennia' },
+  { key: 'swiggy', src: '/about/personal/cards/hdfc-swiggy.webp', alt: 'HDFC Swiggy' },
+  { key: 'flipkart', src: '/about/personal/cards/flipkart-axis.webp', alt: 'Flipkart Axis' },
+  { key: 'icici', src: '/about/personal/cards/icici-amazon-pay.webp', alt: 'ICICI Amazon Pay' },
 ]
 
 // Desktop's vertical pile uses its own front-to-back order — confirmed against
@@ -244,7 +244,7 @@ const CreditCardsSection = () => {
           </CTATextBlock>
           <PlushBlock>
             <PlushLogoWrap>
-              <PlushLogo src="/about/personal/credit-cards/plush-logo.svg" alt="Plush" width={PLUSH_LOGO_W} height={PLUSH_LOGO_H} />
+              <PlushLogo src="/home/works/featured/plush-logo.svg" alt="Plush" width={PLUSH_LOGO_W} height={PLUSH_LOGO_H} />
               <PlushTagline>{PLUSH_TAGLINE}</PlushTagline>
             </PlushLogoWrap>
             <CTAButton href={PLUSH_URL} target="_blank" rel="noopener noreferrer">

@@ -4,6 +4,7 @@ import styled, { ThemeProvider } from 'styled-components'
 import theme, { mq } from '@/styles/theme'
 import Navbar from '@/components/common/Navbar'
 import Footer from '@/components/common/Footer'
+import PersonalAgent from '@/components/common/PersonalAgent'
 
 interface Props {
   children: React.ReactNode
@@ -16,6 +17,7 @@ const Layout = ({ children }: Props) => {
         <Navbar />
         <Main>{children}</Main>
         <Footer />
+        {process.env.NODE_ENV !== 'production' && <PersonalAgent />}
       </PageWrapper>
     </ThemeProvider>
   )

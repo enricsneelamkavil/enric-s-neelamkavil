@@ -179,15 +179,6 @@ const TitleBlock = styled.div`
   flex-direction: column;
 `
 
-const DesktopLabelWrap = styled.div`
-  ${mq.tabletDown} { display: none; }
-`
-
-const MobileLabelWrap = styled.div`
-  display: none;
-  ${mq.tabletDown} { display: block; }
-`
-
 // ── Travel albums ─────────────────────────────────────────────────────────────
 
 const AlbumsRow = styled.div`

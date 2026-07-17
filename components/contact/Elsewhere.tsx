@@ -91,7 +91,7 @@ const Elsewhere = () => (
               aria-label={`${name} — ${handle}`}
             >
               <IconWrap>
-                <Image src={icon} alt={name} draggable={false} fill sizes="40px" />
+                <Image src={icon} alt={name} draggable={false} fill sizes="40px" quality={100} />
               </IconWrap>
               <Details>
                 <PlatformName>{name}</PlatformName>
@@ -168,23 +168,26 @@ const PlatformCard = styled.a`
   }
 `
 
-// No border-radius/clip here — Figma applies none either. Each platform's
-// icon asset already carries its own native shape (Dribbble and Facebook are
-// circular, others rounded-square); a uniform CSS radius would incorrectly
-// squarify the circular ones.
+// Figma's own icon container has no radius (only the outer PlatformCard does).
+// This 12px + overflow:hidden was added deliberately against that source, to
+// mask some of the white padding baked into a couple of the source webp files
+// (dribbble.webp, youtube.webp) — it only trims corners, not flat-edge padding,
+// so it's a partial mitigation, not a real fix. See those two files directly.
 const IconWrap = styled.div`
   position: relative;
   width: 40px;
   height: 40px;
   flex-shrink: 0;
   box-shadow: 0 0 12px rgba(0, 0, 0, 0.15);
+  border-radius: 12px;
+  overflow: hidden;
 
   img {
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
-    object-fit: cover;
+    object-fit: contain;
     pointer-events: none;
     display: block;
   }

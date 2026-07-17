@@ -171,13 +171,4 @@ const AwardSubtitle = styled.p`
   color: ${({ theme }) => theme.colors.text.secondary};
 `
 
-const DesktopLabel = styled.div`
-  ${mq.mobile} { display: none; }
-`
-
-const MobileLabel = styled.div`
-  display: none;
-  ${mq.mobile} { display: block; }
-`
-
 export default AwardShelf

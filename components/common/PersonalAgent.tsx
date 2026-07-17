@@ -407,8 +407,8 @@ const HeaderStatusIcon = styled.span`
   width: 12px;
   height: 12px;
   background-color: ${({ theme }) => theme.colors.text.tertiary};
-  -webkit-mask: url(/icons/expand.svg) no-repeat center / contain;
-  mask: url(/icons/expand.svg) no-repeat center / contain;
+  -webkit-mask: url(/icons/full-view.svg) no-repeat center / contain;
+  mask: url(/icons/full-view.svg) no-repeat center / contain;
 `
 
 const HeaderButtons = styled.div`
