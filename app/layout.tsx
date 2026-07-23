@@ -8,6 +8,7 @@ import { SpeedInsights } from '@vercel/speed-insights/next'
 import { Analytics } from '@vercel/analytics/next'
 import { GoogleAnalytics } from '@next/third-parties/google'
 import StyledComponentsRegistry from '@/styles/StyledComponentsRegistry'
+import Clarity from '@microsoft/clarity'
 import Layout from '@/components/common/Layout'
 import './globals.css'
 
